@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config hint="常用配置（覆写全量配置文件的对应项）">
+  
+    <app caption="应用配置">
+        <signRoomId caption="签到直播间(房间勋章等级越高签到奖励越多)">438</signRoomId>
+        <waitElementTime caption="页面元素加载等待时间(s)">10</waitElementTime>
+        <clearCacheCycle caption="清理内存周期(每抽奖N次清理一次)">10</clearCacheCycle>
+    </app>
+   
+</config>
