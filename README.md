@@ -50,28 +50,28 @@
 ## 运行界面展示
 
 ### ※ 主界面
-![主界面](https://github.com/lyy289065406/expcodes/blob/master/java/99-project/bilibili-plugin/trunk/doc/%E8%BF%90%E8%A1%8C%E6%88%AA%E5%9B%BE/01-%E4%B8%BB%E7%95%8C%E9%9D%A2.png)
+![主界面](https://raw.githubusercontent.com/lyy289065406/bilibili-plugin/master/doc/%E8%BF%90%E8%A1%8C%E6%88%AA%E5%9B%BE/01-%E4%B8%BB%E7%95%8C%E9%9D%A2.png)
 
 ### ※ 多号挂机管理界面
-![多号挂机](https://github.com/lyy289065406/expcodes/blob/master/java/99-project/bilibili-plugin/trunk/doc/%E8%BF%90%E8%A1%8C%E6%88%AA%E5%9B%BE/02-%E5%A4%9A%E5%8F%B7%E6%8C%82%E6%9C%BA.png)
+![多号挂机](https://raw.githubusercontent.com/lyy289065406/bilibili-plugin/master/doc/%E8%BF%90%E8%A1%8C%E6%88%AA%E5%9B%BE/02-%E5%A4%9A%E5%8F%B7%E6%8C%82%E6%9C%BA.png)
 
 ### ※ 登陆界面
 <br/>　
 　*二维码登陆（左） & 帐密登陆（右）*<br/>
-![登陆界面](https://github.com/lyy289065406/expcodes/blob/master/java/99-project/bilibili-plugin/trunk/doc/%E8%BF%90%E8%A1%8C%E6%88%AA%E5%9B%BE/03-%E7%99%BB%E9%99%86%E7%95%8C%E9%9D%A2.png)
+![登陆界面](https://raw.githubusercontent.com/lyy289065406/bilibili-plugin/master/doc/%E8%BF%90%E8%A1%8C%E6%88%AA%E5%9B%BE/03-%E7%99%BB%E9%99%86%E7%95%8C%E9%9D%A2.png)
 
 ### ※ 功能界面
 <br/>　
 　*自动抽奖设置（左） & 开播通知（右）*<br/>
-![抽奖设置与开播通知](https://github.com/lyy289065406/expcodes/blob/master/java/99-project/bilibili-plugin/trunk/doc/%E8%BF%90%E8%A1%8C%E6%88%AA%E5%9B%BE/04-%E6%8A%BD%E5%A5%96%E8%AE%BE%E7%BD%AE%E4%B8%8E%E5%BC%80%E6%92%AD%E9%80%9A%E7%9F%A5.png)
+![抽奖设置与开播通知](https://raw.githubusercontent.com/lyy289065406/bilibili-plugin/master/doc/%E8%BF%90%E8%A1%8C%E6%88%AA%E5%9B%BE/04-%E6%8A%BD%E5%A5%96%E8%AE%BE%E7%BD%AE%E4%B8%8E%E5%BC%80%E6%92%AD%E9%80%9A%E7%9F%A5.png)
 <br/>　
 <br/>　
 　*小学宝箱（左） & 随缘点歌姬（右）*<br/>
-![小学宝箱与随缘点歌](https://github.com/lyy289065406/expcodes/blob/master/java/99-project/bilibili-plugin/trunk/doc/%E8%BF%90%E8%A1%8C%E6%88%AA%E5%9B%BE/05-%E5%B0%8F%E5%AD%A6%E5%AE%9D%E7%AE%B1%E4%B8%8E%E9%9A%8F%E7%BC%98%E7%82%B9%E6%AD%8C.png)
+![小学宝箱与随缘点歌](https://raw.githubusercontent.com/lyy289065406/bilibili-plugin/master/doc/%E8%BF%90%E8%A1%8C%E6%88%AA%E5%9B%BE/05-%E5%B0%8F%E5%AD%A6%E5%AE%9D%E7%AE%B1%E4%B8%8E%E9%9A%8F%E7%BC%98%E7%82%B9%E6%AD%8C.png)
 <br/>　
 <br/>　
 　*粉丝活跃度统计（左） & 直播间抽奖姬（右）*<br/>
-![粉丝活跃度统计与抽奖](https://github.com/lyy289065406/expcodes/blob/master/java/99-project/bilibili-plugin/trunk/doc/%E8%BF%90%E8%A1%8C%E6%88%AA%E5%9B%BE/06-%E7%B2%89%E4%B8%9D%E6%B4%BB%E8%B7%83%E5%BA%A6%E7%BB%9F%E8%AE%A1%E4%B8%8E%E6%8A%BD%E5%A5%96.png)
+![粉丝活跃度统计与抽奖](https://raw.githubusercontent.com/lyy289065406/bilibili-plugin/master/doc/%E8%BF%90%E8%A1%8C%E6%88%AA%E5%9B%BE/06-%E7%B2%89%E4%B8%9D%E6%B4%BB%E8%B7%83%E5%BA%A6%E7%BB%9F%E8%AE%A1%E4%B8%8E%E6%8A%BD%E5%A5%96.png)
 
 
 
