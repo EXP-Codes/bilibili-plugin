@@ -20,17 +20,18 @@ import javax.imageio.ImageWriter;
 import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.stream.ImageInputStream;
 import javax.imageio.stream.ImageOutputStream;
-import javax.swing.JOptionPane;
 
 import com.sun.media.imageio.plugins.tiff.TIFFImageWriteParam;
 
-/*
- * ImageIOHelper.java
- *
- * Created on December 24, 2007, 1:15 AM
- *
- * To change this template, choose Tools | Template Manager
- * and open the template in the editor.
+/**
+ * <PRE>
+ * 图像IO接口
+ * </PRE>
+ * <br/><B>PROJECT : </B> bilibili-plugin
+ * <br/><B>SUPPORT : </B> <a href="http://www.exp-blog.com" target="_blank">www.exp-blog.com</a> 
+ * @version   2017-12-17
+ * @author    EXP: 272629724@qq.com
+ * @since     jdk版本：jdk1.6
  */
 public class ImageIOHelper {
 
@@ -119,9 +120,7 @@ public class ImageIOHelper {
 			ImageReader reader = readers.next();
 
 			if (reader == null) {
-				JOptionPane
-						.showConfirmDialog(null,
-								"Need to install JAI Image I/O package.\nhttps://jai-imageio.dev.java.net");
+				System.err.println("Need to install JAI Image I/O package.\nhttps://jai-imageio.dev.java.net");
 				return null;
 			}
 

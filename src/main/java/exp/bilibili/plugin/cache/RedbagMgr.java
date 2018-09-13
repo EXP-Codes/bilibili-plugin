@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -14,12 +15,13 @@ import net.sf.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import exp.bilibili.plugin.bean.ldm.Award;
-import exp.bilibili.plugin.core.back.MsgSender;
-import exp.bilibili.plugin.envm.BiliCmdAtrbt;
+import exp.bilibili.plugin.bean.ldm.BiliCookie;
 import exp.bilibili.plugin.envm.Redbag;
 import exp.bilibili.plugin.utils.TimeUtils;
 import exp.bilibili.plugin.utils.UIUtils;
+import exp.bilibili.protocol.XHRSender;
+import exp.bilibili.protocol.bean.xhr.Award;
+import exp.bilibili.protocol.envm.BiliCmdAtrbt;
 import exp.libs.utils.format.JsonUtils;
 import exp.libs.utils.other.StrUtils;
 import exp.libs.warp.thread.LoopThread;
@@ -52,23 +54,17 @@ public class RedbagMgr extends LoopThread {
 	 */
 	private boolean exTime;
 	
-	/** 本轮手持红包数 */
-	private int keepRedbagNum;
-	
-	/** 本轮奖池信息 */
-	private Map<String, Award> pool;
+	private int lastRound;
 	
 	private static volatile RedbagMgr instance;
 	
 	private RedbagMgr() {
 		super("红包兑奖姬");
-		this.sleepTime = 1000;
+		this.sleepTime = 500;
 		this.redbags = new LinkedList<Redbag>();
 		this.exchange = false;
 		this.exTime = false;
-		
-		this.keepRedbagNum = 0;
-		this.pool = new HashMap<String, Award>();
+		this.lastRound = 0;
 	}
 	
 	public static RedbagMgr getInstn() {
@@ -124,8 +120,9 @@ public class RedbagMgr extends LoopThread {
 	public void updateExTime() {
 		int minute = TimeUtils.getCurMinute();
 		
-		if(exTime == false && minute == 55) {
-			sleepTime = 1000;
+		if(exTime == false && minute >= 58) {
+			lastRound = queryPool(CookiesMgr.MAIN(), null);	// 防止有人主动刷新过奖池
+			sleepTime = 500;
 			exTime = true;
 			UIUtils.log("红包兑奖时间已到, 正在尝试兑奖...");
 			
@@ -137,19 +134,60 @@ public class RedbagMgr extends LoopThread {
 	}
 	
 	/**
+	 * 兑换奖品
+	 */
+	public void exchange() {
+		if(redbags.isEmpty()) {
+			return;
+		}
+		
+		int round = lastRound;
+		Set<BiliCookie> cookies = CookiesMgr.ALL();
+		for(BiliCookie cookie : cookies) {
+			if(!cookie.isBindTel()) {
+				continue;
+			}
+			
+			Map<String, Award> pool = new HashMap<String, Award>();
+			round = queryPool(cookie, pool);
+			if(round <= lastRound) {
+				break;
+			}
+			
+			exchange(cookie, pool);
+		}
+		
+		if(lastRound <= 0) {
+			lastRound = round;
+			
+		} else if(round > lastRound) {
+			lastRound = round;
+			
+			sleepTime = 60000;
+			exTime = false;
+			UIUtils.log("第 [", round,"] 轮红包兑奖已完成.");
+		}
+	}
+	
+	/**
 	 * 查询奖池.
 	 * 	每轮只查询一次奖池
 	 * @return 手持红包数
 	 */
-	public int queryPool() {
-		pool.clear();
-		String response = MsgSender.queryRedbagPool();
+	private int queryPool(BiliCookie cookie, Map<String, Award> pool) {
+		int round = 0;
+		String response = XHRSender.queryRedbagPool(cookie);
 		try {
 			JSONObject json = JSONObject.fromObject(response);
 			int code = JsonUtils.getInt(json, BiliCmdAtrbt.code, -1);
-			if(code == 0) {
+			if(code == 0 && pool != null) {
 				JSONObject data = JsonUtils.getObject(json, BiliCmdAtrbt.data);
-				keepRedbagNum = JsonUtils.getInt(data, BiliCmdAtrbt.red_bag_num, 0);
+				int keepRedbagNum = JsonUtils.getInt(data, BiliCmdAtrbt.red_bag_num, 0);
+				round = JsonUtils.getInt(data, BiliCmdAtrbt.round, 0);
+				
+				Award info = new Award("0", keepRedbagNum);
+				pool.put(info.getId(), info);
+				
 				JSONArray redbagPool = JsonUtils.getArray(data, BiliCmdAtrbt.pool_list);
 				for(int i = 0; i < redbagPool.size(); i++) {
 					Award award = new Award(redbagPool.getJSONObject(i));
@@ -163,16 +201,12 @@ public class RedbagMgr extends LoopThread {
 		} catch(Exception e) {
 			log.error("查询红包奖池失败: {}", response, e);
 		}
-		return keepRedbagNum;
+		return round;
 	}
 	
-	/**
-	 * 兑换奖品
-	 */
-	public void exchange() {
-		if(redbags.isEmpty() || queryPool() <= 0) {
-			return;
-		}
+	private void exchange(BiliCookie cookie, Map<String, Award> pool) {
+		Award info = pool.get("0");
+		int keepRedbagNum = info.getStockNum();
 		
 		// 根据期望兑换的奖品列表在奖池中进行兑换
 		Iterator<Redbag> redbagIts = redbags.iterator();
@@ -198,14 +232,19 @@ public class RedbagMgr extends LoopThread {
 				continue;
 			}
 			
+			int userExchangeCount = award.getUserExchangeCount();
+			if(award.getExchangeLimit() <= 0) {
+				userExchangeCount = 99999;
+			}
+			
 			// 尽可能多地兑换（若兑换成功则更新手持的红包数量）
 			int num = keepRedbagNum / redbag.PRICE();	// 手持红包可以兑换的上限
-			num = (num > award.getUserExchangeCount() ? award.getUserExchangeCount() : num);	//  用户剩余兑换上限
+			num = (num > userExchangeCount ? userExchangeCount: num);	//  用户剩余兑换上限
 			num = (num > award.getStockNum() ? award.getStockNum() : num);	// 奖池剩余数量
 			
-			log.info("正在试图兑换 [{}] 个 [{}] ...", num, redbag.DESC());
+			UIUtils.log("[", cookie.NICKNAME(), "] 正在试图兑换 [", num, "] 个 [", redbag.DESC(), "] ...");
 			if(num > 0) {
-				if(exchange(redbag, num)) {
+				if(exchange(cookie, redbag, num)) {
 					keepRedbagNum -= (redbag.PRICE() * num);
 					
 				} else {
@@ -221,25 +260,24 @@ public class RedbagMgr extends LoopThread {
 	 * @param num 兑换数量
 	 * @return true:兑换成功; false:兑换失败
 	 */
-	private boolean exchange(Redbag redbag, int num) {
+	private boolean exchange(BiliCookie cookie, Redbag redbag, int num) {
 		boolean isOk = false;
-		
-		String response = MsgSender.exchangeRedbag(redbag.ID(), num);
+		String response = XHRSender.exchangeRedbag(cookie, redbag.ID(), num);
 		try {
 			JSONObject json = JSONObject.fromObject(response);
 			int code = JsonUtils.getInt(json, BiliCmdAtrbt.code, -1);
 			if(code == 0) {
 				isOk = true;
-				String msg = StrUtils.concat("成功兑换了[", num, "]个[", redbag.DESC(), "]");
+				String msg = StrUtils.concat("[", cookie.NICKNAME(), "] 成功兑换了[", num, "]个[", redbag.DESC(), "]");
 				UIUtils.log(msg);
 				log.info(msg);
 				
 			} else {
 				String reason = JsonUtils.getStr(json, BiliCmdAtrbt.msg);
-				log.warn("兑换 [{}] 失败: {}", redbag.DESC(), reason);
+				log.warn("[{}] 兑换 [{}] 失败: {}", cookie.NICKNAME(), redbag.DESC(), reason);
 			}
 		} catch(Exception e) {
-			log.error("兑换 [{}] 失败: {}", redbag.DESC(), response, e);
+			log.error("[{}] 兑换 [{}] 失败: {}", cookie.NICKNAME(), redbag.DESC(), response, e);
 		}
 		return isOk;
 	}
@@ -249,7 +287,7 @@ public class RedbagMgr extends LoopThread {
 	 * @return
 	 */
 	public boolean reflashPool() {
-		return exchange(Redbag.REDBAG_POOL, 1);
+		return exchange(CookiesMgr.MAIN(), Redbag.REDBAG_POOL, 1);
 	}
 	
 	/**

@@ -2,9 +2,9 @@ package exp.bilibili.plugin.envm;
 
 public class LotteryType {
 
-	/** 其他礼物抽奖 */
-	private final static short TYPE_OTHER = 0;
-	public final static LotteryType OTHER = new LotteryType(TYPE_OTHER);
+	/** 高能礼物抽奖 */
+	private final static short TYPE_EG = 0;
+	public final static LotteryType ENGERY = new LotteryType(TYPE_EG);
 	
 	/** 小电视抽奖 */
 	private final static short TYPE_TV = 1;

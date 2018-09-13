@@ -12,33 +12,36 @@ package exp.bilibili.plugin.envm;
  */
 public class Gift {
 
-	public final static Gift CHAT = new Gift("弹幕", 1);
+	public final static Gift CHAT = new Gift("", "弹幕", 1);
 	
-	public final static Gift HOT_STRIP = new Gift("辣条", 100);
+	public final static Gift HOT_STRIP = new Gift("1", "辣条", 100);
 	
-	public final static Gift MILLION = new Gift("亿圆", 1000);
+	public final static Gift MILLION = new Gift("6", "亿圆", 1000);
 	
-	public final static Gift MEOW = new Gift("喵娘", 5200);
+	public final static Gift MEOW = new Gift("4", "喵娘", 5200);
 	
-	public final static Gift B_CLOD = new Gift("B坷垃", 9900);
+	public final static Gift B_CLOD = new Gift("3", "B坷垃", 9900);
 	
-	public final static Gift STORM = new Gift("节奏风暴", 100000);
+	public final static Gift STORM = new Gift("39", "节奏风暴", 100000);
 	
-	public final static Gift TV = new Gift("小电视", 1245000);
+	public final static Gift TV = new Gift("25", "小电视", 1245000);
 	
-	public final static Gift _233 = new Gift("233", 233);
+	public final static Gift _233 = new Gift("8", "233", 233);
 	
-	public final static Gift _666 = new Gift("666", 666);
+	public final static Gift _666 = new Gift("7", "666", 666);
 	
-	public final static Gift CAPTAIN = new Gift("舰长", 198000);
+	public final static Gift CAPTAIN = new Gift("", "舰长", 198000);
 	
-	public final static Gift ADMIRAL = new Gift("提督", 1998000);
+	public final static Gift ADMIRAL = new Gift("", "提督", 1998000);
 	
-	public final static Gift GOVERNOR = new Gift("总督", 19998000);
+	public final static Gift GOVERNOR = new Gift("", "总督", 19998000);
 	
-	public final static Gift LANTERN = new Gift("红灯笼", 2000);
+	public final static Gift LANTERN = new Gift("109", "红灯笼", 2000);
 	
-	public final static Gift SQUIB = new Gift("小爆竹", 2000);
+	public final static Gift SQUIB = new Gift("110", "小爆竹", 2000);
+	
+	/** 礼物ID */
+	private String id;
 	
 	/** 礼物名称 */
 	private String name;
@@ -46,9 +49,14 @@ public class Gift {
 	/** 价值/活跃值 */
 	private int cost;
 	
-	private Gift(String name, int cost) {
+	private Gift(String id, String name, int cost) {
+		this.id = id;
 		this.name = name;
 		this.cost = cost;
+	}
+	
+	public String ID() {
+		return id;
 	}
 	
 	public String NAME() {

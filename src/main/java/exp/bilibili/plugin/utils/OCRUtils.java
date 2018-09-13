@@ -8,7 +8,7 @@ import com.sun.media.OCR;
 
 /**
  * <PRE>
- * 图像识别工具
+ * 图像字符识别工具
  * </PRE>
  * <br/><B>PROJECT : </B> bilibili-plugin
  * <br/><B>SUPPORT : </B> <a href="http://www.exp-blog.com" target="_blank">www.exp-blog.com</a> 
@@ -18,75 +18,29 @@ import com.sun.media.OCR;
  */
 public class OCRUtils {
 	
-	private final static Logger log = LoggerFactory.getLogger(UIUtils.class);
+	/** 日志器 */
+	private final static Logger log = LoggerFactory.getLogger(OCRUtils.class);
 	
+	/** OCR组件目录 */
 	private final static String OCR_DIR = "./conf/ocr/tesseract";
 	
+	/** OCR处理对象 */
 	private final static OCR _OCR = new OCR(OCR_DIR);
 	
+	/** 私有化构造函数 */
 	protected OCRUtils() {}
 
 	/**
-	 * 把JPG图像识别成文本内容
-	 * @param jpgPath
+	 * 把图像识别成文本内容
+	 * @param imgPath
 	 * @return
 	 */
-	public static String jpgToTxt(String jpgPath) {
+	public static String imgToTxt(String imgPath) {
 		String txt = "";
 		try {
-			txt = _OCR.recognizeText(jpgPath, OCR.IMG_FORMAT_JPG);
+			txt = _OCR.recognizeText(imgPath);
 		} catch (Exception e) {
-			log.error("识别图片文字失败: {}", jpgPath, e);
-		}
-		return revise(txt.trim());
-	}
-	
-	/**
-	 * 目前验证码图片只有 a+b 与 a-b 两种形式, 由于字体问题，某些数字会被固定识别错误, 
-	 *  此方法用于修正常见的识别错误的数字/符号, 提高识别率
-	 * @param txt
-	 * @return
-	 */
-	private static String revise(String txt) {
-		String revise = txt;
-		
-		revise = revise.replace("[1", "0");
-		revise = revise.replace("[|", "0");
-		
-		revise = revise.replace("'I", "7");
-		
-		revise = revise.replace("l•", "4");
-		revise = revise.replace("l»", "4");
-		revise = revise.replace("b", "4");
-		revise = revise.replace("h", "4");
-		
-		revise = revise.replace("i", "1");
-		revise = revise.replace("I", "1");
-		revise = revise.replace("]", "1");
-		revise = revise.replace("|", "1");
-		
-		revise = revise.replace("E", "6");
-		
-		revise = revise.replace("B", "8");
-		
-		revise = revise.replace("H", "9");
-		revise = revise.replace("Q", "9");
-		
-		revise = revise.replace("·", "-");
-		return revise;
-	}
-	
-	/**
-	 * 把PNG图像识别成文本内容
-	 * @param pngPath
-	 * @return
-	 */
-	public static String pngToTxt(String pngPath) {
-		String txt = "";
-		try {
-			txt = _OCR.recognizeText(pngPath, OCR.IMG_FORMAT_PNG);
-		} catch (Exception e) {
-			log.error("识别图片文字失败: {}", pngPath, e);
+			log.error("识别图片文字失败: {}", imgPath, e);
 		}
 		return txt.trim();
 	}

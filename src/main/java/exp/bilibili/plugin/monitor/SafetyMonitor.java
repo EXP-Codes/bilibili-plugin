@@ -8,11 +8,11 @@ import net.sf.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import exp.bilibili.plugin.cache.LoginMgr;
-import exp.bilibili.plugin.core.back.MsgSender;
-import exp.bilibili.plugin.envm.BiliCmdAtrbt;
+import exp.bilibili.plugin.cache.CookiesMgr;
 import exp.bilibili.plugin.utils.SafetyUtils;
 import exp.bilibili.plugin.utils.UIUtils;
+import exp.bilibili.protocol.XHRSender;
+import exp.bilibili.protocol.envm.BiliCmdAtrbt;
 import exp.certificate.bean.App;
 import exp.certificate.core.Convertor;
 import exp.libs.utils.encode.CryptoUtils;
@@ -39,17 +39,13 @@ public class SafetyMonitor extends LoopThread {
 
 	private final static Logger log = LoggerFactory.getLogger(SafetyMonitor.class);
 	
-	/** 软件授权页(Github) */
+	/** 软件授权页(Github) TLS协议版本问题，需JDK1.8编译的程序才能访问此网址 */
 	private final static String GITHUB_URL = CryptoUtils.deDES(
 			"610BEF99CF948F0DB1542314AC977291892B30802EC5BF3B2DCDD5538D66DDA67467CE4082C2D0BC56227128E753555C");
 	
 	/** 软件授权页(Gitee) */
 	private final static String GITEE_URL = CryptoUtils.deDES(
 			"4C3B7319D21E23D468926AD72569DDF8408E193F3B526A6F5EE2A5699BCCA673DC22BC762A1F149B03E39422823B4BF0");
-	
-	/** 软件授权页(Bilibili-备用) */
-	private final static String BILIBILI_URL = CryptoUtils.deDES(
-			"EECD1D519FEBFDE5EF68693278F5849E8068123647103E9D1644539B452D8DE870DD36BBCFE2C2A8E5A16D58A0CA752D3D715AF120F89F10990A854A386B95631E7C60D1CFD77605");
 	
 	/** 免检原因 */
 	private final static String UNCHECK_CAUSE = "UNCHECK";
@@ -72,6 +68,8 @@ public class SafetyMonitor extends LoopThread {
 	
 	private String cause;
 	
+	private String loginUser;
+	
 	private String appName;
 
 	private String appVersion;
@@ -86,8 +84,11 @@ public class SafetyMonitor extends LoopThread {
 		this.noResponseCnt = 0;
 		this.loopCnt = LOOP_LIMIT;
 		this.cause = UNCHECK_CAUSE;
+		this.loginUser = CookiesMgr.MAIN().NICKNAME();
 		this.appName = "";
 		this.appVersion = "";
+		
+		init();
 	}
 	
 	public static SafetyMonitor getInstn() {
@@ -101,13 +102,15 @@ public class SafetyMonitor extends LoopThread {
 		return instance;
 	}
 	
-	@Override
-	protected void _before() {
+	private void init() {
 		String verInfo =  VersionMgr.exec("-p");
 		appName = RegexUtils.findFirst(verInfo, "项目名称[ |]*([a-z|\\-]+)");
 		appVersion = RegexUtils.findFirst(verInfo, "版本号[ |]*([\\d|\\.]+)");
+	}
+	
+	@Override
+	protected void _before() {
 		updateCertificateTime(SafetyUtils.fileToCertificate());
-		
 		log.info("{} 已启动", getName());
 	}
 
@@ -193,7 +196,7 @@ public class SafetyMonitor extends LoopThread {
 	 */
 	private boolean checkByBilibili() {
 		boolean isOk = false;
-		String response = MsgSender.queryCertTags(BILIBILI_URL);
+		String response = XHRSender.queryCertTags();
 		try {
 			JSONObject json = JSONObject.fromObject(response);
 			int code = JsonUtils.getInt(json, BiliCmdAtrbt.code, -1);
@@ -287,13 +290,12 @@ public class SafetyMonitor extends LoopThread {
 	 */
 	private boolean checkInWhitelist(String whitelist) {
 		boolean isIn = false;
-		String loginUser = LoginMgr.getInstn().getLoginUser();
 		if(StrUtils.isNotEmpty(whitelist, loginUser)) {
 			isIn = whitelist.contains(loginUser);
 		}
 		return isIn;
 	}
-	
+
 	/**
 	 * 检查软件的当前版本是否大于等于授权版本
 	 * @param versions 授权版本(格式: major.minor ，如: 1.9)
@@ -324,7 +326,6 @@ public class SafetyMonitor extends LoopThread {
 	 */
 	private boolean checkNotInBlacklist(String blacklist) {
 		boolean isNotIn = true;
-		String loginUser = LoginMgr.getInstn().getLoginUser();
 		if(StrUtils.isNotEmpty(blacklist, loginUser)) {
 			isNotIn = !blacklist.contains(loginUser);
 		}
@@ -363,6 +364,14 @@ public class SafetyMonitor extends LoopThread {
 		if(app != null) {
 			checkInTime(app.getTime());
 		}
+	}
+	
+	/**
+	 * 获取当前版本号
+	 * @return
+	 */
+	public static String VERSION() {
+		return getInstn().appVersion;
 	}
 	
 }

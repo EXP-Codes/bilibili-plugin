@@ -16,18 +16,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import exp.bilibili.plugin.Config;
-import exp.bilibili.plugin.bean.ldm.TActivity;
-import exp.bilibili.plugin.bean.pdm.ChatMsg;
-import exp.bilibili.plugin.bean.pdm.GuardBuy;
-import exp.bilibili.plugin.bean.pdm.SendGift;
-import exp.bilibili.plugin.core.back.MsgSender;
+import exp.bilibili.plugin.bean.pdm.TActivity;
 import exp.bilibili.plugin.envm.Gift;
-import exp.bilibili.plugin.envm.Level;
+import exp.bilibili.plugin.envm.Identity;
 import exp.bilibili.plugin.utils.TimeUtils;
 import exp.bilibili.plugin.utils.UIUtils;
+import exp.bilibili.protocol.XHRSender;
+import exp.bilibili.protocol.bean.ws.ChatMsg;
+import exp.bilibili.protocol.bean.ws.GuardBuy;
+import exp.bilibili.protocol.bean.ws.SendGift;
 import exp.libs.envm.Charset;
 import exp.libs.envm.DBType;
-import exp.libs.utils.encode.CryptoUtils;
 import exp.libs.utils.io.FileUtils;
 import exp.libs.utils.io.JarUtils;
 import exp.libs.utils.other.StrUtils;
@@ -62,14 +61,11 @@ public class ActivityMgr {
 		DS.setName(ENV_DB_PATH);
 	}
 	
-	/** 管理员在B站的用户ID */
-	private final static String SENDER_UID = CryptoUtils.deDES("349B00EE2F2B0A6B");
+	/** 总活跃值每20W可兑换软件使用期1天 */
+	public final static int DAY_UNIT = 200000;
 	
-	/** 总活跃值每10W可兑换软件使用期1天 */
-	public final static int DAY_UNIT = 100000;
-	
-	/** 触发个人私信的活跃值单位(即每至少超过1W活跃值时发送一次私信) */
-	private final static int COST_UNIT = 10000;
+	/** 触发个人私信的活跃值单位(即每至少超过20W活跃值时发送一次私信) */
+	private final static int COST_UNIT = 200000;
 	
 	/** 打印活跃值时需要除掉的单位（100） */
 	private final static int SHOW_UNIT = 100;
@@ -138,15 +134,14 @@ public class ActivityMgr {
 	/**
 	 * 初始化
 	 */
-	public void init() {
-		if(isInit == true) {
-			return;
+	public boolean init() {
+		if(isInit == false) {
+			isInit = initEnv();
+			if(isInit == true) {
+				read();
+			}
 		}
-		
-		isInit = initEnv();
-		if(isInit == true) {
-			read();
-		}
+		return isInit;
 	}
 	
 	/**
@@ -154,7 +149,7 @@ public class ActivityMgr {
 	 * @return
 	 */
 	private boolean initEnv() {
-		if(Config.LEVEL < Level.ADMIN) {
+		if(Identity.less(Identity.ADMIN)) {
 			return false;	// 仅管理员可以操作
 		}
 		
@@ -162,6 +157,7 @@ public class ActivityMgr {
 		File dbFile = new File(ENV_DB_PATH);
 		if(!dbFile.exists()) {
 			FileUtils.createDir(ENV_DB_DIR);
+			
 			Connection conn = SqliteUtils.getConnByJDBC(DS);
 			String script = JarUtils.read(ENV_DB_SCRIPT, Charset.ISO);
 			String[] sqls = script.split(";");
@@ -291,8 +287,8 @@ public class ActivityMgr {
 	 */
 	private boolean isRecord() {
 		boolean isRecord = false;
-		if(isInit && Config.LEVEL >= Level.ADMIN) {
-			int curRoomId = RoomMgr.getInstn().getRealRoomId(UIUtils.getCurRoomId());
+		if(init() && !Identity.less(Identity.ADMIN)) {
+			int curRoomId = RoomMgr.getInstn().getRealRoomId(UIUtils.getLiveRoomId());
 			if(ROOM_ID > 0 && ROOM_ID == curRoomId) {
 				isRecord = true;
 			}
@@ -360,9 +356,9 @@ public class ActivityMgr {
 		
 		if(UIUtils.isLogined() && // 登陆后才能发送私信
 				(before % COST_UNIT + cost) >= COST_UNIT) {
-			String msg = StrUtils.concat("恭喜您在 [", ROOM_ID, "] 直播间的活跃度达到 [", 
-					(after / SHOW_UNIT), "]");
-			MsgSender.sendPrivateMsg(SENDER_UID, uid, msg);
+			String msg = StrUtils.concat("恭喜您在 [", Config.getInstn().ACTIVITY_ROOM_ID(), 
+					"] 直播间的活跃度达到 [", after, "] O(∩_∩)O 谢谢资瓷 ~");
+			XHRSender.sendPM(uid, msg);
 		}
 	}
 	

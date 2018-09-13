@@ -6,6 +6,16 @@ import exp.libs.utils.io.FileUtils;
 import exp.libs.utils.num.NumUtils;
 import exp.libs.utils.other.StrUtils;
 
+/**
+ * <PRE>
+ * 安全校验工具类
+ * </PRE>
+ * <br/><B>PROJECT : </B> bilibili-plugin
+ * <br/><B>SUPPORT : </B> <a href="http://www.exp-blog.com" target="_blank">www.exp-blog.com</a> 
+ * @version   2017-12-17
+ * @author    EXP: 272629724@qq.com
+ * @since     jdk版本：jdk1.6
+ */
 public class SafetyUtils {
 
 	/** 授权码正则 */
@@ -38,6 +48,7 @@ public class SafetyUtils {
 			errMsg = "无效的授权码";
 		}
 		
+		// 对私时间用于对外出售，限制其使用期限（过期后不管对公时间如何，均无法启动）
 		if(!checkCertificate()) {
 			errMsg = "软件授权已过期";
 		}

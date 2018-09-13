@@ -23,8 +23,10 @@ import exp.libs.utils.other.StrUtils;
  */
 public class MsgKwMgr {
 
+	/** 行为副词 */
 	private List<String> advs;
 	
+	/** 晚安关键词 */
 	private Set<String> nights;
 	
 	/** 开播上车的卡片类型 */
@@ -36,6 +38,10 @@ public class MsgKwMgr {
 	/** 自动打call的候选列表 */
 	private List<String> calls;
 	
+	/** 歌单 */
+	private List<String> musics;
+	
+	/** 单例 */
 	private static volatile MsgKwMgr instance;
 	
 	private MsgKwMgr() {
@@ -44,6 +50,7 @@ public class MsgKwMgr {
 		this.cards = new ArrayList<String>();
 		this.notices = new ArrayList<String>();
 		this.calls = new ArrayList<String>();
+		this.musics = new ArrayList<String>();
 		
 		init();
 	}
@@ -66,6 +73,7 @@ public class MsgKwMgr {
 		
 		read(Config.getInstn().NOTICE_PATH(), notices);
 		read(Config.getInstn().CALL_PATH(), calls);
+		read(Config.getInstn().MUSIC_PATH(), musics);
 	}
 	
 	private void read(String path, Collection<String> list) {
@@ -82,9 +90,9 @@ public class MsgKwMgr {
 		advs.clear();
 		nights.clear();
 		cards.clear();
-		
 		notices.clear();
 		calls.clear();
+		musics.clear();
 	}
 	
 	public void reload() {
@@ -95,17 +103,30 @@ public class MsgKwMgr {
 		read(Config.getInstn().CALL_PATH(), calls);
 	}
 
-	public static String getAdj() {
-		return getInstn()._getAdj();
+	public static String getAdv() {
+		return getInstn()._getAdv();
 	}
 	
-	private String _getAdj() {
+	private String _getAdv() {
 		if(advs.size() <= 0) {
 			return "";
 		}
 		
 		int idx = RandomUtils.randomInt(advs.size());
 		return advs.get(idx);
+	}
+	
+	public static String getMusic() {
+		return getInstn()._getMusic();
+	}
+	
+	private String _getMusic() {
+		if(musics.size() <= 0) {
+			return "";
+		}
+		
+		int idx = RandomUtils.randomInt(musics.size());
+		return musics.get(idx);
 	}
 	
 	public static boolean containsNight(String msg) {

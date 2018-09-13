@@ -5,10 +5,11 @@ import java.awt.Toolkit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import exp.bilibili.plugin.core.front.AppUI;
-import exp.bilibili.plugin.core.front._NoticeUI;
 import exp.bilibili.plugin.envm.ChatColor;
+import exp.bilibili.plugin.ui.AppUI;
+import exp.bilibili.plugin.ui._NoticeUI;
 import exp.libs.utils.other.StrUtils;
+import exp.libs.warp.ui.SwingUtils;
 
 /**
  * <PRE>
@@ -71,14 +72,6 @@ public class UIUtils {
 		AppUI.getInstn().updateLotteryCnt(num);
 	}
 	
-	public static void updateQrcode() {
-		AppUI.getInstn().updateQrcode();
-	}
-	
-	public static void updateQrcodeTime(int second) {
-		AppUI.getInstn().updateQrcodeTime(second);
-	}
-	
 	public static void markLogin(String username) {
 		AppUI.getInstn().markLogin(username);
 	}
@@ -99,8 +92,16 @@ public class UIUtils {
 		return AppUI.getInstn().getLiveUrl();
 	}
 	
-	public static int getCurRoomId() {
-		return AppUI.getInstn().getCurRoomId();
+	public static int getLiveRoomId() {
+		return AppUI.getInstn().getLiveRoomId();
+	}
+	
+	public static int getFeedRoomId() {
+		return AppUI.getInstn().getFeedRoomId();
+	}
+	
+	public static boolean isAutoFeed() {
+		return AppUI.getInstn().isAutoFeed();
 	}
 	
 	public static ChatColor getCurChatColor() {
@@ -110,6 +111,11 @@ public class UIUtils {
 	public static void notityLive(int roomId) {
 		new _NoticeUI(roomId)._view();		// 右下角通知提示
 		Toolkit.getDefaultToolkit().beep();	// 蜂鸣音提示
+	}
+	
+	public static void notityExit(String msg) {
+		SwingUtils.warn(msg);
+		System.exit(0);
 	}
 	
 }

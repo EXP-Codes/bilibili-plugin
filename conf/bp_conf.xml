@@ -3,8 +3,7 @@
   
     <app caption="应用配置">
         <signRoomId caption="签到直播间(房间勋章等级越高签到奖励越多)">438</signRoomId>
-        <waitElementTime caption="页面元素加载等待时间(s)">10</waitElementTime>
-        <clearCacheCycle caption="清理内存周期(每抽奖N次清理一次)">10</clearCacheCycle>
+        <stormFrequency caption="节奏风暴扫描频率(单位:ms)" hint="小于100容易被封IP">100</stormFrequency>
     </app>
    
 </config>

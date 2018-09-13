@@ -13,7 +13,7 @@
 		<target>System.out</target><!-- System.out|System.err -->
 	</appender>
 
-    <!-- 全量异常日志器  -->
+   <!-- 全量异常日志器  -->
    <appender name="exception"
       class="ch.qos.logback.core.rolling.RollingFileAppender">
       <file>${LOG_HOME}/exception.log</file>
@@ -74,13 +74,13 @@
 	</appender>
 	
 	<!-- 主程序日志 -->
-	<logger name="exp.bilibili.plugin" level="info" additivity="true">
+	<logger name="exp.bilibili" level="info" additivity="true">
 		<appender-ref ref="app" />
 	</logger>
 	
 	<!-- 经验库日志 -->
-	<logger name="exp.libs.utils.format.JsonUtils" level="info" additivity="false">
-    </logger>
+	<logger name="exp.libs.utils.io" level="debug" additivity="false" />
+	<logger name="exp.libs.utils.format.JsonUtils" level="debug" additivity="false" />
 	<logger name="exp.libs" level="info" additivity="false">
 		<appender-ref ref="other" />
 		<appender-ref ref="exception" />

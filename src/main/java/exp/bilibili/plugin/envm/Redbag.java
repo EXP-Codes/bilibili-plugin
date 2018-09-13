@@ -38,6 +38,8 @@ public class Redbag {
 	
 	public final static Redbag CALENDAR = new Redbag("award-calendar", 8888, "哔哩哔哩直播2018新年台历", 2);
 	
+	public final static Redbag MASTER = new Redbag("award-master", 66666, "直播首页推荐卡1小时", 0);
+	
 	private String id;
 	
 	private int price;
@@ -118,6 +120,9 @@ public class Redbag {
 			
 		} else if(CALENDAR.ID().equals(id)) {
 			redbag = CALENDAR;
+			
+		} else if(MASTER.ID().equals(id)) {
+			redbag = MASTER;
 		}
 		return redbag;
 	}

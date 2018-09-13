@@ -6,7 +6,7 @@
 	<!--项目基本信息(必填)-->
 	<groupId>exp.bilibili</groupId>
 	<artifactId>bilibili-plugin</artifactId>
-	<version>2.3-SNAPSHOT</version>
+	<version>3.5-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>哔哩哔哩插件姬</name>
@@ -38,6 +38,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<release.dir>${project.build.directory}/${project.artifactId}-${project.version}</release.dir>
+		<jdk.version>1.7</jdk.version>
 		<explibs.version>1.0-SNAPSHOT</explibs.version>
 		<mrp.plugin.version>1.0-SNAPSHOT</mrp.plugin.version>
 	</properties>
@@ -147,9 +148,37 @@
 	          <groupId>net.webservices.client</groupId>
 	          <artifactId>soapui-xmlbeans</artifactId>
 	        </exclusion>
+	        <exclusion>
+	          <groupId>org.seleniumhq.selenium</groupId>
+	          <artifactId>selenium-java</artifactId>
+	        </exclusion>
+	        <exclusion>
+	          <groupId>com.codeborne</groupId>
+	          <artifactId>phantomjsdriver</artifactId>
+	        </exclusion>
+	        <exclusion>
+	          <groupId>org.seleniumhq.selenium</groupId>
+	          <artifactId>selenium-chrome-driver</artifactId>
+	        </exclusion>
+	        <exclusion>
+	          <groupId>org.seleniumhq.selenium</groupId>
+	          <artifactId>selenium-htmlunit-driver</artifactId>
+	        </exclusion>
+	        <exclusion>	<!-- tensorflow本地化接口（darwin+linux+win） -->
+	          <groupId>org.tensorflow</groupId>
+	          <artifactId>libtensorflow_jni</artifactId>
+	        </exclusion>
 	      </exclusions>
 		</dependency>
 		
+		<!-- tensorflow本地化接口（精简：仅win） -->
+		<!-- dependency>
+		  <groupId>org.tensorflow</groupId>
+		  <artifactId>libtensorflow_jni-for-win</artifactId>
+		  <version>1.6.0-rc1</version>
+		  <classifier>rc1</classifier>
+		</dependency -->
+
 		<!-- 程序校验 -->
 		<dependency>
 			<groupId>exp.certificate</groupId>
@@ -163,66 +192,6 @@
 		  <artifactId>jai-imageio</artifactId>
 		  <version>1.1-alpha</version>
 		  <classifier>alpha</classifier>
-		</dependency>
-
-		<!-- WEB-SOCKET -->
-	    <dependency>
-		  <groupId>org.java-websocket</groupId>
-		  <artifactId>Java-WebSocket</artifactId>
-		  <version>1.3.4</version>
-		</dependency>
-		
-		<!-- WEBKIT -->
-		<dependency>
-          <groupId>org.seleniumhq.selenium</groupId>
-          <artifactId>selenium-java</artifactId>
-          <version>2.53.0</version>
-          <exclusions>
-            <exclusion>
-	          <groupId>org.seleniumhq.selenium</groupId>
-	          <artifactId>selenium-chrome-driver</artifactId>
-	        </exclusion>
-            <exclusion>
-	          <groupId>org.seleniumhq.selenium</groupId>
-	          <artifactId>selenium-firefox-driver</artifactId>
-	        </exclusion>
-	        <exclusion>
-	          <groupId>org.seleniumhq.selenium</groupId>
-	          <artifactId>selenium-ie-driver</artifactId>
-	        </exclusion>
-	        <exclusion>
-	          <groupId>org.seleniumhq.selenium</groupId>
-	          <artifactId>selenium-safari-driver</artifactId>
-	        </exclusion>
-	        <exclusion>
-	          <groupId>org.seleniumhq.selenium</groupId>
-	          <artifactId>selenium-edge-driver</artifactId>
-	        </exclusion>
-	      </exclusions>
-        </dependency>
-        
-        <dependency>
-		  <groupId>com.codeborne</groupId>
-		  <artifactId>phantomjsdriver</artifactId>
-		  <version>1.2.1</version>
-		  <exclusions>
-            <exclusion>
-	          <groupId>org.seleniumhq.selenium</groupId>
-	          <artifactId>selenium-java</artifactId>
-	        </exclusion>
-	      </exclusions>
-		</dependency>
-		
-		<dependency>
-		  <groupId>org.seleniumhq.selenium</groupId>
-		  <artifactId>selenium-chrome-driver</artifactId>
-		  <version>2.44.0</version>
-		</dependency>
-
-		<dependency>
-		  <groupId>org.seleniumhq.selenium</groupId>
-		  <artifactId>selenium-htmlunit-driver</artifactId>
-		  <version>2.44.0</version>
 		</dependency>
 		
 		<!-- 单元测试 -->
@@ -238,6 +207,16 @@
 	<!-- 项目构建 -->
 	<build>
 		<plugins>
+
+			<!-- 指定项目JDK版本 -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>${jdk.version}</source>
+					<target>${jdk.version}</target>
+				</configuration>
+			</plugin>
 
 			<!-- 版本打包插件，在dos跳转到项目根目录，依次执行（需保证没有引用快照、本地与SVN服务器内容完全一致）: 
 				1 发布基线到svn: mvn release:prepare 
@@ -267,7 +246,7 @@
 							<value>target/cobertura/cobertura.ser</value>
 						</property>
 					</systemProperties>
-					<!-- 项目打包时是否跳过d单元测试 -->
+					<!-- 项目打包时是否跳过单元测试 -->
 					<skipTests>true</skipTests>
 				</configuration>
 			</plugin>
@@ -276,7 +255,6 @@
 			<plugin>
 				<groupId>com.github.wvengen</groupId>
 				<artifactId>proguard-maven-plugin</artifactId>
-				<version>2.0.7</version>
 				<executions>
 					<execution>
 						<phase>package</phase>	<!-- 触发混淆打包的maven周期 -->
@@ -340,12 +318,12 @@
 						<!-- 按实际项目修正 -->
 						<option>-keep class 
 							exp.bilibili.plugin.Version,
-							exp.bilibili.plugin.Main
+							exp.bilibili.plugin.BPMain
 						</option>
 						
 						<!-- 保持[Bean类]不变（若框架对 Bean中的内容做了反射处理，则必须保持不变） -->
 						<!-- 按实际项目修正 -->
-						<option>-keep class exp.bilibili.plugin.bean.ldm.TActivity { *;}</option>
+						<option>-keep class exp.bilibili.plugin.bean.pdm.TActivity { *;}</option>
 						
 						<!-- 保持[所有入口方法]不变 -->
 						<!-- 固定不变 -->
@@ -413,24 +391,28 @@
 								<copy todir="${release.dir}/conf">
 									<fileset dir="conf">
 									  <exclude name="driver/chrome-driver.exe" />
+									  <exclude name="tensorflow/storm-captch.pb" />
 									</fileset>
 								</copy>
 								<echo>拷贝资源数据</echo>
 								<copy todir="${release.dir}/data">
 									<fileset dir="data">
-									  <exclude name="cookies/*" />
-									  <exclude name="cookie-mini.dat" />
-									  <exclude name=".BP" />
+									  <exclude name="active/*" />
 									  <exclude name="img/qrcode.png" />
 									  <exclude name="img/vccode.jpg" />
 									  <exclude name="img/vercode.jpg" />
 									  <exclude name="img/tesseract.log" />
 									</fileset>
 								</copy>
+								<copy todir="${release.dir}/cookies">
+                                    <fileset dir="cookies">
+                                      <exclude name="*" />
+                                    </fileset>
+                                </copy>
 								<echo>拷贝文档</echo>
-								<copy todir="${release.dir}/运行截图">
+								<!-- copy todir="${release.dir}/运行截图">
 									<fileset dir="doc/运行截图" />
-								</copy>
+								</copy -->
 								<copy todir="${release.dir}">
 									<fileset dir="doc">
 									  <include name="使用说明.txt" />
@@ -457,7 +439,7 @@
 						<configuration>
 							<mavenRepository>D:\mavenRepository</mavenRepository>
 							<verClass>exp.bilibili.plugin.Version</verClass>
-							<mainClass>exp.bilibili.plugin.Main</mainClass>
+							<mainClass>exp.bilibili.plugin.BPMain</mainClass>
 							<mainArgs></mainArgs>
 							<charset>UTF-8</charset>
 							<jdkPath>java</jdkPath>
@@ -471,43 +453,30 @@
 				</executions>
 			</plugin>
 			
-			<!-- 打包源码: 项目发布基线版本时会自动打包源码，不要启用此插件，否则会失败 -->
-			<!-- plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-source-plugin</artifactId>
-				<version>2.1.2</version>
-				<executions>
-					<execution>
-						<id>attach-sources</id>
-						<phase>verify</phase>
-						<goals>
-							<goal>jar-no-fork</goal>
-							<goal>test-jar-no-fork</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin -->
-
 			<!-- 打包javadoc: 项目发布基线版本时会自动打包javadoc，若报错不要启用此插件 -->
             <!-- javadoc插件会强制使用GBK读取pom文件的内容, 若得到的html网页标题乱码,  -->
             <!-- 则需要通过Run Configurations -> 自定义Maven install命令 -> Common -> Encoding:GBK 确保不会乱码 -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>2.9.1</version>
                 <configuration>
                		<aggregate>true</aggregate>
                 	<charset>UTF-8</charset>
                 	<encoding>UTF-8</encoding>
                 	<docencoding>UTF-8</docencoding>
+                	<skip>false</skip>	<!-- 是否在项目打包时跳过javadoc -->
                 </configuration>
                 <executions>
                     <execution>
-                        <id>attach-javadocs</id>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
+			            <id>attach-javadocs</id>
+			            <phase>deploy</phase>
+			            <goals>
+			                <goal>jar</goal>
+			            </goals>
+			            <configuration>
+			                <additionalparam>-Xdoclint:none</additionalparam>
+			            </configuration>
+			        </execution>
                 </executions>
             </plugin>
 

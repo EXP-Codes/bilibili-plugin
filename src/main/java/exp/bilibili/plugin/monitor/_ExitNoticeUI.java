@@ -58,8 +58,7 @@ public class _ExitNoticeUI extends NoticeWindow {
 
 	@Override
 	protected void setComponentsListener(JPanel rootPanel) {
-		// TODO Auto-generated method stub
-		
+		// Undo
 	}
 	
 	private String getNoticeText(String cause) {
