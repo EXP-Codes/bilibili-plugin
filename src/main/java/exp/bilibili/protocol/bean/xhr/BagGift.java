@@ -1,6 +1,7 @@
 package exp.bilibili.protocol.bean.xhr;
 
 import net.sf.json.JSONObject;
+import exp.bilibili.plugin.envm.Gift;
 import exp.bilibili.protocol.envm.BiliCmdAtrbt;
 import exp.libs.utils.format.JsonUtils;
 import exp.libs.utils.other.StrUtils;
@@ -45,19 +46,27 @@ import exp.libs.utils.other.StrUtils;
  */
 public class BagGift {
 
-	protected String bagId;
+	private String bagId;
 	
-	protected String giftId;
+	private String giftId;
 	
-	protected String giftName;
+	private String giftName;
 	
-	protected int giftNum;
+	private int giftNum;
+	
+	/** 有效期(<=0表示永久有效) */
+	private long expire;
+	
+	/** 可增加亲密值 */
+	private int intimacy;
 	
 	public BagGift(String giftId, String giftName, int giftNum) {
 		this.bagId = "0";
 		this.giftId = (giftId == null ? "" : giftId);
 		this.giftName = (giftName == null ? "" : giftName);
 		this.giftNum = (giftNum < 0  ? 0 : giftNum);
+		this.expire = 0;
+		this.intimacy = Gift.getIntimacy(this.giftId);
 	}
 	
 	/**
@@ -79,6 +88,8 @@ public class BagGift {
 			this.giftId = JsonUtils.getStr(json, BiliCmdAtrbt.gift_id);
 			this.giftName = JsonUtils.getStr(json, BiliCmdAtrbt.gift_name);
 			this.giftNum = JsonUtils.getInt(json, BiliCmdAtrbt.gift_num, 0);
+			this.expire = JsonUtils.getLong(json, BiliCmdAtrbt.expire_at, 0) * 1000;
+			this.intimacy = Gift.getIntimacy(giftId);
 		}
 	}
 
@@ -98,6 +109,18 @@ public class BagGift {
 		return giftNum;
 	}
 	
+	public void setGiftNum(int giftNum) {
+		this.giftNum = giftNum;
+	}
+
+	public long getExpire() {
+		return expire;
+	}
+
+	public int getIntimacy() {
+		return intimacy;
+	}
+
 	@Override
 	public String toString() {
 		return StrUtils.concat(getGiftName(), "x", getGiftNum());

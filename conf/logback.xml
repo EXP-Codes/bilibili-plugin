@@ -54,6 +54,44 @@
 		</encoder>
 	</appender>
 	
+	<!-- WebSocket原始报文日志器 -->
+	<appender name="msg-ws"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<prudent>false</prudent> <!-- 如果是 true，日志会被安全的写入文件（多线程同步），但效率低，默认是 false。 -->
+		<file>${LOG_HOME}/msg-ws.log</file> <!-- 可以是相对目录，也可以是绝对目录，如果上级目录不存在会自动创建 -->
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>${BACKUP}/msg-ws_%d{yyyy-MM-dd}-%i.log.zip
+			</fileNamePattern>
+			<maxHistory>15</maxHistory>
+			<timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxFileSize>64MB</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+		</rollingPolicy>
+		<encoder>
+			<charset>${CHARSET}</charset>
+			<pattern>${PATTERN_DEF}</pattern>
+		</encoder>
+	</appender>
+	
+	<!-- XHR原始报文日志器 -->
+	<appender name="msg-xhr"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<prudent>false</prudent> <!-- 如果是 true，日志会被安全的写入文件（多线程同步），但效率低，默认是 false。 -->
+		<file>${LOG_HOME}/msg-xhr.log</file> <!-- 可以是相对目录，也可以是绝对目录，如果上级目录不存在会自动创建 -->
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>${BACKUP}/msg-xhr_%d{yyyy-MM-dd}-%i.log.zip
+			</fileNamePattern>
+			<maxHistory>15</maxHistory>
+			<timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxFileSize>64MB</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+		</rollingPolicy>
+		<encoder>
+			<charset>${CHARSET}</charset>
+			<pattern>${PATTERN_DEF}</pattern>
+		</encoder>
+	</appender>
+	
 	<!-- 其他日志器 -->
 	<appender name="other"
 		class="ch.qos.logback.core.rolling.RollingFileAppender">
@@ -71,11 +109,26 @@
 			<charset>${CHARSET}</charset>
 			<pattern>${PATTERN_DEF}</pattern>
 		</encoder>
+		<filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <onMatch>DENY</onMatch>
+            <onMismatch>ACCEPT</onMismatch>
+        </filter>
 	</appender>
 	
 	<!-- 主程序日志 -->
 	<logger name="exp.bilibili" level="info" additivity="true">
 		<appender-ref ref="app" />
+	</logger>
+	
+	<!-- WEBSOCKET原始报文日志 -->
+	<logger name="WEBSOCKET" level="info" additivity="false">
+		<appender-ref ref="msg-ws" />
+	</logger>
+	
+	<!-- XHR原始报文日志 -->
+	<logger name="XHR" level="info" additivity="false">
+		<appender-ref ref="msg-xhr" />
 	</logger>
 	
 	<!-- 经验库日志 -->

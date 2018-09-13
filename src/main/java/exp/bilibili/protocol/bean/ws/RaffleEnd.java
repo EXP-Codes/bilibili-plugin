@@ -12,7 +12,7 @@ import exp.libs.utils.format.JsonUtils;
  	(直播间内)高能抽奖开始消息
 	{
 	  "cmd": "RAFFLE_END",
-	  "roomid": 390480,
+	  "roomid": 269706,
 	  "data": {
 	    "raffleId": 61825,
 	    "type": "openfire",

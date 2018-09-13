@@ -1,6 +1,7 @@
 package exp.bilibili.protocol.xhr;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -10,10 +11,10 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import exp.bilibili.plugin.Config;
 import exp.bilibili.plugin.bean.ldm.BiliCookie;
+import exp.bilibili.plugin.bean.ldm.HotLiveRange;
 import exp.bilibili.plugin.cache.CookiesMgr;
 import exp.bilibili.plugin.cache.RoomMgr;
 import exp.bilibili.plugin.envm.LotteryType;
-import exp.bilibili.plugin.utils.TimeUtils;
 import exp.bilibili.plugin.utils.UIUtils;
 import exp.bilibili.protocol.envm.BiliCmdAtrbt;
 import exp.libs.utils.format.JsonUtils;
@@ -33,15 +34,6 @@ import exp.libs.warp.net.http.HttpClient;
  */
 public class LotteryStorm extends _Lottery {
 
-	/** 最大的查询分页(每页最多30个房间): 每页30个房间 */
-	private final static int MAX_PAGES = 2;
-	
-	/** 最少在线人数达标的房间才扫描 */
-	private final static int MIN_ONLINE = 3000;
-	
-	/** 扫描每个房间的间隔(风险行为， 频率需要控制，太快可能被查出来，太慢成功率太低) */
-	private final static long SCAN_INTERVAL = Config.getInstn().STORM_FREQUENCY();
-	
 	/** 查询热门直播间列表URL */
 	private final static String LIVE_URL = Config.getInstn().LIVE_URL();
 	
@@ -52,24 +44,23 @@ public class LotteryStorm extends _Lottery {
 	private final static String STORM_JOIN_URL = Config.getInstn().STORM_JOIN_URL();
 	
 	/** 最上一次抽奖过的节奏风暴编号(礼物编号是递增的) */
-	private static int LAST_STORMID = 0;
+	private static long LAST_STORMID = 0L;
 	
 	/** 私有化构造函数 */
 	protected LotteryStorm() {}
 	
 	/**
 	 * 扫描当前的人气直播间房号列表
-	 * @param cookie 扫描用的cookie
+	 * @param range 扫描范围
 	 * @return
 	 */
-	public static List<Integer> queryHotLiveRoomIds(BiliCookie cookie) {
-		Map<String, String> header = GET_HEADER(cookie.toNVCookie(), "all");
+	public static List<Integer> queryHotLiveRoomIds(HotLiveRange range) {
+		Map<String, String> header = GET_HEADER("", "all");
 		Map<String, String> request = getRequest();
 		
 		List<Integer> roomIds = new LinkedList<Integer>();
 		HttpClient client = new HttpClient();
-		int pageOffset = TimeUtils.isNight() ? 1 : 0;	// 当为晚上时, 不选择首页房间(抢风暴成功率太低)
-		for(int page = 1 + pageOffset; page <= MAX_PAGES + pageOffset; page++) {
+		for(int page = range.BGN_PAGE(); page <= range.END_PAGE(); page++) {
 			request.put(BiliCmdAtrbt.page, String.valueOf(page));
 			String response = client.doGet(LIVE_URL, header, request);
 			roomIds.addAll(analyse(response));
@@ -103,10 +94,10 @@ public class LotteryStorm extends _Lottery {
 			for(int i = 0 ; i < data.size(); i++) {
 				JSONObject room = data.getJSONObject(i);
 				int realRoomId = JsonUtils.getInt(room, BiliCmdAtrbt.roomid, 0);
-				int online = JsonUtils.getInt(room, BiliCmdAtrbt.online, 0);
-				if(online > MIN_ONLINE) {
+//				int online = JsonUtils.getInt(room, BiliCmdAtrbt.online, 0);
+//				if(online > 3000) {	// 在线人气达标才纳入扫描范围
 					roomIds.add(realRoomId);
-				}
+//				}
 				
 				// 顺便关联房间号(短号)与真实房号(长号)
 				int shortId = JsonUtils.getInt(room, BiliCmdAtrbt.short_id, -1);
@@ -122,8 +113,9 @@ public class LotteryStorm extends _Lottery {
 	/**
 	 * 扫描房间中是否有节奏风暴, 有则加入节奏风暴抽奖
 	 * @param hotRoomIds 热门房间列表
+	 * @param scanInterval 扫描房间间隔
 	 */
-	public static void toLottery(List<Integer> hotRoomIds) {
+	public static void toLottery(List<Integer> hotRoomIds, long scanInterval) {
 		HttpClient client = new HttpClient();
 		Map<String, String> request = new HashMap<String, String>();
 		for(Integer roomId : hotRoomIds) {
@@ -135,10 +127,15 @@ public class LotteryStorm extends _Lottery {
 			boolean isExist = true;
 			while(isExist == true) {	// 对于存在节奏风暴的房间, 继续扫描(可能有人连续送节奏风暴)
 				String response = client.doGet(STORM_CHECK_URL, header, request);
-				List<String> raffleIds = getStormIds(roomId, response);
+				if(StrUtils.isTrimEmpty(response)) {
+					log.error("提取直播间 [{}] 的节奏风暴信息失败: 请求频率过高", roomId);
+					ThreadUtils.tSleep(scanInterval);
+					break;
+				}
+				List<String> raffleIds = getStormRaffleIds(roomId, response);
 				isExist = join(roomId, raffleIds);
 			}
-			ThreadUtils.tSleep(SCAN_INTERVAL);
+			ThreadUtils.tSleep(scanInterval);
 		}
 		client.close();
 	}
@@ -146,17 +143,17 @@ public class LotteryStorm extends _Lottery {
 	/**
 	 * 获取节奏风暴的抽奖ID
 	 * @param roomId
-	 * @param response {"code":0,"msg":"","message":"","data":{"id":157283,"roomid":2717660,"num":100,"time":50,"content":"康康胖胖哒……！","hasJoin":0}}
+	 * @param response {"code":0,"msg":"","message":"","data":{"id":318289831272,"roomid":291623,"num":100,"send_num":"1","time":76,"content":"要优雅，不要污","hasJoin":0,"storm_gif":"https://static.hdslb.com/live-static/live-room/images/gift-section/mobilegift/2/jiezou.gif?2017011901"}}
 	 * @return
 	 */
-	private static List<String> getStormIds(int roomId, String response) {
+	private static List<String> getStormRaffleIds(int roomId, String response) {
 		List<String> raffleIds = new LinkedList<String>();
 		try {
 			JSONObject json = JSONObject.fromObject(response);
 			Object data = json.get(BiliCmdAtrbt.data);
 			if(data instanceof JSONObject) {
 				JSONObject room = (JSONObject) data;
-				int raffleId = JsonUtils.getInt(room, BiliCmdAtrbt.id, 0);
+				long raffleId = JsonUtils.getLong(room, BiliCmdAtrbt.id, 0);
 				if(raffleId > LAST_STORMID) {
 					LAST_STORMID = raffleId;
 					raffleIds.add(String.valueOf(raffleId));
@@ -166,7 +163,7 @@ public class LotteryStorm extends _Lottery {
 				JSONArray array = (JSONArray) data;
 				for(int i = 0 ; i < array.size(); i++) {
 					JSONObject room = array.getJSONObject(i);
-					int raffleId = JsonUtils.getInt(room, BiliCmdAtrbt.id, 0);
+					long raffleId = JsonUtils.getLong(room, BiliCmdAtrbt.id, 0);
 					if(raffleId > LAST_STORMID) {
 						LAST_STORMID = raffleId;
 						raffleIds.add(String.valueOf(raffleId));
@@ -207,25 +204,41 @@ public class LotteryStorm extends _Lottery {
 	 */
 	public static boolean toLottery(int roomId, String raffleId) {
 		int cnt = 0;
-		Set<BiliCookie> cookies = CookiesMgr.ALL();
-		for(BiliCookie cookie : cookies) {
-			if(!cookie.isBindTel() || !cookie.isRealName()) {
-				continue;	// 未绑定手机或未实名认证的账号无法参与节奏风暴  (FIXME 未实名也可参加, 但是需要填验证码, 目前未能自动识别验证码)
-			}
+		String reason = "未知异常";
+		boolean isExist = true;
+		Set<BiliCookie> cookies = CookiesMgr.ALL(false);
+		
+		while(isExist && !cookies.isEmpty()) {	// 理论上节奏风暴可以在完结前一直抢到成功为止
+			isExist = false;	// 避免cookies队列没人参与陷入死循环
 			
-			String reason = join(LotteryType.STORM, cookie, STORM_JOIN_URL, roomId, raffleId);
-			if(StrUtils.isEmpty(reason)) {
-				log.info("[{}] 参与直播间 [{}] 抽奖成功(节奏风暴)", cookie.NICKNAME(), roomId);
-				cnt++;
+			Iterator<BiliCookie> cookieIts = cookies.iterator();
+			while(cookieIts.hasNext()) {
+				BiliCookie cookie = cookieIts.next();
 				
-			} else {
-				log.info("[{}] 参与直播间 [{}] 抽奖失败(节奏风暴)", cookie.NICKNAME(), roomId);
-				UIUtils.statistics("失败(", reason, "): 直播间 [", roomId, 
-						"], 账号 [", cookie.NICKNAME(), "]");
+				// 未绑定手机或未实名认证的账号无法参与节奏风暴  (FIXME 未实名也可参加, 但是需要填验证码, 目前未能自动识别验证码)
+				if(!cookie.isBindTel() || !cookie.isRealName()) {
+					cookieIts.remove();
+					continue;
+				}
 				
-				// 节奏风暴名额已抽完, 其他账号无需参与
-				if(reason.contains("不存在")) {
-					break;
+				reason = join(LotteryType.STORM, cookie, STORM_JOIN_URL, roomId, raffleId);
+				if(StrUtils.isEmpty(reason)) {
+					log.info("[{}] 参与直播间 [{}] 抽奖成功(节奏风暴)", cookie.NICKNAME(), roomId);
+					cookieIts.remove();	// 已经成功抽奖的在本轮无需再抽
+					isExist = true;
+					cnt++;
+					
+				} else if(reason.contains("访问被拒绝")) {
+					UIUtils.statistics("失败(", reason, "): 账号 [", cookie.NICKNAME(), "]");
+					cookieIts.remove();	// 被临时封禁抽奖的账号无需再抽
+					isExist = true;
+					
+				} else {
+					log.info("[{}] 参与直播间 [{}] 抽奖失败(节奏风暴)", cookie.NICKNAME(), roomId);
+					isExist = reason.contains("再接再励");
+					if(isExist == false) {
+						break;	// 节奏风暴已完结
+					}
 				}
 			}
 		}
@@ -233,6 +246,12 @@ public class LotteryStorm extends _Lottery {
 		if(cnt > 0) {
 			UIUtils.statistics("成功(节奏风暴x", cnt, "): 直播间 [", roomId, "]");
 			UIUtils.updateLotteryCnt(cnt);
+			
+		} else {
+			if(reason.contains("不存在")) {
+				reason = "亿圆被抢光啦";
+			}
+			UIUtils.statistics("失败(", reason, "): 直播间 [", roomId, "]");
 		}
 		return (cnt > 0);
 	}

@@ -15,6 +15,7 @@ import exp.bilibili.plugin.utils.UIUtils;
 import exp.bilibili.protocol.envm.BiliCmdAtrbt;
 import exp.libs.utils.format.JsonUtils;
 import exp.libs.utils.num.NumUtils;
+import exp.libs.utils.os.ThreadUtils;
 import exp.libs.utils.other.StrUtils;
 import exp.libs.warp.net.http.HttpURLUtils;
 
@@ -49,7 +50,7 @@ public class LotteryEnergy extends _Lottery {
 	 */
 	public static void toLottery(int roomId) {
 		List<String> raffleIds = getRaffleId(EG_CHECK_URL, roomId, 
-				CookiesMgr.VEST().toNVCookie());
+				CookiesMgr.MAIN().toNVCookie());
 		for(String raffleId : raffleIds) {
 			int id = NumUtils.toInt(raffleId, 0);
 			if(id > LAST_RAFFLEID) {	// 礼物编号是递增的
@@ -102,7 +103,7 @@ public class LotteryEnergy extends _Lottery {
 		int cnt = 0;
 		Set<BiliCookie> cookies = CookiesMgr.ALL();
 		for(BiliCookie cookie : cookies) {
-			if(cookie.isBindTel() == false) {
+			if(!cookie.allowLottery() || !cookie.isBindTel()) {
 				continue;	// 未绑定手机的账号无法参与高能抽奖
 			}
 			
@@ -115,7 +116,14 @@ public class LotteryEnergy extends _Lottery {
 				log.info("[{}] 参与直播间 [{}] 抽奖失败(高能礼物)", cookie.NICKNAME(), roomId);
 				UIUtils.statistics("失败(", reason, "): 直播间 [", roomId, 
 						"],账号[", cookie.NICKNAME(), "]");
+				
+				// 高能已过期, 其他账号无需参与
+				if(reason.contains("已过期") || reason.contains("不存在")) {
+					break;
+				}
 			}
+			
+			ThreadUtils.tSleep(200);
 		}
 		
 		if(cnt > 0) {

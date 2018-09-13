@@ -19,7 +19,7 @@ import exp.libs.utils.format.JsonUtils;
 	    "svip": 1		// 年费 （年费和月费只会出现一个）
 	    "vip":1			// 月费（年费和月费只会出现一个）
 	  },
-	  "roomid": 390480
+	  "roomid": 269706
 	}
 	
 	{

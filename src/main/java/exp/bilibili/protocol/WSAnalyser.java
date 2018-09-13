@@ -13,6 +13,7 @@ import exp.bilibili.plugin.cache.RoomMgr;
 import exp.bilibili.plugin.utils.UIUtils;
 import exp.bilibili.protocol.bean.ws.ActivityEvent;
 import exp.bilibili.protocol.bean.ws.ChatMsg;
+import exp.bilibili.protocol.bean.ws.ComboEnd;
 import exp.bilibili.protocol.bean.ws.EnergyLottery;
 import exp.bilibili.protocol.bean.ws.GuardBuy;
 import exp.bilibili.protocol.bean.ws.GuardMsg;
@@ -21,6 +22,7 @@ import exp.bilibili.protocol.bean.ws.Preparing;
 import exp.bilibili.protocol.bean.ws.RaffleEnd;
 import exp.bilibili.protocol.bean.ws.RaffleStart;
 import exp.bilibili.protocol.bean.ws.RoomBlock;
+import exp.bilibili.protocol.bean.ws.RoomRank;
 import exp.bilibili.protocol.bean.ws.RoomSilentOff;
 import exp.bilibili.protocol.bean.ws.SendGift;
 import exp.bilibili.protocol.bean.ws.SpecialGift;
@@ -37,7 +39,7 @@ import exp.libs.utils.other.StrUtils;
 
 /**
  * <PRE>
- * WS接收的JSON报文解析器
+ * WebSocket接收的JSON报文解析器
  * </PRE>
  * <br/><B>PROJECT : </B> bilibili-plugin
  * <br/><B>SUPPORT : </B> <a href="http://www.exp-blog.com" target="_blank">www.exp-blog.com</a> 
@@ -58,77 +60,85 @@ public class WSAnalyser {
 	
 	/**
 	 * 把从ws接收到到的json消息转换为Bean对象并处理
-	 * @param json
-	 * @return
+	 * @param json Json格式消息
+	 * @param roomId 被监听的房间号
+	 * @param onlyListen 是否只监听礼物通知消息
+	 * @return 是否处理成功
 	 */
-	public static boolean toMsgBean(JSONObject json) {
+	public static boolean toMsgBean(JSONObject json, int roomId, boolean onlyListen) {
 		boolean isOk = true;
 		String cmd = JsonUtils.getStr(json, BiliCmdAtrbt.cmd);
 		BiliCmd biliCmd = BiliCmd.toCmd(cmd);
 		
-		if(biliCmd == BiliCmd.DANMU_MSG) {
+		if(!onlyListen && biliCmd == BiliCmd.DANMU_MSG) {
 			toDo(new ChatMsg(json));
 			
-		} else if(biliCmd == BiliCmd.SEND_GIFT) {
+		} else if(!onlyListen && biliCmd == BiliCmd.SEND_GIFT) {
 			toDo(new SendGift(json));
 			
 		} else if(biliCmd == BiliCmd.SYS_MSG) {
 			if(StrUtils.isNotEmpty(_getRoomId(json))) {
-				toDo(new TvLottery(json));
+				toDo(new TvLottery(json), onlyListen);
 				
-			} else {
+			} else if(!onlyListen) {
 				toDo(new SysMsg(json));
 			}
 			
 		} else if(biliCmd == BiliCmd.SYS_GIFT) {
 			if(StrUtils.isNotEmpty(_getRoomId(json))) {
-				toDo(new EnergyLottery(json));
+				toDo(new EnergyLottery(json), onlyListen);
 				
-			} else {
+			} else if(!onlyListen) {
 				toDo(new SysGift(json));
 			}
 			
 		} else if(biliCmd == BiliCmd.SPECIAL_GIFT) {
-			toDo(new SpecialGift(json));
+			toDo(new SpecialGift(json), roomId);
 			
 		} else if(biliCmd == BiliCmd.RAFFLE_START) {
-			toDo(new RaffleStart(json));
+			toDo(new RaffleStart(json), onlyListen);
 			
-		} else if(biliCmd == BiliCmd.RAFFLE_END) {
+		} else if(!onlyListen && biliCmd == BiliCmd.RAFFLE_END) {
 			toDo(new RaffleEnd(json));
 			
-		} else if(biliCmd == BiliCmd.WELCOME) {
+		} else if(!onlyListen && biliCmd == BiliCmd.WELCOME) {
 			toDo(new WelcomeMsg(json));
 			
-		} else if(biliCmd == BiliCmd.WELCOME_GUARD) {
+		} else if(!onlyListen && biliCmd == BiliCmd.WELCOME_GUARD) {
 			toDo(new WelcomeGuard(json));
 			
-		} else if(biliCmd == BiliCmd.GUARD_BUY) {
+		} else if(!onlyListen && biliCmd == BiliCmd.GUARD_BUY) {
 			toDo(new GuardBuy(json));
 			
-		} else if(biliCmd == BiliCmd.GUARD_MSG) {
+		} else if(!onlyListen && biliCmd == BiliCmd.GUARD_MSG) {
 			toDo(new GuardMsg(json));
 			
-		} else if(biliCmd == BiliCmd.LIVE) {
+		} else if(!onlyListen && biliCmd == BiliCmd.LIVE) {
 			toDo(new LiveMsg(json));
 			
-		} else if(biliCmd == BiliCmd.PREPARING) {
+		} else if(!onlyListen && biliCmd == BiliCmd.PREPARING) {
 			toDo(new Preparing(json));
 			
-		} else if(biliCmd == BiliCmd.ROOM_SILENT_OFF) {
+		} else if(!onlyListen && biliCmd == BiliCmd.ROOM_SILENT_OFF) {
 			toDo(new RoomSilentOff(json));
 			
-		} else if(biliCmd == BiliCmd.WISH_BOTTLE) {
+		} else if(!onlyListen && biliCmd == BiliCmd.WISH_BOTTLE) {
 			toDo(new WishBottle(json));
 			
-		} else if(biliCmd == BiliCmd.ROOM_BLOCK_MSG) {
+		} else if(!onlyListen && biliCmd == BiliCmd.ROOM_BLOCK_MSG) {
 			toDo(new RoomBlock(json));
 			
-		} else if(biliCmd == BiliCmd.ACTIVITY_EVENT) {
+		} else if(!onlyListen && biliCmd == BiliCmd.ACTIVITY_EVENT) {
 			toDo(new ActivityEvent(json));
 			
+		} else if(!onlyListen && biliCmd == BiliCmd.ROOM_RANK) {
+			toDo(new RoomRank(json));
+			
+		} else if(!onlyListen && biliCmd == BiliCmd.COMBO_END) {
+			toDo(new ComboEnd(json));
+			
 		} else {
-			isOk = false;
+			isOk = onlyListen;
 		}
 		return isOk;
 	}
@@ -193,10 +203,17 @@ public class WSAnalyser {
 	 * 小电视通知
 	 * @param msgBean
 	 */
-	private static void toDo(TvLottery msgBean) {
-		String msg = StrUtils.concat("直播间 [", msgBean.ROOM_ID(), "] 正在小电视抽奖中!!!");
-		UIUtils.notify(msg);
-		log.info(msg);
+	private static void toDo(TvLottery msgBean, boolean onlyListen) {
+		boolean isBuilding = msgBean.getMsg().contains("大楼");
+		if(isBuilding || !onlyListen) {
+			String giftName = isBuilding ? "摩天大楼" : (
+					msgBean.getMsg().contains("光环") ? "C位光环" : "小电视");
+			String msg = StrUtils.concat("直播间 [", msgBean.ROOM_ID(), "] 正在", giftName, "抽奖中!!!");
+			UIUtils.notify(msg);
+			log.info(msg);
+		} else {
+			// Undo: 小电视/C位光环 是全平台公告, 摩天大楼只是分区公告, 此处可避免重复打印 小电视/C位光环 公告
+		}
 		
 		RoomMgr.getInstn().addTvRoom(msgBean.ROOM_ID(), msgBean.getTvId());
 		RoomMgr.getInstn().relate(msgBean.getRoomId(), msgBean.getRealRoomId());
@@ -216,36 +233,52 @@ public class WSAnalyser {
 	 * 高能礼物抽奖消息
 	 * @param msgBean
 	 */
-	private static void toDo(EnergyLottery msgBean) {
-		String msg = StrUtils.concat("直播间 [", msgBean.ROOM_ID(), "] 正在高能抽奖中!!!");
-		UIUtils.notify(msg);
-		log.info(msg);
+	private static void toDo(EnergyLottery msgBean, boolean onlyListen) {
+		String msg = "";
+		if(msgBean.getMsg().contains("20倍节奏风暴")) {
+			msg = StrUtils.concat("直播间 [", msgBean.ROOM_ID(), "] 开启了20倍节奏风暴!!!");
+			// TODO 极少人一次送20个节奏风暴, 暂没必要参加抽奖
+			
+		} else {
+			msg = StrUtils.concat("直播间 [", msgBean.ROOM_ID(), "] 正在高能抽奖中!!!");
+			RoomMgr.getInstn().addGiftRoom(msgBean.ROOM_ID());
+			RoomMgr.getInstn().relate(msgBean.getRoomId(), msgBean.getRealRoomId());
+		}
 		
-		RoomMgr.getInstn().addGiftRoom(msgBean.ROOM_ID());
-		RoomMgr.getInstn().relate(msgBean.getRoomId(), msgBean.getRealRoomId());
+		if(onlyListen == false) {
+			UIUtils.notify(msg);
+			log.info(msg);
+			
+		} else {
+			// Undo: 高能礼物是全平台公告, 此处可避免重复打印高能公告
+		}
 	}
 	
 	/**
 	 * 特殊礼物：(直播间内)节奏风暴消息
 	 * @param msgBean
 	 */
-	private static void toDo(SpecialGift msgBean) {
-		String msg = StrUtils.concat("直播间 [", msgBean.getRoomId(), "] 开启了节奏风暴!!!");
+	private static void toDo(SpecialGift msgBean, int roomId) {
+		String msg = StrUtils.concat("直播间 [", roomId, "] 开启了节奏风暴!!!");
 		UIUtils.notify(msg);
 		log.info(msg);
 		
-		RoomMgr.getInstn().addStormRoom(msgBean.getRoomId(), msgBean.getRaffleId());
+		RoomMgr.getInstn().addStormRoom(roomId, msgBean.getRaffleId());
 	}
 
 	/**
 	 * (直播间内)高能抽奖开始消息
 	 * @param msgBean
 	 */
-	private static void toDo(RaffleStart msgBean) {
-		String msg = StrUtils.concat("感谢[", msgBean.getFrom(), "]的高能!!!");
-		log.info(msg);
+	private static void toDo(RaffleStart msgBean, boolean onlyListen) {
+		if(onlyListen == false) {
+			String msg = StrUtils.concat("感谢[", msgBean.getFrom(), "]的高能!!!");
+			ChatMgr.getInstn().sendThxEnergy(msg);
+			log.info(msg);
+		} else {
+			// Undo: 避免把其他直播间的高能礼物在当前直播间进行感谢
+		}
 		
-		ChatMgr.getInstn().sendThxEnergy(msg);
 		RoomMgr.getInstn().addGiftRoom(msgBean.getRoomId());
 	}
 
@@ -303,12 +336,14 @@ public class WSAnalyser {
 	}
 
 	/**
-	 * (全频道)登船消息
+	 * (全频道)总督登船消息
 	 * @param msgBean
 	 */
 	private static void toDo(GuardMsg msgBean) {
 		UIUtils.chat(msgBean.getMsg());
 		log.info(msgBean.getMsg());
+		
+		RoomMgr.getInstn().addGuardRoom(msgBean.getLiveup());
 	}
 	
 	/**
@@ -371,6 +406,22 @@ public class WSAnalyser {
 	 * @param msgBean
 	 */
 	private static void toDo(ActivityEvent msgBean) {
+		// Undo
+	}
+	
+	/**
+	 * 直播间小时榜排名通知消息
+	 * @param msgBean
+	 */
+	private static void toDo(RoomRank msgBean) {
+		// Undo
+	}
+	
+	/**
+	 * (直播间内)礼物combo连击结束消息
+	 * @param msgBean
+	 */
+	private static void toDo(ComboEnd msgBean) {
 		// Undo
 	}
 	

@@ -13,7 +13,7 @@ import exp.libs.utils.format.JsonUtils;
 	{
 	  "cmd": "PREPARING",
 	  "round": 1,
-	  "roomid": "390480"
+	  "roomid": "269706"
 	}
  * </PRE>
  * @version   2017-12-17

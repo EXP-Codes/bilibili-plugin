@@ -1,5 +1,7 @@
 package exp.bilibili.protocol.bean.other;
 
+import exp.libs.utils.other.StrUtils;
+
 /**
  * <PRE>
  * 主播/房管/用户对象
@@ -40,6 +42,11 @@ public class User {
 	
 	public int LV() {
 		return level;
+	}
+	
+	@Override
+	public String toString() {
+		return StrUtils.concat(ID(), "(", LV(), ")", ":", NAME());
 	}
 	
 }

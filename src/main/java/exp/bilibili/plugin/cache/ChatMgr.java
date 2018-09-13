@@ -17,8 +17,8 @@ import exp.bilibili.plugin.utils.UIUtils;
 import exp.bilibili.protocol.XHRSender;
 import exp.bilibili.protocol.bean.ws.ChatMsg;
 import exp.bilibili.protocol.bean.ws.SendGift;
-import exp.libs.utils.num.RandomUtils;
 import exp.libs.utils.other.ListUtils;
+import exp.libs.utils.other.RandomUtils;
 import exp.libs.utils.other.StrUtils;
 import exp.libs.utils.verify.RegexUtils;
 import exp.libs.warp.thread.LoopThread;
@@ -29,8 +29,7 @@ import exp.libs.warp.thread.LoopThread;
  *  1.自动晚安
  *  2.自动感谢投喂
  *  3.定时公告
- *  4.自动打call
- *  5.举报/禁言等命令检测
+ *  4.举报/禁言等命令检测
  * </PRE>
  * <br/><B>PROJECT : </B> bilibili-plugin
  * <br/><B>SUPPORT : </B> <a href="http://www.exp-blog.com" target="_blank">www.exp-blog.com</a> 
@@ -61,7 +60,7 @@ public class ChatMgr extends LoopThread {
 	private final static String NIGHT_KEY = "晚安(´▽`)ﾉ  ";
 	
 	/** 同一时间可以感谢的最大用户数（避免刷屏） */
-	private final static int THX_USER_LIMIT = 1;
+	private final static int THX_USER_LIMIT = 2;
 	
 	/** 发送消息间隔 */
 	private final static long SEND_TIME = 500;
@@ -72,9 +71,6 @@ public class ChatMgr extends LoopThread {
 	/** 滚屏公告周期 */
 	private final static long NOTICE_TIME = 300000;
 	
-	/** 自动打call周期 */
-	private final static long CALL_TIME = 30000;
-	
 	/** 检测待发送消息间隔 */
 	private final static long SLEEP_TIME = 1000;
 	
@@ -82,22 +78,15 @@ public class ChatMgr extends LoopThread {
 	
 	private final static int NOTICE_LIMIT = (int) (NOTICE_TIME / SLEEP_TIME);
 	
-	private final static int CALL_LIMIT = (int) (CALL_TIME / SLEEP_TIME);
-	
 	private int thxCnt;
 	
 	private int noticeCnt;
-	
-	private int callCnt;
 	
 	/** 自动答谢 */
 	private boolean autoThankYou;
 	
 	/** 自动公告 */
 	private boolean autoNotice;
-	
-	/** 自动打call */
-	private boolean autoCall;
 	
 	/** 自动晚安 */
 	private boolean autoGoodNight;
@@ -123,11 +112,9 @@ public class ChatMgr extends LoopThread {
 		super("自动发言姬");
 		this.thxCnt = 0;
 		this.noticeCnt = 0;
-		this.callCnt = 0;
 		this.chatCnt = SCREEN_CHAT_LIMT;
 		this.autoThankYou = false;
 		this.autoNotice = false;
-		this.autoCall = false;
 		this.autoGoodNight = false;
 		this.nightedUsers = new HashSet<String>();
 		this.userGifts = new LinkedHashMap<String, Map<String, Integer>>();
@@ -169,12 +156,6 @@ public class ChatMgr extends LoopThread {
 			toNotice();
 		}
 		
-		// 定时打call（支持主播公告）
-		if(callCnt++ >= CALL_LIMIT && allowAutoChat()) {
-			callCnt = 0;
-			toCall();
-		}
-		
 		_sleep(SLEEP_TIME);
 	}
 
@@ -193,7 +174,7 @@ public class ChatMgr extends LoopThread {
 			return;
 		}
 		
-		String card = RandomUtils.randomElement(MsgKwMgr.getCards());
+		String card = RandomUtils.genElement(MsgKwMgr.getCards());
 		String msg = "滴~".concat(card);
 		
 		int hour = TimeUtils.getCurHour(8);	// 中国8小时时差
@@ -315,9 +296,7 @@ public class ChatMgr extends LoopThread {
 				Integer num = gifts.get(giftName);
 				if(num != null && num > 0) {
 					int cost = ActivityMgr.showCost(giftName, num);
-					String msg = StrUtils.concat(NOTICE_KEY, "感谢[", username, "]", 
-							(CookiesMgr.MAIN().isGuard() ? MsgKwMgr.getAdv() : ""), // 非提督/总督的弹幕长度不够, 不写形容词
-							"投喂", giftName, "x", num, ":活跃+", cost);
+					String msg = getThxMsg(username, giftName, num, cost);
 					XHRSender.sendDanmu(msg);
 				}
 			}
@@ -334,13 +313,31 @@ public class ChatMgr extends LoopThread {
 			}
 			sb.setLength(sb.length() - 1);
 			
-			String msg = StrUtils.concat(NOTICE_KEY, "感谢[", username, "]", 
-					(CookiesMgr.MAIN().isGuard() ? MsgKwMgr.getAdv() : ""), // 非提督/总督的弹幕长度不够, 不写形容词
-					"投喂[", sb.toString(), "]:活跃+", cost);
+			String msg = getThxMsg(username, sb.toString(), -1, cost);
 			XHRSender.sendDanmu(msg);
 		}
 		
 		gifts.clear();
+	}
+	
+	private String getThxMsg(String username, String gift, int num, int cost) {
+		String head = StrUtils.concat(NOTICE_KEY, "感谢[", username, "]");
+		String tail = "";
+		if(num > 0) {
+			tail = StrUtils.concat("投喂", gift, "x", num);
+		} else {
+			tail = StrUtils.concat("投喂[", gift, "]");
+		}
+		
+		String adj = "";
+		int len = CookiesMgr.MAIN().DANMU_LEN() - head.length() - tail.length();
+		for(int retry = 0; retry < 3; retry++) {
+			adj = MsgKwMgr.getAdv();
+			if(len >= adj.length()) {
+				break;
+			}
+		}
+		return StrUtils.concat(head, adj, tail);
 	}
 	
 	/**
@@ -352,19 +349,7 @@ public class ChatMgr extends LoopThread {
 		}
 		
 		String msg = NOTICE_KEY.concat(
-				RandomUtils.randomElement(MsgKwMgr.getNotices()));
-		XHRSender.sendDanmu(msg);
-	}
-	
-	/**
-	 * 定时打call
-	 */
-	private void toCall() {
-		if(!isAutoCall() || ListUtils.isEmpty(MsgKwMgr.getCalls())) {
-			return;
-		}
-		
-		String msg = RandomUtils.randomElement(MsgKwMgr.getCalls());
+				RandomUtils.genElement(MsgKwMgr.getNotices()));
 		XHRSender.sendDanmu(msg);
 	}
 	
@@ -517,15 +502,6 @@ public class ChatMgr extends LoopThread {
 	
 	public boolean isAutoNotice() {
 		return autoNotice;
-	}
-	
-	public void setAutoCall() {
-		autoCall = !autoCall;
-		chatCnt = SCREEN_CHAT_LIMT;
-	}
-	
-	public boolean isAutoCall() {
-		return autoCall;
 	}
 	
 	public void setAutoGoodNight() {

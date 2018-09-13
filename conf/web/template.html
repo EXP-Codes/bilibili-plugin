@@ -1,0 +1,32 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  
+  <head>
+    <title>哔哩哔哩抽奖姬</title>	<!-- 3D标签云 -->
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="author" content="EXP" />
+    <meta name="date" content="@{date}@" />
+    
+    <style type="text/css">
+      body{background:#24313d;}
+      #tagsList {position:relative; width:900px; height:500px; margin: 10px auto 0;  }
+      #tagsList a {position:absolute; top:0px; left:0px; font-family: Microsoft YaHei; color:#fff; font-weight:bold; text-decoration:none; padding: 3px 6px; }
+      #tagsList a:hover { color:#FF0000; letter-spacing:2px;}
+      
+      #reflashBtn {position:relative; top:1px; left:1px; color:#ff0; font-weight:bold; text-decoration:none; padding: 3px 6px; background-color:transparent; border:1; height=40px; width=200px; }
+      #lucky {position:relative; top:1px; left:20px; color:#ff0; font-weight:bold; text-decoration:none; padding: 3px 6px; background-color:transparent; border:1; height=40px; width=200px; }
+    </style>
+    
+    <script type="text/javascript" src="js/tags.js"></script>
+  </head>
+  
+  <body>
+    <div>
+      <input id="reflashBtn" type=button value="刷新名单" onclick="location.reload()">
+      <input id="lucky" type=button value="抽奖" src="js/tags.js" onclick="bingo()">
+    </div>
+    <div id="tagsList">
+@{tags}@
+    </div>
+  </body>
+</html>

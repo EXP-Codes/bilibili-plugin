@@ -5,9 +5,10 @@ import java.awt.Toolkit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import exp.bilibili.plugin.envm.ChatColor;
+import exp.bilibili.plugin.bean.ldm.HotLiveRange;
 import exp.bilibili.plugin.ui.AppUI;
 import exp.bilibili.plugin.ui._NoticeUI;
+import exp.libs.envm.Colors;
 import exp.libs.utils.other.StrUtils;
 import exp.libs.warp.ui.SwingUtils;
 
@@ -80,6 +81,10 @@ public class UIUtils {
 		return AppUI.getInstn().isLogined();
 	}
 	
+	public static boolean isJoinLottery() {
+		return AppUI.getInstn().isJoinLottery();
+	}
+	
 	public static void updateAppTitle(String certificateTime) {
 		AppUI.getInstn().updateTitle(certificateTime);
 	}
@@ -96,15 +101,27 @@ public class UIUtils {
 		return AppUI.getInstn().getLiveRoomId();
 	}
 	
-	public static int getFeedRoomId() {
-		return AppUI.getInstn().getFeedRoomId();
+	public static HotLiveRange getHotLiveRange() {
+		return AppUI.getInstn().getHotLiveRange();
+	}
+	
+	public static int getLotteryProbability() {
+		return AppUI.getInstn().getLotteryProbability();
+	}
+	
+	public static long getReactionTime() {
+		return AppUI.getInstn().getReactionTime();
+	}
+	
+	public static long getIntervalTime() {
+		return AppUI.getInstn().getIntervalTime();
 	}
 	
 	public static boolean isAutoFeed() {
 		return AppUI.getInstn().isAutoFeed();
 	}
 	
-	public static ChatColor getCurChatColor() {
+	public static Colors getCurChatColor() {
 		return AppUI.getInstn().getCurChatColor();
 	}
 	

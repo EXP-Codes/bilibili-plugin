@@ -4,6 +4,16 @@
     <app caption="应用配置">
         <signRoomId caption="签到直播间(房间勋章等级越高签到奖励越多)">438</signRoomId>
         <stormFrequency caption="节奏风暴扫描频率(单位:ms)" hint="小于100容易被封IP">100</stormFrequency>
+        <protectFeed caption="自动投喂保护" 
+                     hint="自动投喂打开后, 会每小时触发：自动扭蛋(满100执行)、自动投喂（包裹+银瓜子）
+                           ,而为了避免误操作打开开关带来损失, 再增加此备用开关, 策略如下：
+                           1. 实名认证用户, 此开关无效, 强制不触发扭蛋、永久礼物、银瓜子投喂
+                           2. 仅手机绑定用户, 若此保护开关打开, 则享有与实名认证用户同等待遇
+                           3. 仅手机绑定用户, 若此保护开关关闭, 则依然触发扭蛋、所有礼物、银瓜子投喂
+                           4. 无手机绑定用户, 此开关无效, 强制触发扭蛋、永久礼物、银瓜子投喂"
+        >true</protectFeed>
+        <reactionTime caption="参与抽奖的反应时间(ms)" hint="过快反应抽奖会被冻结">2000</reactionTime>
+        <intervalTime caption="参与抽奖的间隔时间(ms)" hint="抽奖频度过高会被冻结">60000</intervalTime>
     </app>
    
 </config>

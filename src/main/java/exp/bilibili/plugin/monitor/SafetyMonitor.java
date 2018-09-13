@@ -8,22 +8,19 @@ import net.sf.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import exp.bilibili.plugin.Config;
 import exp.bilibili.plugin.cache.CookiesMgr;
 import exp.bilibili.plugin.utils.SafetyUtils;
 import exp.bilibili.plugin.utils.UIUtils;
 import exp.bilibili.protocol.XHRSender;
 import exp.bilibili.protocol.envm.BiliCmdAtrbt;
-import exp.certificate.bean.App;
-import exp.certificate.core.Convertor;
-import exp.libs.utils.encode.CryptoUtils;
+import exp.certificate.api.Certificate;
+import exp.certificate.bean.AppInfo;
 import exp.libs.utils.format.JsonUtils;
 import exp.libs.utils.num.NumUtils;
 import exp.libs.utils.other.StrUtils;
 import exp.libs.utils.time.TimeUtils;
-import exp.libs.utils.verify.RegexUtils;
-import exp.libs.warp.net.http.HttpUtils;
 import exp.libs.warp.thread.LoopThread;
-import exp.libs.warp.ver.VersionMgr;
 
 /**
  * <PRE>
@@ -39,13 +36,11 @@ public class SafetyMonitor extends LoopThread {
 
 	private final static Logger log = LoggerFactory.getLogger(SafetyMonitor.class);
 	
-	/** 软件授权页(Github) TLS协议版本问题，需JDK1.8编译的程序才能访问此网址 */
-	private final static String GITHUB_URL = CryptoUtils.deDES(
-			"610BEF99CF948F0DB1542314AC977291892B30802EC5BF3B2DCDD5538D66DDA67467CE4082C2D0BC56227128E753555C");
+	/** 软件授权页(Github) : 测试服务器 (需支持TLSv1.2协议才能访问此网址) */
+	private final static String GITHUB_URL = Config.getInstn().TEST_SERVER();
 	
-	/** 软件授权页(Gitee) */
-	private final static String GITEE_URL = CryptoUtils.deDES(
-			"4C3B7319D21E23D468926AD72569DDF8408E193F3B526A6F5EE2A5699BCCA673DC22BC762A1F149B03E39422823B4BF0");
+	/** 软件授权页(Gitee) : 正式服务器 */
+	private final static String GITEE_URL = Config.getInstn().OFFICIAL_SERVER();
 	
 	/** 免检原因 */
 	private final static String UNCHECK_CAUSE = "UNCHECK";
@@ -85,10 +80,8 @@ public class SafetyMonitor extends LoopThread {
 		this.loopCnt = LOOP_LIMIT;
 		this.cause = UNCHECK_CAUSE;
 		this.loginUser = CookiesMgr.MAIN().NICKNAME();
-		this.appName = "";
-		this.appVersion = "";
-		
-		init();
+		this.appName = Config.APP_NAME;
+		this.appVersion = Config.APP_VER;
 	}
 	
 	public static SafetyMonitor getInstn() {
@@ -100,12 +93,6 @@ public class SafetyMonitor extends LoopThread {
 			}
 		}
 		return instance;
-	}
-	
-	private void init() {
-		String verInfo =  VersionMgr.exec("-p");
-		appName = RegexUtils.findFirst(verInfo, "项目名称[ |]*([a-z|\\-]+)");
-		appVersion = RegexUtils.findFirst(verInfo, "版本号[ |]*([\\d|\\.]+)");
 	}
 	
 	@Override
@@ -163,13 +150,12 @@ public class SafetyMonitor extends LoopThread {
 			loopCnt = 0;
 			
 			// 先尝试用Gitee(国内)获取授权页, 若失败则从GitHub(国际)获取授权页
-			String pageSource = HttpUtils.getPageSource(GITEE_URL);
-			if(StrUtils.isEmpty(pageSource)) {
-				pageSource = HttpUtils.getPageSource(GITHUB_URL);
+			AppInfo appInfo = Certificate.getAppInfo(GITEE_URL, appName);
+			if(appInfo == null) {
+				appInfo = Certificate.getAppInfo(GITHUB_URL, appName);
 			}
 			
-			App app = Convertor.toApp(pageSource, appName);	// 提取软件授权信息
-			if(app == null) {
+			if(appInfo == null) {
 				if(++noResponseCnt >= NO_RESPONSE_LIMIT) {
 					if(checkByBilibili() == true) {	// Github或Gitee网络不通时, 转B站校验
 						noResponseCnt = 0;
@@ -181,10 +167,10 @@ public class SafetyMonitor extends LoopThread {
 				}
 			} else {
 				noResponseCnt = 0;
-				isContinue = check(app);
+				isContinue = check(appInfo);
 			}
 			
-			updateCertificateTime(app);	// 更新授权时间
+			updateCertificateTime(appInfo);	// 更新授权时间
 			UIUtils.updateAppTitle(certificateTime); // 把授权时间更新到标题
 		}
 		return isContinue;
@@ -203,9 +189,9 @@ public class SafetyMonitor extends LoopThread {
 			
 			if(code == 0) {
 				JSONArray data = JsonUtils.getArray(json, BiliCmdAtrbt.data);
-				App app = _toApp(data);	// 生成软件授权信息
-				if(app != null) {
-					isOk = check(app);
+				AppInfo appInfo = _toAppInfo(data);	// 生成软件授权信息
+				if(appInfo != null) {
+					isOk = check(appInfo);
 				}
 			}
 		} catch(Exception e) {
@@ -219,10 +205,10 @@ public class SafetyMonitor extends LoopThread {
 	 * @param data
 	 * @return
 	 */
-	private App _toApp(JSONArray data) {
-		App app = null;
+	private AppInfo _toAppInfo(JSONArray data) {
+		AppInfo appInfo = null;
 		if(data == null || data.size() <= 0) {
-			return app;
+			return appInfo;
 		}
 		
 		String versions = "";
@@ -253,30 +239,30 @@ public class SafetyMonitor extends LoopThread {
 		
 		if(blacklist.length() > 0) { blacklist.setLength(blacklist.length() - 1); }
 		if(whitelist.length() > 0) { whitelist.setLength(whitelist.length() - 1); }
-		app = new App(appName, versions, time, blacklist.toString(), whitelist.toString());
-		return app;
+		appInfo = new AppInfo(appName, versions, time, blacklist.toString(), whitelist.toString());
+		return appInfo;
 	}
 	
 	/**
 	 * 校验当前软件是否匹配授权信息
-	 * @param app 软件授权信息
+	 * @param appInfo 软件授权信息
 	 * @return true:匹配; false:不匹配
 	 */
-	private boolean check(App app) {
+	private boolean check(AppInfo appInfo) {
 		boolean isOk = true;
-		if(checkInWhitelist(app.getWhitelist())) {
+		if(checkInWhitelist(appInfo.getWhitelist())) {
 			cause = UNCHECK_CAUSE;	// 白名单用户, 启动后则免检
 			isOk = false;
 			
-		} else if(!checkVersions(app.getVersions())) {
-			cause = "版本已失效";
+		} else if(!checkVersions(appInfo.getVersions())) {
+			cause = "版本已失效, 请升级到最新版";
 			isOk = false;
 			
-		} else if(!checkNotInBlacklist(app.getBlacklist())) {
+		} else if(!checkNotInBlacklist(appInfo.getBlacklist())) {
 			cause = "孩子, 你被管理员关小黑屋了";
 			isOk = false;
 			
-		} else if(!checkInTime(app.getTime())) {
+		} else if(!checkInTime(appInfo.getTime())) {
 			cause = "授权已过期";
 			isOk = false;
 		}
@@ -333,10 +319,9 @@ public class SafetyMonitor extends LoopThread {
 	}
 	
 	/**
-	 * 检查对公时间是否过期.
-	 * 	若对公时间已过期, 则检查对私时间是否过期.
+	 * 检查对公和对私时间是否已过期.
 	 * @param time 对公授权时间(格式： yyyy-MM-dd HH:mm:ss)
-	 * @return true:对公或对私时间未过期; false:对公与对私时间均过期
+	 * @return true:对公和对私时间均未过期; false:对公或对私时间过期
 	 */
 	private boolean checkInTime(String time) {
 		long now = System.currentTimeMillis();
@@ -344,10 +329,9 @@ public class SafetyMonitor extends LoopThread {
 		long privateTime = SafetyUtils.fileToCertificate();
 		
 		// 更新授权时间
-		long maxTime = (publicTime > privateTime ? publicTime : privateTime);
-		updateCertificateTime(maxTime);
+		updateCertificateTime(NumUtils.min(privateTime, publicTime));
 		
-		return !(now > publicTime && now > privateTime);
+		return (now <= publicTime && now <= privateTime);
 	}
 	
 	/**
@@ -360,18 +344,10 @@ public class SafetyMonitor extends LoopThread {
 	/**
 	 * 更新授权时间
 	 */
-	private void updateCertificateTime(App app) {
-		if(app != null) {
-			checkInTime(app.getTime());
+	private void updateCertificateTime(AppInfo appInfo) {
+		if(appInfo != null) {
+			checkInTime(appInfo.getTime());
 		}
-	}
-	
-	/**
-	 * 获取当前版本号
-	 * @return
-	 */
-	public static String VERSION() {
-		return getInstn().appVersion;
 	}
 	
 }

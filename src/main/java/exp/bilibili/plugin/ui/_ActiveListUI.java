@@ -230,13 +230,16 @@ class _ActiveListUI extends PopChildWindow {
 		return excel.saveAs(XLS_SAVE_PATH);
 	}
 	
+	
 	/**
 	 * <PRE>
 	 * 历史版本表单组件
 	 * </PRE>
-	 * 
-	 * @author Administrator
-	 * @date 2017年7月6日
+	 * <br/><B>PROJECT : </B> bilibili-plugin
+	 * <br/><B>SUPPORT : </B> <a href="http://www.exp-blog.com" target="_blank">www.exp-blog.com</a> 
+	 * @version   2017-12-17
+	 * @author    EXP: 272629724@qq.com
+	 * @since     jdk版本：jdk1.6
 	 */
 	private class _HisVerTable extends NormTable {
 		

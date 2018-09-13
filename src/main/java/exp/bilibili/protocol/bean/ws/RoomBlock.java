@@ -14,7 +14,7 @@ import exp.libs.utils.format.JsonUtils;
 	  "cmd": "ROOM_BLOCK_MSG",
 	  "uid": "247056833",
 	  "uname": "hghi7432",
-	  "roomid": 390480
+	  "roomid": 269706
 	}
  * </PRE>
  * @version   2017-12-17

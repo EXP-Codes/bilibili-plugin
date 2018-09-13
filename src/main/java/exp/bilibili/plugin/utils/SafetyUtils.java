@@ -35,11 +35,7 @@ public class SafetyUtils {
 	
 	/**
 	 * 校验软件的证书(授权码和授权时间)是否有效.
-	 *  管理员:拥有全部功能, 不受授权码和证书影响
-	 *  主播:拥有全部功能, 仅有授权时间
-	 *  普通用户:拥有部分功能, 受授权码和授权时间影响
-	 * @param code 授权码(UPLIVE:主播; 匹配正则:普通用户)
-	 * @param isAdmin 是否为管理员
+	 * @param code 授权码
 	 * @return true:有效; false:无效
 	 */
 	public static String checkAC(String code) {
@@ -51,6 +47,7 @@ public class SafetyUtils {
 		// 对私时间用于对外出售，限制其使用期限（过期后不管对公时间如何，均无法启动）
 		if(!checkCertificate()) {
 			errMsg = "软件授权已过期";
+			FileUtils.delete(C_PATH);	// 删除授权时间文件, 使得无法通过修改系统时间逃避校验
 		}
 		return errMsg;
 	}

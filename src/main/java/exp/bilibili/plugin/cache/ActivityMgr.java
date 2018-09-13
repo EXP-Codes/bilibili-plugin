@@ -64,8 +64,8 @@ public class ActivityMgr {
 	/** 总活跃值每20W可兑换软件使用期1天 */
 	public final static int DAY_UNIT = 200000;
 	
-	/** 触发个人私信的活跃值单位(即每至少超过20W活跃值时发送一次私信) */
-	private final static int COST_UNIT = 200000;
+	/** 触发个人私信的活跃值单位(即每至少超过50W活跃值时发送一次私信) */
+	private final static int COST_UNIT = 500000;
 	
 	/** 打印活跃值时需要除掉的单位（100） */
 	private final static int SHOW_UNIT = 100;
@@ -281,6 +281,24 @@ public class ActivityMgr {
 	}
 	
 	/**
+	 * 刷新活跃值到数据库
+	 */
+	public void reflash() {
+		if(isRecord() == true) {
+			save();
+			
+			lastPeriod = TimeUtils.getLastPeriod();
+			if(lastPeriod == curPeriod) {	// 已跨月
+				lastSumCost = curSumCost;
+				curSumCost = 0;
+			}
+			curPeriod = TimeUtils.getCurPeriod();
+			
+			read();
+		}
+	}
+	
+	/**
 	 * 是否记录活跃值
 	 *  当且仅当是管理员身份, 且在监听特定直播间时才记录
 	 * @return
@@ -355,8 +373,9 @@ public class ActivityMgr {
 		curSumCost += cost;
 		
 		if(UIUtils.isLogined() && // 登陆后才能发送私信
+				ChatMgr.getInstn().isAutoThankYou() && // 开启了答谢姬
 				(before % COST_UNIT + cost) >= COST_UNIT) {
-			String msg = StrUtils.concat("恭喜您在 [", Config.getInstn().ACTIVITY_ROOM_ID(), 
+			String msg = StrUtils.concat("恭喜您本月在 [", Config.getInstn().ACTIVITY_ROOM_ID(), 
 					"] 直播间的活跃度达到 [", after, "] O(∩_∩)O 谢谢资瓷 ~");
 			XHRSender.sendPM(uid, msg);
 		}

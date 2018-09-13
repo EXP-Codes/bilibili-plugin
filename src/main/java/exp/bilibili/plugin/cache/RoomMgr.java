@@ -71,7 +71,16 @@ public class RoomMgr {
 	 * @param roomId 礼物房间号
 	 */
 	public void addGiftRoom(int roomId) {
-		giftRoomIds.add(new LotteryRoom(roomId));
+		giftRoomIds.add(new LotteryRoom(roomId, LotteryType.ENGERY));
+	}
+	
+	/**
+	 * 添加小电视房间
+	 * @param roomId 小电视房间号
+	 * @param tvId 小电视编号
+	 */
+	public void addTvRoom(int roomId, String tvId) {
+		giftRoomIds.add(new LotteryRoom(roomId, tvId, LotteryType.TV));
 	}
 	
 	/**
@@ -87,12 +96,12 @@ public class RoomMgr {
 	}
 	
 	/**
-	 * 添加小电视房间
-	 * @param roomId 小电视房间号
-	 * @param tvId 小电视编号
+	 * 添加总督房间
+	 * @param liveup 主播名称
 	 */
-	public void addTvRoom(int roomId, String tvId) {
-		giftRoomIds.add(new LotteryRoom(roomId, tvId, LotteryType.TV));
+	public void addGuardRoom(String liveup) {
+		int roomId = XHRSender.searchRoomId(liveup);
+		giftRoomIds.add(new LotteryRoom(roomId, LotteryType.GUARD));
 	}
 	
 	/**

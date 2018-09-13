@@ -10,8 +10,8 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 
-import exp.bilibili.plugin.Config;
 import exp.bilibili.plugin.bean.ldm.BiliCookie;
+import exp.bilibili.plugin.cache.CookiesMgr;
 import exp.bilibili.plugin.cache.RoomMgr;
 import exp.bilibili.plugin.envm.CookieType;
 import exp.bilibili.plugin.ui.login.LoginBtn;
@@ -97,6 +97,7 @@ public class __MiniUserLine extends JPanel {
 		public void afterLogout(final BiliCookie cookie) {
 			miniCookie.setAutoFeed(false);
 			miniCookie = BiliCookie.NULL;
+			
 			autoFeed.setSelected(false);
 			roomTF.setText("");
 			usernameTF.setText("");
@@ -105,10 +106,10 @@ public class __MiniUserLine extends JPanel {
 	}
 	
 	private void _afterLogin() {
-		autoFeed.doClick();
-		miniCookie.setFeedRoomId(Config.getInstn().SIGN_ROOM_ID());
+		autoFeed.setSelected(miniCookie.isAutoFeed());
 		roomTF.setText(String.valueOf(miniCookie.getFeedRoomId()));
 		usernameTF.setText(miniCookie.NICKNAME());
+		usernameTF.setToolTipText(miniCookie.UID());
 	}
 	
 	private void setAutoFeedBtnListener() {
@@ -118,6 +119,7 @@ public class __MiniUserLine extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				if(miniCookie != BiliCookie.NULL) {
 					miniCookie.setAutoFeed(autoFeed.isSelected());
+					CookiesMgr.getInstn().update(miniCookie);
 				}
 			}
 		});
@@ -136,6 +138,8 @@ public class __MiniUserLine extends JPanel {
 				int roomId = NumUtils.toInt(sRoomId, 0);
 				if(RoomMgr.getInstn().isExist(roomId)) {
 					miniCookie.setFeedRoomId(roomId);
+					CookiesMgr.getInstn().update(miniCookie);
+					
 					String msg = StrUtils.concat("[", miniCookie.NICKNAME(), 
 							"] 的 [投喂房间号] 变更为: ", roomId);
 					SwingUtils.info(msg);

@@ -14,6 +14,9 @@ import exp.libs.utils.encode.CryptoUtils;
  */
 public class Identity {
 
+	/** 试用用户: -guest */
+	public final static Identity GUEST = new Identity(0, CryptoUtils.deDES("10F55724557C0D55"));
+	
 	/** 普通用户: -user */
 	public final static Identity USER = new Identity(1, CryptoUtils.deDES("637B5DE0EB673958"));
 	

@@ -9,7 +9,8 @@ import org.slf4j.LoggerFactory;
 import exp.bilibili.plugin.Config;
 import exp.bilibili.plugin.cache.RoomMgr;
 import exp.bilibili.plugin.utils.UIUtils;
-import exp.libs.warp.net.http.HttpUtils;
+import exp.libs.envm.HttpHead;
+import exp.libs.utils.other.RandomUtils;
 
 /**
  * <PRE>
@@ -25,7 +26,10 @@ class __XHR {
 
 	/** 日志器 */
 	protected final static Logger log = LoggerFactory.getLogger(__XHR.class);
-	
+
+	/** XHR原始报文日志器 */
+	protected final static Logger xhrlog = LoggerFactory.getLogger("XHR");
+
 	/** 直播服务器主机 */
 	protected final static String LIVE_HOST = Config.getInstn().LIVE_HOST();
 	
@@ -40,6 +44,15 @@ class __XHR {
 	
 	/** 私有化构造函数 */
 	protected __XHR() {}
+	
+	/**
+	 * 获取访问ID
+	 * @return 访问ID
+	 */
+	protected static String getVisitId() {
+		long num = System.currentTimeMillis() * RandomUtils.genInt(1000000);
+		return Long.toString(num, 36);
+	}
 	
 	/**
 	 * 获取当前监听直播间的真实房号
@@ -65,12 +78,12 @@ class __XHR {
 	 */
 	protected final static Map<String, String> GET_HEADER(String cookie) {
 		Map<String, String> header = new HashMap<String, String>();
-		header.put(HttpUtils.HEAD.KEY.ACCEPT, "application/json, text/plain, */*");
-		header.put(HttpUtils.HEAD.KEY.ACCEPT_ENCODING, "gzip, deflate, sdch");
-		header.put(HttpUtils.HEAD.KEY.ACCEPT_LANGUAGE, "zh-CN,zh;q=0.8,en;q=0.6");
-		header.put(HttpUtils.HEAD.KEY.CONNECTION, "keep-alive");
-		header.put(HttpUtils.HEAD.KEY.COOKIE, cookie);
-		header.put(HttpUtils.HEAD.KEY.USER_AGENT, HttpUtils.HEAD.VAL.USER_AGENT);
+		header.put(HttpHead.KEY.ACCEPT, "application/json, text/plain, */*");
+		header.put(HttpHead.KEY.ACCEPT_ENCODING, "gzip, deflate, sdch");
+		header.put(HttpHead.KEY.ACCEPT_LANGUAGE, "zh-CN,zh;q=0.8,en;q=0.6");
+		header.put(HttpHead.KEY.CONNECTION, "keep-alive");
+		header.put(HttpHead.KEY.COOKIE, cookie);
+		header.put(HttpHead.KEY.USER_AGENT, HttpHead.VAL.USER_AGENT);
 		return header;
 	}
 	
@@ -82,9 +95,9 @@ class __XHR {
 	 */
 	protected final static Map<String, String> GET_HEADER(String cookie, String uri) {
 		Map<String, String> header = GET_HEADER(cookie);
-		header.put(HttpUtils.HEAD.KEY.HOST, LIVE_HOST);
-		header.put(HttpUtils.HEAD.KEY.ORIGIN, LIVE_HOME);
-		header.put(HttpUtils.HEAD.KEY.REFERER, LIVE_HOME.concat(uri));
+		header.put(HttpHead.KEY.HOST, LIVE_HOST);
+		header.put(HttpHead.KEY.ORIGIN, LIVE_HOME);
+		header.put(HttpHead.KEY.REFERER, LIVE_HOME.concat(uri));
 		return header;
 	}
 	
@@ -95,14 +108,14 @@ class __XHR {
 	 */
 	protected final static Map<String, String> POST_HEADER(String cookie) {
 		Map<String, String> header = new HashMap<String, String>();
-		header.put(HttpUtils.HEAD.KEY.ACCEPT, "application/json, text/javascript, */*; q=0.01");
-		header.put(HttpUtils.HEAD.KEY.ACCEPT_ENCODING, "gzip, deflate, br");
-		header.put(HttpUtils.HEAD.KEY.ACCEPT_LANGUAGE, "zh-CN,zh;q=0.8,en;q=0.6");
-		header.put(HttpUtils.HEAD.KEY.CONNECTION, "keep-alive");
-		header.put(HttpUtils.HEAD.KEY.CONTENT_TYPE, // POST的是表单
-				HttpUtils.HEAD.VAL.POST_FORM.concat(Config.DEFAULT_CHARSET));
-		header.put(HttpUtils.HEAD.KEY.COOKIE, cookie);
-		header.put(HttpUtils.HEAD.KEY.USER_AGENT, HttpUtils.HEAD.VAL.USER_AGENT);
+		header.put(HttpHead.KEY.ACCEPT, "application/json, text/javascript, */*; q=0.01");
+		header.put(HttpHead.KEY.ACCEPT_ENCODING, "gzip, deflate, br");
+		header.put(HttpHead.KEY.ACCEPT_LANGUAGE, "zh-CN,zh;q=0.8,en;q=0.6");
+		header.put(HttpHead.KEY.CONNECTION, "keep-alive");
+		header.put(HttpHead.KEY.CONTENT_TYPE, // POST的是表单
+				HttpHead.VAL.POST_FORM.concat(Config.DEFAULT_CHARSET));
+		header.put(HttpHead.KEY.COOKIE, cookie);
+		header.put(HttpHead.KEY.USER_AGENT, HttpHead.VAL.USER_AGENT);
 		return header;
 	}
 	
@@ -114,9 +127,9 @@ class __XHR {
 	 */
 	protected final static Map<String, String> POST_HEADER(String cookie, String uri) {
 		Map<String, String> header = POST_HEADER(cookie);
-		header.put(HttpUtils.HEAD.KEY.HOST, LIVE_HOST);
-		header.put(HttpUtils.HEAD.KEY.ORIGIN, LIVE_HOME);
-		header.put(HttpUtils.HEAD.KEY.REFERER, LIVE_HOME.concat(uri));
+		header.put(HttpHead.KEY.HOST, LIVE_HOST);
+		header.put(HttpHead.KEY.ORIGIN, LIVE_HOME);
+		header.put(HttpHead.KEY.REFERER, LIVE_HOME.concat(uri));
 		return header;
 	}
 	

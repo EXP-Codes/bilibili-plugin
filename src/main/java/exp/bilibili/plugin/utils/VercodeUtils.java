@@ -1,7 +1,10 @@
 package exp.bilibili.plugin.utils;
 
+import exp.bilibili.plugin.cache.VercodeRecognition;
 import exp.libs.utils.num.NumUtils;
+import exp.libs.utils.other.RandomUtils;
 import exp.libs.utils.other.StrUtils;
+import exp.libs.warp.ocr.OCR;
 
 /**
  * <PRE>
@@ -15,27 +18,68 @@ import exp.libs.utils.other.StrUtils;
  */
 public class VercodeUtils {
 	
+	/** OCR组件目录 */
+	public final static String OCR_DIR = "./conf/ocr/tesseract";
+	
+	/** OCR处理对象 (用于识别旧版无干扰的验证码) */
+	private final static OCR OCR = new OCR(OCR_DIR);
+	
+	/** B站小学数学验证码识别器 (用于识别新版有干扰的验证码) */
+	private final static VercodeRecognition RECOGNITION = VercodeRecognition.getInstn();
+	
 	/** 私有化构造函数 */
 	protected VercodeUtils() {}
 	
 	/**
-	 * 计算小学数学验证码图片中的表达式
-	 * @param imgPath 小学数学验证码图片路径, 目前仅有 a+b 与 a-b 两种形式的验证码
-	 * @return 表达式计算结果
+	 * 从小学数学验证码的图片中析取表达式.
+	 * ------------------------------------
+	 *   验证码表达式的特点:
+	 *    1. 仅有 a+b 与 a-b 两种形式的验证码 (其中a为2位数, b为1位数)
+	 *    2. a的取值范围是 [10, 99]
+	 *    3. b的取值范围是 [1, 9]
+	 *    4. 验证码结果的取值范围是 [1, 108]
+	 * 
+	 * @param imgPath 小学数学验证码图片路径
+	 * @return 数学表达式
 	 */
-	public static int calculateExpressionImage(String imgPath) {
-		String expression = OCRUtils.imgToTxt(imgPath);	// 图像识别
-		expression = revise(expression);	// 修正表达式
+	public static int calculateImageExpression(String imgPath) {
+		String expression = RECOGNITION.analyse(imgPath); // 新版图像识别(有干扰)
+		int rst = calculate(expression);
+		
+		// 即使识别失败, 还是碰碰运气
+		// 而目前识别是在仅当表达式存在数字1的时候 (因识别略低, 算法直接跳过不识别)
+		// 而当表达式至少存在一个1时, 取值范围为 [1, 100] 而非 [1, 108] 
+		if(rst <= 0) {	
+			rst = RandomUtils.genInt(1, 100);
+		}
+		return rst;
+	}
+	
+	/**
+	 * 从小学数学验证码的图片中析取表达式 (通过OCR工具识别).
+	 * ------------------------------------
+	 *   验证码表达式的特点:
+	 *    1. 仅有 a+b 与 a-b 两种形式的验证码 (其中a为2位数, b为1位数)
+	 *    2. a的取值范围是 [10, 99]
+	 *    3. b的取值范围是 [1, 9]
+	 *    4. 验证码结果的取值范围是 [1, 108]
+	 * 
+	 * @param imgPath 小学数学验证码图片路径
+	 * @return 数学表达式
+	 */
+	public static int calculateImageExpressionByOCR(String imgPath) {
+		String expression = OCR.recognizeText(imgPath);	// 旧版图像识别(无干扰)
+		expression = reviseByOCR(expression);	// 修正表达式
 		return calculate(expression);
 	}
 	
 	/**
-	 * 目前小学数学验证码图片的运算式只有 a+b 与 a-b 两种形式, 由于字体问题，某些数字会被固定识别错误, 
+	 * 目前小学数学验证码图片由于字体问题，某些数字会被OCR固定识别错误, 
 	 *  此方法用于修正常见的识别错误的数字/符号, 提高识别率
 	 * @param txt
 	 * @return
 	 */
-	private static String revise(String expression) {
+	private static String reviseByOCR(String expression) {
 		String revise = expression;
 		
 		revise = revise.replace("[1", "0");

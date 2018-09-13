@@ -16,6 +16,7 @@ import exp.bilibili.protocol.XHRSender;
 import exp.libs.envm.Charset;
 import exp.libs.utils.encode.CryptoUtils;
 import exp.libs.utils.io.FileUtils;
+import exp.libs.utils.os.ThreadUtils;
 import exp.libs.utils.other.PathUtils;
 import exp.libs.utils.other.StrUtils;
 
@@ -49,8 +50,10 @@ public class CookiesMgr {
 	private final static String COOKIE_MINI_PREFIX = "cookie-mini-";
 	
 	/** 上限保存的小号Cookie个数 */
-	public final static int MAX_NUM = !Identity.less(Identity.ADMIN) ? 99 : 
-		(!Identity.less(Identity.UPLIVE) ? 8 : 3);
+	public final static int MAX_NUM = 
+			(!Identity.less(Identity.ADMIN) ? 233 : 
+			(!Identity.less(Identity.UPLIVE) ? 15 : 
+			(!Identity.less(Identity.USER) ? 8 : 3)));
 	
 	/** 主号cookie */
 	private BiliCookie mainCookie;
@@ -108,7 +111,7 @@ public class CookiesMgr {
 			isOk = save(cookie, COOKIE_VEST_PATH);
 			
 		} else {
-			if(miniCookies.size() < MAX_NUM) {
+			if(miniCookies.size() < MAX_NUM || miniCookies.contains(cookie)) {
 				String cookiePath = miniPaths.get(cookie);
 				if(cookiePath == null) {
 					cookiePath = PathUtils.combine(COOKIE_DIR, StrUtils.concat(
@@ -127,12 +130,16 @@ public class CookiesMgr {
 			miniPaths.put(cookie, cookiePath);
 		}
 		
-		String data = CryptoUtils.toDES(cookie.toString());
+		String data = CryptoUtils.toDES(cookie.toHeaderCookie());
 		boolean isOk = FileUtils.write(cookiePath, data, Charset.ISO, false);
 		if(isOk == true) {
 			lastAddCookieTime = System.currentTimeMillis();
 		}
 		return isOk;
+	}
+	
+	public boolean update(BiliCookie cookie) {
+		return add(cookie, cookie.TYPE());
 	}
 	
 	public boolean load(CookieType type) {
@@ -156,6 +163,7 @@ public class CookiesMgr {
 						miniCookies.add(miniCookie);
 						isOk = true;
 					}
+					ThreadUtils.tSleep(50);
 				}
 			}
 		}
@@ -228,7 +236,17 @@ public class CookiesMgr {
 	}
 	
 	public static Set<BiliCookie> ALL() {
-		Set<BiliCookie> cookies = new LinkedHashSet<BiliCookie>();
+		return ALL(false);
+	}
+	
+	/**
+	 * 获取所有Cookies
+	 * @param order 是否有序
+	 * @return
+	 */
+	public static Set<BiliCookie> ALL(boolean order) {
+		Set<BiliCookie> cookies = order ? 
+				new LinkedHashSet<BiliCookie>() : new HashSet<BiliCookie>();
 		if(BiliCookie.NULL != MAIN()) { cookies.add(MAIN()); }
 		if(BiliCookie.NULL != VEST()) { cookies.add(VEST()); }
 		cookies.addAll(MINIs());
@@ -261,6 +279,16 @@ public class CookiesMgr {
 	 */
 	public long getLastAddCookieTime() {
 		return lastAddCookieTime;
+	}
+	
+	/**
+	 * 重置所有Cookie的任务执行状态
+	 */
+	public void resetTaskStatus() {
+		Set<BiliCookie> cookies = ALL();
+		for(BiliCookie cookie : cookies) {
+			cookie.TASK_STATUS().init();
+		}
 	}
 	
 	/**

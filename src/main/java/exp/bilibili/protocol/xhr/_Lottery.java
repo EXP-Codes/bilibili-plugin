@@ -6,10 +6,10 @@ import java.util.Map;
 import net.sf.json.JSONObject;
 import exp.bilibili.plugin.Config;
 import exp.bilibili.plugin.bean.ldm.BiliCookie;
-import exp.bilibili.plugin.envm.ChatColor;
 import exp.bilibili.plugin.envm.LotteryType;
 import exp.bilibili.plugin.utils.VercodeUtils;
 import exp.bilibili.protocol.envm.BiliCmdAtrbt;
+import exp.libs.envm.Colors;
 import exp.libs.utils.format.JsonUtils;
 import exp.libs.utils.os.ThreadUtils;
 import exp.libs.utils.other.StrUtils;
@@ -54,15 +54,17 @@ class _Lottery extends __XHR {
 	 */
 	protected static String join(LotteryType type, BiliCookie cookie, 
 			String url, int roomId, String raffleId) {
-		final int RETRY_LIMIT = 2;
-		final int RETRY_TIME = 500;
+		final int RETRY_LIMIT = 20;
+		final int RETRY_INTERVAL = 100;
 		String sRoomId = getRealRoomId(roomId);
-		Map<String, String> header = GET_HEADER(cookie.toNVCookie(), sRoomId);
+		String visitId = getVisitId();
+		Map<String, String> header = POST_HEADER(cookie.toNVCookie(), 
+				StrUtils.concat(sRoomId, "?visit_id=", visitId));
 		String reason = "";
 		
 		// 加入高能/小电视抽奖
 		if(LotteryType.STORM != type) {
-			Map<String, String> request = getRequest(sRoomId, raffleId);
+			Map<String, String> request = getRequest(cookie.CSRF(), sRoomId, raffleId, visitId);
 			for(int retry = 0; retry < RETRY_LIMIT; retry++) {
 				String response = HttpURLUtils.doPost(url, header, request);
 				
@@ -70,7 +72,7 @@ class _Lottery extends __XHR {
 				if(StrUtils.isEmpty(reason) || !reason.contains("系统繁忙")) {
 					break;
 				}
-				ThreadUtils.tSleep(RETRY_TIME);
+				ThreadUtils.tSleep(RETRY_INTERVAL);
 			}
 			
 		// 加入节奏风暴抽奖
@@ -79,14 +81,14 @@ class _Lottery extends __XHR {
 				String[] captcha = cookie.isRealName() ? // 实名认证后无需填节奏风暴验证码
 						new String[] { "", "" } : getStormCaptcha(cookie);
 				Map<String, String> request = getRequest(sRoomId, raffleId, 
-						cookie.CSRF(), captcha[0], captcha[1]);
+						cookie.CSRF(), visitId, captcha[0], captcha[1]);
 				String response = HttpURLUtils.doPost(url, header, request);
 				
 				reason = analyse(response);
 				if(StrUtils.isEmpty(reason) || reason.contains("不存在")) {
 					break;
 				}
-				ThreadUtils.tSleep(RETRY_TIME);
+				ThreadUtils.tSleep(RETRY_INTERVAL);
 			}
 		}
 		return reason;
@@ -109,9 +111,13 @@ class _Lottery extends __XHR {
 	 * @param raffleId
 	 * @return
 	 */
-	private static Map<String, String> getRequest(String roomId, String raffleId) {
+	private static Map<String, String> getRequest(String csrf, 
+			String roomId, String raffleId, String visitId) {
 		Map<String, String> request = getRequest(roomId);
 		request.put(BiliCmdAtrbt.raffleId, raffleId);	// 礼物编号
+		request.put(BiliCmdAtrbt.type, "Gift");	// 礼物编号
+		request.put(BiliCmdAtrbt.csrf_token, csrf);
+		request.put(BiliCmdAtrbt.visit_id, visitId);
 		return request;
 	}
 	
@@ -125,14 +131,14 @@ class _Lottery extends __XHR {
 	 * @return
 	 */
 	private static Map<String, String> getRequest(String roomId, String raffleId, 
-			String csrf, String captchaToken, String captchaValue) {
+			String csrf, String visitId, String captchaToken, String captchaValue) {
 		Map<String, String> request = getRequest(roomId);
 		request.put(BiliCmdAtrbt.id, raffleId);		// 礼物编号
-		request.put(BiliCmdAtrbt.color, ChatColor.WHITE.RGB());
+		request.put(BiliCmdAtrbt.color, Colors.WHITE.RGB());
 		request.put(BiliCmdAtrbt.captcha_token, captchaToken);
 		request.put(BiliCmdAtrbt.captcha_phrase, captchaValue);
-		request.put(BiliCmdAtrbt.token, "");
 		request.put(BiliCmdAtrbt.csrf_token, csrf);
+		request.put(BiliCmdAtrbt.visit_id, visitId);
 		return request;
 	}
 	
@@ -153,11 +159,11 @@ class _Lottery extends __XHR {
 				
 				// 未实名认证且不填写验证码, 则会出现异常原因为空的情况
 				if(StrUtils.isEmpty(reason)) {
-					reason = "验证码错误:实名认证可跳过";
+					reason = "验证码错误";
 					
-				// 这两种异常实际上都是领不到的
+				// 这两种异常实际上是服务器没响应请求，需要一直抢
 				} else if(reason.contains("错过了奖励") || reason.contains("已经领取")) {
-					reason = "亿圆被抢光啦";
+					reason = "再接再励";
 				}
 			}
 		} catch(Exception e) {

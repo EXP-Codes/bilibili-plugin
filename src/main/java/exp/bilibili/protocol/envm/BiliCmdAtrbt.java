@@ -1,9 +1,6 @@
 package exp.bilibili.protocol.envm;
 
 
-
-
-
 /**
  * <PRE>
  * B站Json交互报文字段属性
@@ -26,6 +23,8 @@ public class BiliCmdAtrbt {
 	
 	public final static String roomid = "roomid";
 	
+	public final static String area_v2_id = "area_v2_id";
+	
 	public final static String msg_text = "msg_text";
 	
 	public final static String msg = "msg";
@@ -43,6 +42,8 @@ public class BiliCmdAtrbt {
 	public final static String text = "text";
 	
 	public final static String list = "list";
+	
+	public final static String bag_list = "bag_list";
 	
 	public final static String userInfo = "userInfo";
 	
@@ -162,6 +163,8 @@ public class BiliCmdAtrbt {
 	
 	public final static String gift_num = "gift_num";
 	
+	public final static String expire_at = "expire_at";
+	
 	public final static String safe_rank = "safe_rank";
 	
 	public final static String bind_tel = "bind_tel";
@@ -179,6 +182,8 @@ public class BiliCmdAtrbt {
 	public final static String token = "token";
 	
 	public final static String csrf_token = "csrf_token";
+	
+	public final static String visit_id = "visit_id";
 	
 	public final static String fontsize = "fontsize";
 	
@@ -313,5 +318,49 @@ public class BiliCmdAtrbt {
 	public final static String height = "height";
 	
 	public final static String image = "image";
+	
+	public final static String img = "img";
+	
+	public final static String fansMedalList = "fansMedalList";
+	
+	public final static String medal_id = "medal_id";
+	
+	public final static String medal_name = "medal_name";
+	
+	public final static String day_num = "day_num";
+	
+	public final static String day_limit = "day_limit";
+	
+	public final static String todayFeed = "todayFeed";
+	
+	public final static String gift_list = "gift_list";
+	
+	public final static String search_type = "search_type";
+	
+	public final static String keyword = "keyword";
+	
+	public final static String result = "result";
+	
+	public final static String live_room = "live_room";
+	
+	public final static String guard = "guard";
+	
+	public final static String rank_desc = "rank_desc";
+	
+	public final static String r_uname = "r_uname";
+	
+	public final static String combo_num = "combo_num";
+	
+	public final static String parent_area_id = "parent_area_id";
+	
+	public final static String cate_id = "cate_id";
+	
+	public final static String area_id = "area_id";
+	
+	public final static String sort_type = "sort_type";
+	
+	public final static String page_size = "page_size";
+	
+	public final static String top_recommend = "top_recommend";
 	
 }

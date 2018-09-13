@@ -84,6 +84,14 @@ public class BiliCmd {
 	private final static String _ACTIVITY_EVENT = "ACTIVITY_EVENT";
 	public final static BiliCmd ACTIVITY_EVENT = new BiliCmd(_ACTIVITY_EVENT);
 	
+	/** 直播间小时榜排名通知消息 */
+	private final static String _ROOM_RANK = "ROOM_RANK";
+	public final static BiliCmd ROOM_RANK = new BiliCmd(_ROOM_RANK);
+	
+	/** 礼物combo连击结束消息 */
+	private final static String _COMBO_END = "COMBO_END";
+	public final static BiliCmd COMBO_END = new BiliCmd(_COMBO_END);
+	
 	private String cmd;
 	
 	private BiliCmd(String cmd) {
@@ -146,6 +154,12 @@ public class BiliCmd {
 			
 		} else if(_ACTIVITY_EVENT.equals(cmd)) {
 			biliCMD = ACTIVITY_EVENT;
+			
+		} else if(_ROOM_RANK.equals(cmd)) {
+			biliCMD = ROOM_RANK;
+			
+		} else if(_COMBO_END.equals(cmd)) {
+			biliCMD = COMBO_END;
 			
 		}
 		return biliCMD;

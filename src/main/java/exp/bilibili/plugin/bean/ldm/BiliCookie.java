@@ -2,10 +2,14 @@ package exp.bilibili.plugin.bean.ldm;
 
 import java.util.Date;
 
+import exp.bilibili.plugin.Config;
 import exp.bilibili.plugin.envm.CookieType;
 import exp.bilibili.plugin.envm.Danmu;
+import exp.bilibili.plugin.utils.UIUtils;
+import exp.libs.utils.num.NumUtils;
+import exp.libs.utils.other.BoolUtils;
 import exp.libs.utils.other.StrUtils;
-import exp.libs.warp.net.http.cookie.HttpCookie;
+import exp.libs.warp.net.cookie.HttpCookie;
 
 /**
  * <PRE>
@@ -27,6 +31,12 @@ public class BiliCookie extends HttpCookie {
 	
 	/** B站用户ID标识 */
 	private final static String UID_KEY = "DedeUserID";
+	
+	/** 自动投喂开关 */
+	private final static String FEED_KEY = "AutoFeed";
+	
+	/** 自动投喂房间号标识 */
+	private final static String RID_KEY = "RoomID";
 	
 	/** 登陆类型 */
 	private CookieType type;
@@ -63,19 +73,29 @@ public class BiliCookie extends HttpCookie {
 	
 	/** 投喂房间号 */
 	private int feedRoomId;
+
+	/** 标识日常任务的执行状态 */
+	private TaskStatus taskStatus;
+	
+	/** 累计参与抽奖计数 */
+	private int lotteryCnt;
+	
+	/** 上次抽奖时间 */
+	private long lastLotteryTime;
 	
 	public BiliCookie() {
 		super();
-		init();
 	}
 	
 	public BiliCookie(String headerCookies) {
 		super(headerCookies);
-		init();
 	}
 	
-	private void init() {
+	protected void init() {
 		this.type = CookieType.UNKNOW;
+		this.expires = new Date();
+		this.csrf = "";
+		this.uid = "";
 		this.nickName = "";
 		this.isBindTel = false;
 		this.isRealName = false;
@@ -83,23 +103,31 @@ public class BiliCookie extends HttpCookie {
 		this.isVip = false;
 		this.isGuard = false;
 		this.autoFeed = false;
-		this.feedRoomId = 0;
-		
-		// 以下值可能先在 {@link takeCookieNVE} 中被初始化
-		this.expires = (expires == null ? new Date() : expires);
-		this.csrf = (StrUtils.isEmpty(csrf) ? "" : csrf);
-		this.uid = (StrUtils.isEmpty(uid) ? "" : uid);
+		this.feedRoomId = Config.getInstn().SIGN_ROOM_ID();
+		this.taskStatus = new TaskStatus();
+		this.lotteryCnt = 0;
+		this.lastLotteryTime = 0L;
 	}
 	
 	@Override
-	protected void takeCookieNVE(String name, String value, Date expires) {
+	protected boolean takeCookieNVE(String name, String value, Date expires) {
+		boolean isKeep = true;
 		if(CSRF_KEY.equalsIgnoreCase(name)) {
 			this.csrf = value;
 			
 		} else if(UID_KEY.equalsIgnoreCase(name)) {
 			this.uid = value;
 			this.expires = expires;
+			
+		} else if(FEED_KEY.equals(name)) {
+			this.autoFeed = BoolUtils.toBool(value, false);
+			isKeep = false;	// 属于自定义的cookie属性, 不保持到cookie会话中(即不会发送到服务器)
+			
+		} else if(RID_KEY.equals(name)) {
+			this.feedRoomId = NumUtils.toInt(value, 0);
+			isKeep = false;	// 属于自定义的cookie属性, 不保持到cookie会话中(即不会发送到服务器)
 		}
+		return isKeep;
 	}
 	
 	/**
@@ -201,7 +229,71 @@ public class BiliCookie extends HttpCookie {
 	public void setFeedRoomId(int feedRoomId) {
 		this.feedRoomId = feedRoomId;
 	}
+	
+	public TaskStatus TASK_STATUS() {
+		return taskStatus;
+	}
+	
+	/**
+	 * 是否允许抽奖
+	 * @return
+	 */
+	public boolean allowLottery() {
+		boolean isOk = random();
+		isOk &= frequency();
+		isOk &= continuity();
+		return isOk;
+	}
+	
+	/**
+	 * 以随机方式控制抽奖
+	 * @return
+	 */
+	private boolean random() {
+		int percent = UIUtils.getLotteryProbability();
+		return BoolUtils.hit(percent);
+	}
 
+	/**
+	 * 通过抽奖间隔控制高频抽奖
+	 * @return
+	 */
+	private boolean frequency() {
+		boolean isOk = false;
+		long now = System.currentTimeMillis();
+		if(now - lastLotteryTime >= UIUtils.getIntervalTime()) {
+			lastLotteryTime = now;
+			isOk = true;
+		}
+		return isOk;
+	}
+	
+	/**
+	 * 控制连续抽奖.
+	 * 限制未实名账号连续抽奖 (B站严查未实名账号)
+	 * @return
+	 */
+	private boolean continuity() {
+		boolean isOk = true;
+		if(isRealName() == false) {
+			if(lotteryCnt >= Config.LOTTERY_LIMIT) {
+				lotteryCnt = 0;
+				isOk = false;
+				
+			} else {
+				lotteryCnt++;
+			}
+		}
+		return isOk;
+	}
+	
+	@Override
+	public String toHeaderCookie() {
+		return StrUtils.concat(super.toHeaderCookie(), 
+				LFCR, FEED_KEY, "=", (isAutoFeed() ? "true" : "false"), 
+				LFCR, RID_KEY, "=", getFeedRoomId());
+	}
+	
 	@Override
 	public boolean equals(Object obj) {
 		if(obj == null || !(obj instanceof BiliCookie)) {

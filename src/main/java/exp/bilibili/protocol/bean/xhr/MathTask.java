@@ -56,7 +56,7 @@ public class MathTask {
 	}
 	
 	public boolean existNext() {
-		return (existNext && !(curRound >= maxRound && step >= MAX_STEP));
+		return existNext;
 	}
 	
 	public void setExistNext(boolean exist) {

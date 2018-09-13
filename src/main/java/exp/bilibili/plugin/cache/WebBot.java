@@ -1,11 +1,11 @@
 package exp.bilibili.plugin.cache;
 
-import java.util.HashSet;
 import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import exp.bilibili.plugin.Config;
 import exp.bilibili.plugin.bean.ldm.BiliCookie;
 import exp.bilibili.plugin.envm.LotteryType;
 import exp.bilibili.plugin.utils.TimeUtils;
@@ -13,6 +13,7 @@ import exp.bilibili.plugin.utils.UIUtils;
 import exp.bilibili.protocol.XHRSender;
 import exp.bilibili.protocol.bean.other.LotteryRoom;
 import exp.libs.utils.num.NumUtils;
+import exp.libs.utils.os.ThreadUtils;
 import exp.libs.utils.other.StrUtils;
 import exp.libs.warp.thread.LoopThread;
 
@@ -25,8 +26,10 @@ import exp.libs.warp.thread.LoopThread;
  *   2.日常任务(签到/友爱社/小学数学)
  *   3.自动扭蛋、投喂
  *   4.自动领取成就奖励
- *   5.检查cookie有效期
- *   6.打印版权信息
+ *   5.自动领取日常/周常礼包
+ *   6.自动领取活动心跳礼物
+ *   7.检查cookie有效期
+ *   8.打印版权信息
  * </PRE>
  * <br/><B>PROJECT : </B> bilibili-plugin
  * <br/><B>SUPPORT : </B> <a href="http://www.exp-blog.com" target="_blank">www.exp-blog.com</a> 
@@ -40,13 +43,13 @@ public class WebBot extends LoopThread {
 	private final static Logger log = LoggerFactory.getLogger(WebBot.class);
 	
 	/** 单位时间：天 */
-	private final static long DAY_UNIT = 86400000L;
+	private final static long DAY_UNIT = TimeUtils.DAY_UNIT;
 	
 	/** 单位时间：小时 */
-	private final static long HOUR_UNIT = 3600000L;
+	private final static long HOUR_UNIT = TimeUtils.HOUR_UNIT;
 	
 	/** 北京时间时差 */
-	private final static int HOUR_OFFSET = 8;
+	private final static int HOUR_OFFSET = TimeUtils.PEKING_HOUR_OFFSET;
 	
 	/** 延迟时间 */
 	private final static long DELAY_TIME = 120000L;
@@ -62,9 +65,6 @@ public class WebBot extends LoopThread {
 	
 	/** 轮询次数 */
 	private int loopCnt;
-	
-	/** 已完成当天任务的cookies */
-	private Set<BiliCookie> finCookies;
 	
 	/** 最近一次添加过cookie的时间点 */
 	private long lastAddCookieTime;
@@ -84,19 +84,9 @@ public class WebBot extends LoopThread {
 	private WebBot() {
 		super("Web行为模拟器");
 		this.loopCnt = 0;
-		this.finCookies = new HashSet<BiliCookie>();
 		this.lastAddCookieTime = System.currentTimeMillis();
 		this.nextTaskTime = System.currentTimeMillis() + DELAY_TIME;	// 首次打开软件时, 延迟一点时间再执行任务
-		initResetTaskTime();
-	}
-	
-	/**
-	 * 把上次任务重置时间初始化为当天0点
-	 */
-	private void initResetTaskTime() {
-		resetTaskTime = System.currentTimeMillis() / DAY_UNIT * DAY_UNIT;
-		resetTaskTime -= HOUR_UNIT * HOUR_OFFSET;
-		resetTaskTime += DELAY_TIME;	// 避免临界点时差, 后延一点时间
+		this.resetTaskTime = TimeUtils.getZeroPointMillis(HOUR_OFFSET) + DELAY_TIME;	// 避免临界点时差, 后延一点时间
 	}
 	
 	/**
@@ -131,7 +121,6 @@ public class WebBot extends LoopThread {
 
 	@Override
 	protected void _after() {
-		finCookies.clear();
 		log.info("{} 已停止", getName());
 	}
 	
@@ -139,7 +128,7 @@ public class WebBot extends LoopThread {
 		
 		// 优先参与直播间抽奖
 		LotteryRoom room = RoomMgr.getInstn().getGiftRoom();
-		if(room != null) {
+		if(room != null && UIUtils.isJoinLottery()) {
 			toLottery(room);
 			
 		// 无抽奖操作则做其他事情
@@ -159,15 +148,35 @@ public class WebBot extends LoopThread {
 		
 		// 小电视抽奖
 		if(room.TYPE() == LotteryType.TV) {
+			_waitReactionTime(room);
 			XHRSender.toTvLottery(roomId, raffleId);
 			
 		// 节奏风暴抽奖
 		} else if(room.TYPE() == LotteryType.STORM) {
+//			_waitReactionTime(room);	// 节奏风暴无需等待, 当前环境太多机器人, 很难抢到前几名导致被捉
 			XHRSender.toStormLottery(roomId, raffleId);
+			
+		// 总督登船领奖
+		} else if(room.TYPE() == LotteryType.GUARD) {
+			_waitReactionTime(room);
+			XHRSender.getGuardGift(roomId);
 			
 		// 高能抽奖
 		} else {
+			_waitReactionTime(room);
 			XHRSender.toEgLottery(roomId);
+		}
+	}
+	
+	/**
+	 * 等待满足抽奖反应时间（过快反应会被冻结抽奖）
+	 * @param room 抽奖房间
+	 */
+	private void _waitReactionTime(LotteryRoom room) {
+		long waitTime = UIUtils.getReactionTime() - 
+				(System.currentTimeMillis() - room.getStartTime());
+		if(waitTime > 0) {
+			ThreadUtils.tSleep(waitTime);
 		}
 	}
 	
@@ -178,23 +187,22 @@ public class WebBot extends LoopThread {
 		resetDailyTasks();	// 满足某个条件则重置每日任务
 		
 		if(nextTaskTime > 0 && nextTaskTime <= System.currentTimeMillis()) {
-			Set<BiliCookie> cookies = CookiesMgr.ALL();
+			Set<BiliCookie> cookies = CookiesMgr.ALL(true);
 			for(BiliCookie cookie : cookies) {
-				if(finCookies.contains(cookie)) {
+				if(cookie.TASK_STATUS().isAllFinish()) {
 					continue;
 				}
 				
 				long max = -1;
-				max = NumUtils.max(XHRSender.toSign(cookie), max);		// 每日签到
+				max = NumUtils.max(XHRSender.toSign(cookie), max);				// 每日签到
+				max = NumUtils.max(XHRSender.receiveDailyGift(cookie), max);	// 每日/每周礼包
 				if(cookie.isBindTel()) {	// 仅绑定了手机的账号才能参与
-					max = NumUtils.max(XHRSender.toAssn(cookie), max);		// 友爱社
-					max = NumUtils.max(XHRSender.doMathTask(cookie), max);	// 小学数学
+//					max = NumUtils.max(XHRSender.receiveHolidayGift(cookie), max);	// 活动心跳礼物
+					max = NumUtils.max(XHRSender.toAssn(cookie), max);			// 友爱社
+					max = NumUtils.max(XHRSender.doMathTask(cookie), max);		// 小学数学
 				}
 				nextTaskTime = NumUtils.max(nextTaskTime, max);
-				
-				if(max <= 0) {
-					finCookies.add(cookie);
-				}
+				ThreadUtils.tSleep(50);
 			}
 		}
 	}
@@ -209,7 +217,8 @@ public class WebBot extends LoopThread {
 		if(now - resetTaskTime > DAY_UNIT) {
 			resetTaskTime = now;
 			nextTaskTime = now;
-			finCookies.clear();
+			CookiesMgr.getInstn().resetTaskStatus();
+			log.info("日常任务已重置");
 			
 		// 当cookie发生变化时, 仅重置任务时间
 		} else if(nextTaskTime <= 0 && 
@@ -226,9 +235,14 @@ public class WebBot extends LoopThread {
 		if(loopCnt++ >= EVENT_LIMIT) {
 			loopCnt = 0;
 			
-			toCapsule();	// 自动扭蛋
-			toAutoFeed();	// 自动投喂
-			takeFinishAchieve();	// 领取成就奖励
+			// 零点错峰时不执行事件
+			if(TimeUtils.inZeroPointRange() == false) {
+				toCapsule();	// 自动扭蛋
+				toAutoFeed();	// 自动投喂
+				takeFinishAchieve();	// 领取成就奖励
+			}
+			
+			reflashActivity();		// 刷新活跃值到数据库
 			checkCookieExpires();	// 检查Cookie有效期
 			
 			// 打印心跳
@@ -248,7 +262,12 @@ public class WebBot extends LoopThread {
 		Set<BiliCookie> cookies = CookiesMgr.MINIs();
 		for(BiliCookie cookie : cookies) {
 			if(cookie.isAutoFeed()) {
-				XHRSender.toCapsule(cookie);
+				if(cookie.isRealName() || 
+						(cookie.isBindTel() && Config.getInstn().PROTECT_FEED())) {
+					// Undo 已经实名、 或绑了手机且开了投喂保护的， 不触发扭蛋
+				} else {
+					XHRSender.toCapsule(cookie);
+				}
 			}
 		}
 	}
@@ -261,13 +280,12 @@ public class WebBot extends LoopThread {
 			return;	// 总开关
 		}
 		
-		int defaultRoomId = UIUtils.getFeedRoomId();
 		Set<BiliCookie> cookies = CookiesMgr.MINIs();
 		for(BiliCookie cookie : cookies) {
 			if(cookie.isAutoFeed()) {
 				int roomId = cookie.getFeedRoomId();
-				roomId = RoomMgr.getInstn().isExist(roomId) ? roomId : defaultRoomId;
 				XHRSender.toFeed(cookie, roomId);
+				ThreadUtils.tSleep(50);
 			}
 		}
 	}
@@ -280,6 +298,13 @@ public class WebBot extends LoopThread {
 		for(BiliCookie cookie : cookies) {
 			XHRSender.toAchieve(cookie);
 		}
+	}
+	
+	/**
+	 * 刷新活跃值到数据库(每天凌晨刷新一次)
+	 */
+	private void reflashActivity() {
+		ActivityMgr.getInstn().reflash();
 	}
 	
 	/**

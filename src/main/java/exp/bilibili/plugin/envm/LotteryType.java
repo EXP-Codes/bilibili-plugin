@@ -1,5 +1,15 @@
 package exp.bilibili.plugin.envm;
 
+/**
+ * <PRE>
+ * 抽奖类型
+ * </PRE>
+ * <br/><B>PROJECT : </B> bilibili-plugin
+ * <br/><B>SUPPORT : </B> <a href="http://www.exp-blog.com" target="_blank">www.exp-blog.com</a> 
+ * @version   2017-12-17
+ * @author    EXP: 272629724@qq.com
+ * @since     jdk版本：jdk1.6
+ */
 public class LotteryType {
 
 	/** 高能礼物抽奖 */
@@ -13,6 +23,10 @@ public class LotteryType {
 	/** 节奏风暴抽奖 */
 	private final static short TYPE_STORM = 2;
 	public final static LotteryType STORM = new LotteryType(TYPE_STORM);
+	
+	/** 总督领奖 */
+	private final static short TYPE_GUARD = 3;
+	public final static LotteryType GUARD = new LotteryType(TYPE_GUARD);
 	
 	private short type;
 	

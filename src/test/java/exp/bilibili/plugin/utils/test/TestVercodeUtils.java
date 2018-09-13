@@ -12,10 +12,20 @@ public class TestVercodeUtils {
 
 	@Test
 	public void testCalculateExpressionImage() {
-		File dir = new File("./src/test/resources/exp/bilibili/plugin/utils/test/math");
+		File dir = new File("./src/test/resources/exp/bilibili/plugin/utils/test/math/cur");
 		File[] imgs = dir.listFiles();
 		for(File img : imgs) {
-			int rst = VercodeUtils.calculateExpressionImage(img.getPath());
+			int rst = VercodeUtils.calculateImageExpression(img.getPath());
+			System.out.println(img.getName() + " : " + rst);
+		}
+	}
+	
+	@Test
+	public void testCalculateExpressionImageByOCR() {
+		File dir = new File("./src/test/resources/exp/bilibili/plugin/utils/test/math/ocr");
+		File[] imgs = dir.listFiles();
+		for(File img : imgs) {
+			int rst = VercodeUtils.calculateImageExpressionByOCR(img.getPath());
 			System.out.println(img.getName() + " : " + rst);
 		}
 	}

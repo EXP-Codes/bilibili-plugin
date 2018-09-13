@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.swing.JButton;
@@ -13,10 +14,18 @@ import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
+import org.jb2011.lnf.beautyeye.ch3_button.BEButtonUI.NormalColor;
+
 import exp.bilibili.plugin.cache.OnlineUserMgr;
-import exp.libs.utils.num.RandomUtils;
+import exp.libs.envm.Charset;
+import exp.libs.utils.io.FileUtils;
 import exp.libs.utils.os.ThreadUtils;
+import exp.libs.utils.other.RandomUtils;
+import exp.libs.utils.time.TimeUtils;
+import exp.libs.warp.cmd.CmdUtils;
 import exp.libs.warp.thread.LoopThread;
+import exp.libs.warp.tpl.Template;
+import exp.libs.warp.ui.BeautyEyeUtils;
 import exp.libs.warp.ui.SwingUtils;
 import exp.libs.warp.ui.cpt.win.PopChildWindow;
 
@@ -34,6 +43,12 @@ class _LotteryUI extends PopChildWindow {
 
 	private final static long serialVersionUID = -4322589966897649896L;
 
+	/** 3D抽奖姬-页面模板路径 */
+	private final static String _3D_TPL_PATH = "./conf/web/template.html";
+	
+	/** 3D抽奖姬-页面路径 */
+	private final static String _3D_PAGE_PATH = "./conf/web/lucky-princess.html";
+	
 	private final static int WIDTH = 800;
 	
 	private final static int HEIGHT = 400;
@@ -56,16 +71,18 @@ class _LotteryUI extends PopChildWindow {
 	
 	private NameViewer viewer;
 	
+	/** 切换到3D标签云抽奖模式 */
+	private JButton to3DBtn;
+	
 	protected _LotteryUI() {
 		super("直播间活跃用户抽奖", WIDTH, HEIGHT);
 	}
 	
 	@Override
 	protected void initComponents(Object... args) {
-		this.users = OnlineUserMgr.getInstn().getAllOnlineUsers();
+		this.users = new LinkedList<String>();
 		this.userPanel = new JPanel(new GridLayout(ROW, COL));
 		SwingUtils.addBorder(userPanel, "在线活跃用户列表  (仅随机显示" +  (ROW * COL) + "名)");
-		refreshUserPanel();
 		
 		this.luckyBtn = new JButton("抽奖人数:" + users.size());
 		luckyBtn.setForeground(Color.RED);
@@ -78,6 +95,10 @@ class _LotteryUI extends PopChildWindow {
 		luckyTA.setEditable(false);
 		
 		this.isLottery = false;
+		
+		this.to3DBtn = new JButton("3D模式");
+		BeautyEyeUtils.setButtonStyle(NormalColor.lightBlue, to3DBtn);
+		to3DBtn.setForeground(Color.WHITE);
 	}
 
 	@Override
@@ -87,16 +108,6 @@ class _LotteryUI extends PopChildWindow {
 		rootPanel.add(getLuckyPanel(), BorderLayout.EAST);
 	}
 	
-	private void refreshUserPanel() {
-		userPanel.removeAll();
-		
-		int size = ROW * COL;
-		size = (size > users.size() ? users.size() : size);
-		for(int i = 0; i < size; i++) {
-			userPanel.add(new JLabel(users.get(i)), i);
-		}
-	}
-	
 	private JPanel getLotteryPanel() {
 		JPanel panel = new JPanel(new BorderLayout()); {
 			panel.add(SwingUtils.getHGridPanel(
@@ -104,7 +115,8 @@ class _LotteryUI extends PopChildWindow {
 						luckyBtn,
 						new JLabel("[小幸运]: ", JLabel.RIGHT),
 						luckyTF,
-						new JLabel(" ")), 
+						SwingUtils.getEBorderPanel(new JLabel(" "), to3DBtn)
+				), 
 				BorderLayout.CENTER
 			);
 		}
@@ -122,6 +134,11 @@ class _LotteryUI extends PopChildWindow {
 
 	@Override
 	protected void setComponentsListener(JPanel rootPanel) {
+		setLuckyBtnListener();
+		set3DBtnListener();
+	}
+	
+	private void setLuckyBtnListener() {
 		luckyBtn.addActionListener(new ActionListener() {
 			
 			@Override
@@ -142,7 +159,7 @@ class _LotteryUI extends PopChildWindow {
 					isLottery = false;
 				}
 				
-				ThreadUtils.tSleep(500); // 避免连续点击
+				ThreadUtils.tSleep(200); // 避免连续点击
 			}
 		});
 	}
@@ -174,17 +191,65 @@ class _LotteryUI extends PopChildWindow {
 		SwingUtils.toEnd(luckyTA);
 	}
 	
-	protected void refreshUsers() {
+	private void set3DBtnListener() {
+		to3DBtn.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				StringBuilder tags = new StringBuilder();
+				for(String user : users) {
+					tags.append("       <a href=\"#\" title=\"").append(user);
+					tags.append("\">").append(user).append("</a>\r\n");
+				}
+				
+				// 根据在线用户更新3D抽奖页面
+				Template tpl = new Template(_3D_TPL_PATH, Charset.UTF8);
+				tpl.set("date", TimeUtils.getSysDate());
+				tpl.set("tags", tags.toString());
+				
+				if(FileUtils.write(_3D_PAGE_PATH, tpl.getContent(), Charset.UTF8, false)) {
+					CmdUtils.execute("cmd /c start ".concat(_3D_PAGE_PATH));	// 打开3D抽奖界面
+					_hide();	// 隐藏2D抽奖界面
+					
+				} else {
+					SwingUtils.warn("召唤3D抽奖姬失败 o(>_<)o");
+				}
+			}
+		});
+	}
+	
+	@Override
+	protected void AfterView() {
 		if(isLottery == true) {
 			return;	// 若在抽奖中, 则不更新用户表
 		}
 		
-		users.clear();
-		users = OnlineUserMgr.getInstn().getAllOnlineUsers();
+		refreshUsers();
 		refreshUserPanel();
 		
 		luckyBtn.setText("抽奖人数:" + users.size());
 		luckyTF.setText("");
+	}
+
+	private void refreshUsers() {
+		users.clear();
+		users = OnlineUserMgr.getInstn().getAllOnlineUsers();
+	}
+	
+	private void refreshUserPanel() {
+		userPanel.removeAll();
+		
+		int size = ROW * COL;
+		size = (size > users.size() ? users.size() : size);
+		for(int i = 0; i < size; i++) {
+			userPanel.add(new JLabel(users.get(i)), i);
+		}
+	}
+	
+	@Override
+	protected void beforeHide() {
+		// TODO Auto-generated method stub
+		
 	}
 	
 	protected void clear() {
@@ -195,20 +260,18 @@ class _LotteryUI extends PopChildWindow {
 		}
 	}
 	
-	@Override
-	protected void AfterView() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	protected void beforeHide() {
-		// TODO Auto-generated method stub
-		
-	}
 	
-	
-	
+	///////////////////////////////////////////////////////////////////////
+	/**
+	 * <PRE>
+	 * 名字闪现器
+	 * </PRE>
+	 * <br/><B>PROJECT : </B> bilibili-plugin
+	 * <br/><B>SUPPORT : </B> <a href="http://www.exp-blog.com" target="_blank">www.exp-blog.com</a> 
+	 * @version   2017-12-17
+	 * @author    EXP: 272629724@qq.com
+	 * @since     jdk版本：jdk1.6
+	 */
 	private class NameViewer extends LoopThread {
 
 		protected NameViewer() {
@@ -220,7 +283,7 @@ class _LotteryUI extends PopChildWindow {
 
 		@Override
 		protected void _loopRun() {
-			int idx = RandomUtils.randomInt(users.size());
+			int idx = RandomUtils.genInt(users.size());
 			String username = users.get(idx);
 			luckyTF.setText(username);
 		}

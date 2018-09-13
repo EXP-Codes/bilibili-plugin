@@ -6,12 +6,13 @@ import java.util.Map;
 import net.sf.json.JSONObject;
 import exp.bilibili.plugin.Config;
 import exp.bilibili.plugin.bean.ldm.BiliCookie;
-import exp.bilibili.plugin.envm.ChatColor;
+import exp.bilibili.plugin.utils.UIUtils;
 import exp.bilibili.protocol.envm.BiliCmdAtrbt;
+import exp.libs.envm.Colors;
+import exp.libs.envm.HttpHead;
 import exp.libs.utils.format.JsonUtils;
 import exp.libs.utils.other.StrUtils;
 import exp.libs.warp.net.http.HttpURLUtils;
-import exp.libs.warp.net.http.HttpUtils;
 
 /**
  * <PRE>
@@ -45,10 +46,10 @@ public class Chat extends __XHR {
 	 * @param color 弹幕颜色
 	 * @return
 	 */
-	public static boolean sendDanmu(BiliCookie cookie, int roomId, String msg, ChatColor color) {
+	public static boolean sendDanmu(BiliCookie cookie, int roomId, String msg, Colors color) {
 		String sRoomId = getRealRoomId(roomId);
 		Map<String, String> header = POST_HEADER(cookie.toNVCookie(), sRoomId);
-		Map<String, String> request = getRequest(msg, sRoomId, color.RGB());
+		Map<String, String> request = getRequest(cookie.CSRF(), msg, sRoomId, color);
 		String response = HttpURLUtils.doPost(CHAT_URL, header, request);
 		return analyse(response, msg);
 	}
@@ -60,14 +61,16 @@ public class Chat extends __XHR {
 	 * @param chatColor
 	 * @return
 	 */
-	private static Map<String, String> getRequest(String msg, String roomId, String color) {
+	private static Map<String, String> getRequest(String csrf, 
+			String msg, String roomId, Colors color) {
 		Map<String, String> params = new HashMap<String, String>();
 		params.put(BiliCmdAtrbt.rnd, String.valueOf(System.currentTimeMillis() / 1000));	// 时间戳
 		params.put(BiliCmdAtrbt.msg, msg);			// 弹幕内容
-		params.put(BiliCmdAtrbt.color, color);		// 弹幕颜色
+		params.put(BiliCmdAtrbt.color, color.RGB());// 弹幕颜色
 		params.put(BiliCmdAtrbt.roomid, roomId);	// 接收消息的房间号
 		params.put(BiliCmdAtrbt.fontsize, "25");
 		params.put(BiliCmdAtrbt.mode, "1");
+		params.put(BiliCmdAtrbt.csrf_token, csrf);
 		return params;
 	}
 	
@@ -93,9 +96,9 @@ public class Chat extends __XHR {
 	 */
 	private static Map<String, String> getHeader(String cookie) {
 		Map<String, String> header = POST_HEADER(cookie);
-		header.put(HttpUtils.HEAD.KEY.HOST, LINK_HOST);
-		header.put(HttpUtils.HEAD.KEY.ORIGIN, MSG_HOME);
-		header.put(HttpUtils.HEAD.KEY.REFERER, MSG_HOME);
+		header.put(HttpHead.KEY.HOST, LINK_HOST);
+		header.put(HttpHead.KEY.ORIGIN, MSG_HOME);
+		header.put(HttpHead.KEY.REFERER, MSG_HOME);
 		return header;
 	}
 	
@@ -141,7 +144,7 @@ public class Chat extends __XHR {
 			} else {
 				String reason = JsonUtils.getStr(json, BiliCmdAtrbt.msg);
 				reason = (StrUtils.isEmpty(reason) ? String.valueOf(code) : reason);
-				log.warn("发送消息失败({}): {}", reason, msg);
+				UIUtils.log("发送消息失败(", reason, "): ", msg);
 			}
 		} catch(Exception e) {
 			log.error("发送消息失败: {}", msg, e);

@@ -14,7 +14,6 @@ import exp.libs.utils.format.JsonUtils;
  	特殊礼物：(房间内)节奏风暴消息
 	{
 	  "cmd": "SPECIAL_GIFT",
-	  "roomid": 390480			// 这是此程序擅自加的
 	  "data": {
 	    "39": {
 	      "id": 152125,
@@ -33,8 +32,6 @@ import exp.libs.utils.format.JsonUtils;
  */
 public class SpecialGift extends _Msg {
 
-	private int roomId;
-	
 	private String raffleId;
 	
 	public SpecialGift(JSONObject json) {
@@ -45,17 +42,12 @@ public class SpecialGift extends _Msg {
 	@SuppressWarnings("rawtypes")
 	@Override
 	protected void analyse(JSONObject json) {
-		this.roomId = JsonUtils.getInt(json, BiliCmdAtrbt.roomid, 0);
 		JSONObject data = JsonUtils.getObject(json, BiliCmdAtrbt.data);
 		Iterator keys = data.keys();
 		if(keys.hasNext()) {
 			JSONObject obj = JsonUtils.getObject(data, keys.next().toString());
 			this.raffleId = JsonUtils.getStr(obj, BiliCmdAtrbt.id);
 		}
-	}
-
-	public int getRoomId() {
-		return roomId;
 	}
 
 	public String getRaffleId() {

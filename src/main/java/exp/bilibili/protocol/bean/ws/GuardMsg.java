@@ -3,6 +3,7 @@ package exp.bilibili.protocol.bean.ws;
 import exp.bilibili.protocol.envm.BiliCmd;
 import exp.bilibili.protocol.envm.BiliCmdAtrbt;
 import exp.libs.utils.format.JsonUtils;
+import exp.libs.utils.verify.RegexUtils;
 import net.sf.json.JSONObject;
 
 /**
@@ -12,7 +13,7 @@ import net.sf.json.JSONObject;
  	(全频道)登船消息
 	{
 	  "cmd": "GUARD_MSG",
-	  "msg": "乘客 :?期货大佬:? 成功购买5311231房间总督船票1张，欢迎登船！"
+	  "msg": "用户 :?阿斗金:? 在主播 吃不饱的小黄瓜 的直播间开通了总督"
 	}
  * </PRE>
  * @version   2017-12-17
@@ -23,6 +24,8 @@ public class GuardMsg extends _Msg {
 
 	private String msg;
 	
+	private String liveup;
+	
 	public GuardMsg(JSONObject json) {
 		super(json);
 		this.cmd = BiliCmd.GUARD_MSG;
@@ -31,10 +34,15 @@ public class GuardMsg extends _Msg {
 	@Override
 	protected void analyse(JSONObject json) {
 		this.msg = JsonUtils.getStr(json, BiliCmdAtrbt.msg);
+		this.liveup = RegexUtils.findFirst(msg, "在主播 (\\S+) 的直播间");
 	}
 
 	public String getMsg() {
 		return msg;
 	}
-
+	
+	public String getLiveup() {
+		return liveup;
+	}
+	
 }

@@ -21,13 +21,13 @@ import exp.bilibili.plugin.utils.UIUtils;
 import exp.bilibili.protocol.bean.other.User;
 import exp.bilibili.protocol.bean.xhr.Achieve;
 import exp.bilibili.protocol.envm.BiliCmdAtrbt;
+import exp.libs.envm.HttpHead;
 import exp.libs.utils.encode.CryptoUtils;
 import exp.libs.utils.format.JsonUtils;
 import exp.libs.utils.num.BODHUtils;
 import exp.libs.utils.num.NumUtils;
 import exp.libs.utils.other.StrUtils;
 import exp.libs.warp.net.http.HttpURLUtils;
-import exp.libs.warp.net.http.HttpUtils;
 
 /**
  * <PRE>
@@ -72,6 +72,9 @@ public class Other extends __XHR {
 	/** 领取成就奖励URL */
 	private final static String DO_ACHIEVE_URL = Config.getInstn().DO_ACHIEVE_URL();
 	
+	/** 检索主播的直播间URL */
+	private final static String SEARCH_URL = Config.getInstn().SEARCH_URL();
+	
 	/** 私有化构造函数 */
 	protected Other() {}
 	
@@ -90,9 +93,9 @@ public class Other extends __XHR {
 	 */
 	private static Map<String, String> getHeader() {
 		Map<String, String> header = GET_HEADER("");
-		header.put(HttpUtils.HEAD.KEY.HOST, LINK_HOST);
-		header.put(HttpUtils.HEAD.KEY.ORIGIN, LINK_HOME);
-		header.put(HttpUtils.HEAD.KEY.REFERER, LINK_HOME.concat("/p/world/index"));
+		header.put(HttpHead.KEY.HOST, LINK_HOST);
+		header.put(HttpHead.KEY.ORIGIN, LINK_HOME);
+		header.put(HttpHead.KEY.REFERER, LINK_HOME.concat("/p/world/index"));
 		return header;
 	}
 	
@@ -135,9 +138,9 @@ public class Other extends __XHR {
 	 */
 	private static Map<String, String> getHeader(String cookie) {
 		Map<String, String> header = POST_HEADER(cookie);
-		header.put(HttpUtils.HEAD.KEY.HOST, LIVE_HOST);
-		header.put(HttpUtils.HEAD.KEY.ORIGIN, LINK_HOME);
-		header.put(HttpUtils.HEAD.KEY.REFERER, LINK_HOME.concat("/p/center/index"));
+		header.put(HttpHead.KEY.HOST, LIVE_HOST);
+		header.put(HttpHead.KEY.ORIGIN, LINK_HOME);
+		header.put(HttpHead.KEY.REFERER, LINK_HOME.concat("/p/center/index"));
 		return header;
 	}
 	
@@ -384,6 +387,10 @@ public class Other extends __XHR {
 		return achieves;
 	}
 	
+	/**
+	 * 查询成就的请求参数
+	 * @return
+	 */
 	private static Map<String, String> getRequest() {
 		Map<String, String> request = new HashMap<String, String>();
 		request.put(BiliCmdAtrbt.type, "normal");	// 普通成就
@@ -422,6 +429,38 @@ public class Other extends __XHR {
 				log.error("[{}] 领取成就 [{}] 的奖励失败: {}", cookie.NICKNAME(), achieve.getName(), response, e);
 			}
 		}
+	}
+	
+	/**
+	 * 检索主播的房间号
+	 * @param cookie
+	 * @param liveupName 主播名称
+	 * @return 主播的房间号(长号)
+	 */
+	public static int searchRoomId(BiliCookie cookie, String liveupName) {
+		Map<String, String> header = getHeader(cookie.toNVCookie());
+		Map<String, String> request = new HashMap<String, String>();
+		request.put(BiliCmdAtrbt.search_type, "live");
+		request.put(BiliCmdAtrbt.keyword, liveupName);
+		
+		int roomId = -1;
+		String response = HttpURLUtils.doGet(SEARCH_URL, header, request);
+		try {
+			JSONObject json = JSONObject.fromObject(response);
+			JSONObject result = JsonUtils.getObject(json, BiliCmdAtrbt.result);
+			JSONArray liveRooms = JsonUtils.getArray(result, BiliCmdAtrbt.live_room);
+			if(liveRooms.size() > 0) {
+				JSONObject liveRoom = liveRooms.getJSONObject(0);
+				roomId = JsonUtils.getInt(liveRoom, BiliCmdAtrbt.roomid, -1);
+				if(roomId < 0) {
+					roomId = JsonUtils.getInt(liveRoom, BiliCmdAtrbt.short_id, -1);
+				}
+			}
+			
+		} catch(Exception e) {
+			log.error("搜索主播 [{}] 的房间号失败: {}", liveupName, response, e);
+		}
+		return roomId;
 	}
 	
 }

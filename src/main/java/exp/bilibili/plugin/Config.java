@@ -10,8 +10,10 @@ import exp.libs.envm.Charset;
 import exp.libs.utils.io.FileUtils;
 import exp.libs.utils.num.NumUtils;
 import exp.libs.utils.other.StrUtils;
+import exp.libs.utils.verify.RegexUtils;
 import exp.libs.warp.conf.xml.XConfig;
 import exp.libs.warp.conf.xml.XConfigFactory;
+import exp.libs.warp.ver.VersionMgr;
 
 /**
  * <PRE>
@@ -27,17 +29,29 @@ public class Config {
 	
 	public final static String DEFAULT_CHARSET = Charset.UTF8;
 	
-	private final static String APP_PATH = "/exp/bilibili/plugin/bp_conf.xml";
+	public final static String APP_NAME = RegexUtils.findFirst(VersionMgr.getAppName(), "([a-zA-Z\\-]+)");
+	
+	public final static String APP_VER = VersionMgr.getVersion();
+	
+	public final static String LIB_PATH = "./lib";
+	
+	private final static String APP_PATH = "/exp/bilibili/bp_conf.xml";
 	
 	private final static String USER_PATH = "./conf/bp_conf.xml";
 	
-	public final static int DEFAULT_ROOM_ID = 390480;
+	public final static int DEFAULT_ROOM_ID = 269706;
 	
+	/** 连续抽奖限制(主要避免被抓到封号) */
+	public final static int LOTTERY_LIMIT = 10;
+	
+	/** 禁止自动发言的直播间 */
 	private Set<Integer> tabuAutoRoomIds;
 	
-	private static volatile Config instance;
-	
+	/** xml配置器 */
 	private XConfig xConf;
+	
+	/** 单例 */
+	private static volatile Config instance;
 	
 	private Config() {
 		this.xConf = XConfigFactory.createConfig("BILIBILI_CONF");
@@ -159,6 +173,14 @@ public class Config {
 		return xConf.getVal("/config/urls/manageURL");
 	}
 	
+	public String MEDAL_URL() {
+		return xConf.getVal("/config/urls/medalURL");
+	}
+	
+	public String GIFT_URL() {
+		return xConf.getVal("/config/urls/giftURL");
+	}
+	
 	public String BAG_URL() {
 		return xConf.getVal("/config/urls/bagURL");
 	}
@@ -195,12 +217,24 @@ public class Config {
 		return xConf.getVal("/config/urls/stormJoinURL");
 	}
 	
+	public String GUARD_CHECK_URL() {
+		return xConf.getVal("/config/urls/guardCheckURL");
+	}
+	
+	public String GUARD_JOIN_URL() {
+		return xConf.getVal("/config/urls/guardJoinURL");
+	}
+	
 	public String EG_CHECK_URL() {
 		return xConf.getVal("/config/urls/egCheckURL");
 	}
 	
 	public String EG_JOIN_URL() {
 		return xConf.getVal("/config/urls/egJoinURL");
+	}
+	
+	public String TV_CHECK_URL() {
+		return xConf.getVal("/config/urls/tvCheckURL");
 	}
 	
 	public String TV_JOIN_URL() {
@@ -219,8 +253,16 @@ public class Config {
 		return xConf.getVal("/config/urls/mathExecURL");
 	}
 	
+	public String HB_URL() {
+		return xConf.getVal("/config/urls/hbURL");
+	}
+	
+	public String HB_GIFT_URL() {
+		return xConf.getVal("/config/urls/hbGiftURL");
+	}
+	
 	public String APP_VIDEO_URL() {
-		return xConf.getVal("/config/urls/apVideoURL");
+		return xConf.getVal("/config/urls/appVideoURL");
 	}
 	
 	public String APP_WATCH_URL() {
@@ -231,20 +273,20 @@ public class Config {
 		return xConf.getVal("/config/urls/pcWatchURL");
 	}
 	
-	public String GET_BUCKET_URL() {
-		return xConf.getVal("/config/urls/getBucket");
+	public String GAME_URL() {
+		return xConf.getVal("/config/urls/gameURL");
 	}
 	
-	public String EX_BUCKET_URL() {
-		return xConf.getVal("/config/urls/exBucket");
+	public String AMUSE_URL() {
+		return xConf.getVal("/config/urls/amuseURL");
 	}
 	
-	public String GET_REDBAG_URL() {
-		return xConf.getVal("/config/urls/getRedbag");
+	public String DRAW_URL() {
+		return xConf.getVal("/config/urls/drawURL");
 	}
 	
-	public String EX_REDBAG_URL() {
-		return xConf.getVal("/config/urls/exRedbag");
+	public String SEARCH_URL() {
+		return xConf.getVal("/config/urls/searchURL");
 	}
 	
 	public String COOKIE_DIR() {
@@ -300,21 +342,63 @@ public class Config {
 		return xConf.getLong("/config/app/stormFrequency");
 	}
 	
+	public boolean PROTECT_FEED() {
+		return xConf.getBool("/config/app/protectFeed");
+	}
+	
+	public long REACTION_TIME() {
+		return xConf.getLong("/config/app/reactionTime");
+	}
+	
+	public long INTERVAL_TIME() {
+		return xConf.getLong("/config/app/intervalTime");
+	}
+	
+	public String TEST_SERVER() {
+		return xConf.getVal("/config/monitor/testServer");
+	}
+	
+	public String OFFICIAL_SERVER() {
+		return xConf.getVal("/config/monitor/officialServer");
+	}
+	
 	/**
 	 * 设置默认房间号（每日签到用）
 	 * (房间勋章等级越高签到奖励越多)
 	 */
 	public boolean setSignRoomId(int roomId) {
+		return setValueInXml("signRoomId", String.valueOf(roomId));
+	}
+	
+	/**
+	 * 设置默认的抽奖反应时间
+	 * @param reactionTime 抽奖反应时间(ms)
+	 * @return
+	 */
+	public boolean setReactionTime(String reactionTime) {
+		return setValueInXml("reactionTime", reactionTime);
+	}
+	
+	/**
+	 * 设置默认的抽奖间隔时间
+	 * @param intervalTime 抽奖反应时间(ms)
+	 * @return
+	 */
+	public boolean setIntervalTime(String intervalTime) {
+		return setValueInXml("intervalTime", intervalTime);
+	}
+	
+	private boolean setValueInXml(String tagName, String value) {
 		boolean isOk = false;
-		final String REGEX = "(<signRoomId[^>]+>)[^<]*(</signRoomId>)";
-		if(roomId > 0) {
+		final String REGEX = StrUtils.concat("(<", tagName, "[^>]+>)[^<]*(</", tagName, ">)");
+		if(StrUtils.isNotEmpty(value)) {
 			String xml = FileUtils.read(USER_PATH, DEFAULT_CHARSET);
 			Pattern ptn = Pattern.compile(REGEX);
 			Matcher mth = ptn.matcher(xml);
 			if(mth.find()) {
 				String head = mth.group(1);
 				String tail = mth.group(2);
-				String txt = StrUtils.concat(head, roomId, tail);
+				String txt = StrUtils.concat(head, value, tail);
 				xml = xml.replace(mth.group(0), txt);
 				
 				isOk = FileUtils.write(USER_PATH, xml, DEFAULT_CHARSET, false);

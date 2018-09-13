@@ -9,11 +9,11 @@ import exp.bilibili.plugin.Config;
 import exp.bilibili.plugin.bean.ldm.BiliCookie;
 import exp.bilibili.protocol.bean.other.AppVideo;
 import exp.bilibili.protocol.envm.BiliCmdAtrbt;
+import exp.libs.envm.HttpHead;
 import exp.libs.utils.format.JsonUtils;
 import exp.libs.utils.num.IDUtils;
 import exp.libs.utils.other.StrUtils;
 import exp.libs.warp.net.http.HttpURLUtils;
-import exp.libs.warp.net.http.HttpUtils;
 
 /**
  * <PRE>
@@ -100,8 +100,8 @@ public class WatchLive extends __XHR {
 	private static Map<String, String> getHeader(BiliCookie cookie, long watchTime) {
 		Map<String, String> header = POST_HEADER(cookie.toNVCookie());
 		header.put(BiliCmdAtrbt.DisplayID, StrUtils.concat(cookie.UID(), "-", watchTime));
-		header.put(HttpUtils.HEAD.KEY.USER_AGENT, APP_USER_AGENT);
-		header.put(HttpUtils.HEAD.KEY.HOST, "live-trace.bilibili.com");
+		header.put(HttpHead.KEY.USER_AGENT, APP_USER_AGENT);
+		header.put(HttpHead.KEY.HOST, "live-trace.bilibili.com");
 		
 		// 观看直播的手机是设备参数(相对固定)
 		header.put(BiliCmdAtrbt.DeviceID, "SilMKRkvHSwfe04rVyseKxNxSH4aKWkLbAJmVSdbOghiVjUEMgMyAzMDMQE2Ag");
@@ -176,8 +176,8 @@ public class WatchLive extends __XHR {
 	 */
 	private static Map<String, String> getHeader() {
 		Map<String, String> header = GET_HEADER("");
-		header.put(HttpUtils.HEAD.KEY.USER_AGENT, APP_USER_AGENT);
-		header.put(HttpUtils.HEAD.KEY.HOST, "live.bilibili.com");
+		header.put(HttpHead.KEY.USER_AGENT, APP_USER_AGENT);
+		header.put(HttpHead.KEY.HOST, "live.bilibili.com");
 		return header;
 	}
 	
