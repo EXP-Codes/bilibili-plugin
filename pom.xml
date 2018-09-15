@@ -6,7 +6,7 @@
     <!--项目基本信息(必填)-->
     <groupId>exp.bilibili</groupId>
     <artifactId>bilibili-plugin</artifactId>
-    <version>5.6-SNAPSHOT</version>
+    <version>5.7</version>
     <packaging>jar</packaging>
 
     <name>哔哩哔哩插件姬</name>
@@ -39,8 +39,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <release.dir>${project.build.directory}/${project.artifactId}-${project.version}</release.dir>
         <jdk.version>1.7</jdk.version>
-        <explibs.version>1.0-SNAPSHOT</explibs.version>
-        <mrp.plugin.version>1.0-SNAPSHOT</mrp.plugin.version>
+        <explibs.version>1.0</explibs.version>
+        <mrp.plugin.version>1.0</mrp.plugin.version>
     </properties>
 
     <!-- 项目依赖 -->
