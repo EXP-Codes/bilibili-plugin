@@ -9,7 +9,7 @@ import exp.libs.utils.format.JsonUtils;
  * 
  * <PRE>
  * 
- 	(直播间内)高能抽奖开始消息
+ 	(直播间内)高能抽奖结束消息
 	{
 	  "cmd": "RAFFLE_END",
 	  "roomid": 269706,

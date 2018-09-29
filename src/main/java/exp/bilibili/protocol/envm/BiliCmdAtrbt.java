@@ -367,4 +367,6 @@ public class BiliCmdAtrbt {
 	
 	public final static String top_recommend = "top_recommend";
 	
+	public final static String copy_writing = "copy_writing";
+	
 }

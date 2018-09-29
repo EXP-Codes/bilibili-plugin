@@ -29,6 +29,8 @@ public class GuardBuy extends WelcomeGuard {
 
 	private int num;
 	
+	private int roomId;
+	
 	public GuardBuy(JSONObject json) {
 		super(json);
 		this.cmd = BiliCmd.GUARD_BUY;
@@ -38,6 +40,7 @@ public class GuardBuy extends WelcomeGuard {
 	protected void analyse(JSONObject json) {
 		super.analyse(json);
 		
+		this.roomId = JsonUtils.getInt(json, BiliCmdAtrbt.roomid, 0);
 		JSONObject data = JsonUtils.getObject(json, BiliCmdAtrbt.data); {
 			this.num = JsonUtils.getInt(data, BiliCmdAtrbt.num, 0);
 		}
@@ -45,6 +48,10 @@ public class GuardBuy extends WelcomeGuard {
 
 	public int getNum() {
 		return num;
+	}
+
+	public int getRoomId() {
+		return roomId;
 	}
 
 }

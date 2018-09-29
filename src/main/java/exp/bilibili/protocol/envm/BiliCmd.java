@@ -28,6 +28,10 @@ public class BiliCmd {
 	private final static String _WELCOME_GUARD = "WELCOME_GUARD";
 	public final static BiliCmd WELCOME_GUARD = new BiliCmd(_WELCOME_GUARD);
 	
+	/** 船员进入直播间特效消息 */
+	private final static String _ENTRY_EFFECT = "ENTRY_EFFECT";
+	public final static BiliCmd ENTRY_EFFECT = new BiliCmd(_ENTRY_EFFECT);
+	
 	/** (直播间内)新船员上船消息 */
 	private final static String _GUARD_BUY = "GUARD_BUY";
 	public final static BiliCmd GUARD_BUY = new BiliCmd(_GUARD_BUY);
@@ -116,6 +120,9 @@ public class BiliCmd {
 			
 		} else if(_WELCOME_GUARD.equals(cmd)) {
 			biliCMD = WELCOME_GUARD;
+			
+		} else if(_ENTRY_EFFECT.equals(cmd)) {
+			biliCMD = ENTRY_EFFECT;
 			
 		} else if(_GUARD_BUY.equals(cmd)) {
 			biliCMD = GUARD_BUY;

@@ -139,6 +139,46 @@ import exp.libs.utils.format.JsonUtils;
 =======================================================================================================
 
 	{
+	  "cmd": "NOTICE_MSG",
+	  "full": {
+	    "head_icon": "http://i0.hdslb.com/bfs/live/e483b2dd2bf03e0c98542b5e1c395bc3e460ab3c.webp",
+	    "tail_icon": "",
+	    "head_icon_fa": "http://i0.hdslb.com/bfs/live/4407b3ab37730ede965e85e176924b1d2fbc49a0.png",
+	    "tail_icon_fa": "",
+	    "head_icon_fan": 12,
+	    "tail_icon_fan": 0,
+	    "background": "#A6714AFF",
+	    "color": "#FFFFFFFF",
+	    "highlight": "#FDFF2FFF",
+	    "time": 10
+	  },
+	  "half": {
+	    "head_icon": "http://i0.hdslb.com/bfs/live/ad30c259cbc5cefb482585421d650a0288cbe03c.png",
+	    "tail_icon": "",
+	    "background": "#DE9C72FF",
+	    "color": "#FFFFFFFF",
+	    "highlight": "#FDFF2FFF",
+	    "time": 8
+	  },
+	  "side": {
+	    "head_icon": "",
+	    "background": "",
+	    "color": "",
+	    "highlight": "",
+	    "border": ""
+	  },
+	  "roomid": 1557206,
+	  "real_roomid": 0,
+	  "msg_common": "恭喜 <%你像风停了又起丶%> 获得大奖 <%23333x银瓜子%>, 感谢 <%shannonlxl%> 的赠送",
+	  "msg_self": "恭喜 <%你像风停了又起丶%> 获得大奖 <%23333x银瓜子%>, 感谢 <%shannonlxl%> 的赠送",
+	  "link_url": "",
+	  "msg_type": 5,
+	  "shield_uid": -1
+	}
+	
+=======================================================================================================
+
+	{
 	  "full": {
 	    "head_icon": "http://i0.hdslb.com/bfs/live/6fb61c0b149b46571b7945ba4e7561b92929bd04.webp",
 	    "tail_icon": "http://i0.hdslb.com/bfs/live/822da481fdaba986d738db5d8fd469ffa95a8fa1.webp",
@@ -224,7 +264,7 @@ public class NoticeMsg extends _Msg {
 	public JSONObject toJson() {
 		JSONObject json = new JSONObject();
 		switch(type) {
-			case 1 : { 
+			case 1 : case 5 : { 
 				json.put(BiliCmdAtrbt.cmd, BiliCmd.SYS_MSG.CMD());
 				json.put(BiliCmdAtrbt.msg, msg);
 				break; 

@@ -15,6 +15,7 @@ import exp.bilibili.protocol.bean.ws.ActivityEvent;
 import exp.bilibili.protocol.bean.ws.ChatMsg;
 import exp.bilibili.protocol.bean.ws.ComboEnd;
 import exp.bilibili.protocol.bean.ws.EnergyLottery;
+import exp.bilibili.protocol.bean.ws.EntryEffect;
 import exp.bilibili.protocol.bean.ws.GuardBuy;
 import exp.bilibili.protocol.bean.ws.GuardMsg;
 import exp.bilibili.protocol.bean.ws.LiveMsg;
@@ -120,6 +121,9 @@ public class WSAnalyser {
 			
 		} else if(!onlyListen && biliCmd == BiliCmd.GUARD_MSG) {
 			toDo(new GuardMsg(json));
+			
+		} else if(!onlyListen && biliCmd == BiliCmd.ENTRY_EFFECT) {
+			toDo(new EntryEffect(json));
 			
 		} else if(!onlyListen && biliCmd == BiliCmd.LIVE) {
 			toDo(new LiveMsg(json));
@@ -339,6 +343,8 @@ public class WSAnalyser {
 		log.info(msg);
 			
 		ChatMgr.getInstn().sendThxGuard(msg);
+		RoomMgr.getInstn().addGuardRoom(msgBean.getRoomId());
+		
 		OnlineUserMgr.getInstn().addOnlineUser(msgBean.getUsername());
 		ActivityMgr.getInstn().add(msgBean);
 	}
@@ -355,6 +361,14 @@ public class WSAnalyser {
 			msgBean.setRoomId(XHRSender.searchRoomId(msgBean.getLiveup()));;
 		}
 		RoomMgr.getInstn().addGuardRoom(msgBean.getRoomId());
+	}
+	
+	/**
+	 * 船员进入直播间特效
+	 * @param msgBean
+	 */
+	private static void toDo(EntryEffect msgBean) {
+		// UNDO
 	}
 	
 	/**
