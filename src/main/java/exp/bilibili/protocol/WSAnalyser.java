@@ -14,6 +14,7 @@ import exp.bilibili.plugin.utils.UIUtils;
 import exp.bilibili.protocol.bean.ws.ActivityEvent;
 import exp.bilibili.protocol.bean.ws.ChatMsg;
 import exp.bilibili.protocol.bean.ws.ComboEnd;
+import exp.bilibili.protocol.bean.ws.ComboSend;
 import exp.bilibili.protocol.bean.ws.EnergyLottery;
 import exp.bilibili.protocol.bean.ws.EntryEffect;
 import exp.bilibili.protocol.bean.ws.GuardBuy;
@@ -145,6 +146,9 @@ public class WSAnalyser {
 			
 		} else if(!onlyListen && biliCmd == BiliCmd.ROOM_RANK) {
 			toDo(new RoomRank(json));
+			
+		} else if(!onlyListen && biliCmd == BiliCmd.COMBO_SEND) {
+			toDo(new ComboSend(json));
 			
 		} else if(!onlyListen && biliCmd == BiliCmd.COMBO_END) {
 			toDo(new ComboEnd(json));
@@ -439,6 +443,14 @@ public class WSAnalyser {
 	 * @param msgBean
 	 */
 	private static void toDo(RoomRank msgBean) {
+		// Undo
+	}
+	
+	/**
+	 * (直播间内)礼物combo连击消息
+	 * @param msgBean
+	 */
+	private static void toDo(ComboSend msgBean) {
 		// Undo
 	}
 	

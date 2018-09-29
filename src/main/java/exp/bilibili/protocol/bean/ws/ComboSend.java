@@ -9,18 +9,17 @@ import exp.libs.utils.format.JsonUtils;
  * 
  * <PRE>
  * 
- 	(直播间内)礼物combo连击结束消息:
+ 	(直播间内)礼物combo连击消息:
 	{
-	  "cmd": "COMBO_END",
+	  "cmd": "COMBO_SEND",
 	  "data": {
-	    "uname": "东方晟",
-	    "r_uname": "叶落莫言",
-	    "combo_num": 4,
-	    "price": 233,
-	    "gift_name": "233",
-	    "gift_id": 8,
-	    "start_time": 1529550034,
-	    "end_time": 1529550035
+	    "uid": 298674880,
+	    "uname": "霞光舍不得臭猫呀",
+	    "combo_num": 5,
+	    "gift_name": "吃瓜",
+	    "gift_id": 20004,
+	    "action": "赠送",
+	    "combo_id": "gift:combo_id:298674880:27020889:20004:1538239401.4661"
 	  }
 	}
  * </PRE>
@@ -28,26 +27,26 @@ import exp.libs.utils.format.JsonUtils;
  * @author    EXP: 272629724@qq.com
  * @since     jdk版本：jdk1.6
  */
-public class ComboEnd extends _Msg {
+public class ComboSend extends _Msg {
 
 	private String uname;
-	
-	private String upName;
 	
 	private int comboNum;
 	
 	private String giftId;
 	
-	public ComboEnd(JSONObject json) {
+	private String comboIds;
+	
+	public ComboSend(JSONObject json) {
 		super(json);
-		this.cmd = BiliCmd.COMBO_END;
+		this.cmd = BiliCmd.COMBO_SEND;
 	}
 	
 	@Override
 	protected void analyse(JSONObject json) {
 		JSONObject data = JsonUtils.getObject(json, BiliCmdAtrbt.data); {
 			this.uname = JsonUtils.getStr(data, BiliCmdAtrbt.uname);
-			this.upName = JsonUtils.getStr(data, BiliCmdAtrbt.r_uname);
+			this.comboIds = JsonUtils.getStr(data, BiliCmdAtrbt.combo_id);
 			this.comboNum = JsonUtils.getInt(data, BiliCmdAtrbt.combo_num, 0);
 			this.giftId = JsonUtils.getStr(data, BiliCmdAtrbt.gift_id);
 		}
@@ -57,8 +56,8 @@ public class ComboEnd extends _Msg {
 		return uname;
 	}
 
-	public String getUpName() {
-		return upName;
+	public String getComboIds() {
+		return comboIds;
 	}
 
 	public int getComboNum() {

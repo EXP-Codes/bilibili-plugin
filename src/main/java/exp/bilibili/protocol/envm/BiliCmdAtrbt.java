@@ -369,4 +369,6 @@ public class BiliCmdAtrbt {
 	
 	public final static String copy_writing = "copy_writing";
 	
+	public final static String combo_id = "combo_id";
+	
 }

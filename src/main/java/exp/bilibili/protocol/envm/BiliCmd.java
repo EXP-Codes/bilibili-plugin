@@ -96,6 +96,10 @@ public class BiliCmd {
 	private final static String _ROOM_RANK = "ROOM_RANK";
 	public final static BiliCmd ROOM_RANK = new BiliCmd(_ROOM_RANK);
 	
+	/** 礼物combo连击消息 */
+	private final static String _COMBO_SEND = "COMBO_SEND";
+	public final static BiliCmd COMBO_SEND = new BiliCmd(_COMBO_SEND);
+	
 	/** 礼物combo连击结束消息 */
 	private final static String _COMBO_END = "COMBO_END";
 	public final static BiliCmd COMBO_END = new BiliCmd(_COMBO_END);
@@ -171,6 +175,9 @@ public class BiliCmd {
 			
 		} else if(_ROOM_RANK.equals(cmd)) {
 			biliCMD = ROOM_RANK;
+			
+		} else if(_COMBO_SEND.equals(cmd)) {
+			biliCMD = COMBO_SEND;
 			
 		} else if(_COMBO_END.equals(cmd)) {
 			biliCMD = COMBO_END;
