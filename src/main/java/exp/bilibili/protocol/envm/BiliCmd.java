@@ -16,6 +16,10 @@ public class BiliCmd {
 	/** 未知消息 */
 	public final static BiliCmd UNKNOW = new BiliCmd("UNKNOW");
 	
+	/** 通知消息（这种消息根据不同的类型可转换成不同的消息） */
+	private final static String _NOTICE_MSG = "NOTICE_MSG";
+	public final static BiliCmd NOTICE_MSG = new BiliCmd(_NOTICE_MSG);
+	
 	/** 欢迎老爷消息 */
 	private final static String _WELCOME = "WELCOME";
 	public final static BiliCmd WELCOME = new BiliCmd(_WELCOME);
@@ -104,7 +108,10 @@ public class BiliCmd {
 	
 	public static BiliCmd toCmd(String cmd) {
 		BiliCmd biliCMD = UNKNOW;
-		if(_WELCOME.equals(cmd)) {
+		if(_NOTICE_MSG.equals(cmd)) {
+			biliCMD = NOTICE_MSG;
+			
+		} else if(_WELCOME.equals(cmd)) {
 			biliCMD = WELCOME;
 			
 		} else if(_WELCOME_GUARD.equals(cmd)) {

@@ -26,9 +26,12 @@ public class GuardMsg extends _Msg {
 	
 	private String liveup;
 	
+	private int roomId;
+	
 	public GuardMsg(JSONObject json) {
 		super(json);
 		this.cmd = BiliCmd.GUARD_MSG;
+		this.roomId = 0;
 	}
 	
 	@Override
@@ -43,6 +46,14 @@ public class GuardMsg extends _Msg {
 	
 	public String getLiveup() {
 		return liveup;
+	}
+
+	public int getRoomId() {
+		return roomId;
+	}
+
+	public void setRoomId(int roomId) {
+		this.roomId = roomId;
 	}
 	
 }

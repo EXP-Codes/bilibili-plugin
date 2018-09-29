@@ -109,10 +109,12 @@ public class LotteryEnergy extends _Lottery {
 			
 			String reason = join(LotteryType.ENGERY, cookie, EG_JOIN_URL, roomId, raffleId);
 			if(StrUtils.isEmpty(reason)) {
+				sttclog.info("[{}] [{}] [{}] [{}] [{}]", "ENERGY", roomId, cookie.NICKNAME(), "T", reason);
 				log.info("[{}] 参与直播间 [{}] 抽奖成功(高能礼物)", cookie.NICKNAME(), roomId);
 				cnt++;
 				
 			} else if(!reason.contains("已加入抽奖")) {
+				sttclog.info("[{}] [{}] [{}] [{}] [{}]", "ENERGY", roomId, cookie.NICKNAME(), "F", reason);
 				log.info("[{}] 参与直播间 [{}] 抽奖失败(高能礼物)", cookie.NICKNAME(), roomId);
 				UIUtils.statistics("失败(", reason, "): 直播间 [", roomId, 
 						"],账号[", cookie.NICKNAME(), "]");

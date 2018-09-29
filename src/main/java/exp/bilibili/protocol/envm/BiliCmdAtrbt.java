@@ -29,6 +29,10 @@ public class BiliCmdAtrbt {
 	
 	public final static String msg = "msg";
 	
+	public final static String msg_common = "msg_common";
+	
+	public final static String msg_type = "msg_type";
+	
 	public final static String rep = "rep";
 	
 	public final static String url = "url";

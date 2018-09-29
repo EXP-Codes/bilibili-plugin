@@ -131,6 +131,7 @@ public class DailyTasks extends __XHR {
 			int code = JsonUtils.getInt(json, BiliCmdAtrbt.code, -1);
 			String reason = JsonUtils.getStr(json, BiliCmdAtrbt.msg);
 			if(code == 0) {
+				sttclog.info("[{}] [{}] [{}] [{}]", signType, username, "T", reason);
 				UIUtils.log("[", username, "] ", signType, "签到完成");
 				
 				// FIXME: 每日签到时, 顺便打印领取日常/周常礼包提示
@@ -140,6 +141,7 @@ public class DailyTasks extends __XHR {
 				}
 				
 			} else if(!reason.contains("已签到") && !reason.contains("已领取")) {
+				sttclog.info("[{}] [{}] [{}] [{}]", signType, username, "F", reason);
 				log.warn("[{}] {}签到失败: {}", username, signType, reason);
 				if(!reason.contains("需要绑定手机号")) {
 					nextTaskTime = System.currentTimeMillis() + DELAY_5_MIN;
@@ -358,13 +360,20 @@ public class DailyTasks extends __XHR {
 			String reason = JsonUtils.getStr(json, BiliCmdAtrbt.msg);
 			if(code == 0) {
 				isOk = true;
+				sttclog.info("[{}] [{}] [{}] [{}]", "MATH", username, "T", reason);
 				UIUtils.log("[", username, "] 小学数学任务进度: ", task.getCurRound(), "/", 
 						task.getMaxRound(), "轮-", task.getStep(), "分钟");
 				
 			} else if(reason.contains("验证码错误")) {
+				sttclog.info("[{}] [{}] [{}] [{}]", "MATH", username, "F", reason);
 				isOk = false;
 				
+			} else if(reason.contains("访问被拒绝")) {
+				sttclog.info("[{}] [{}] [{}] [{}]", "MATH", username, "F", reason);
+				isOk = true;	// 账号被临时冻结，等待下一轮再重试
+				
 			} else if(reason.contains("未绑定手机") || reason.contains("已经领完")) {
+				sttclog.info("[{}] [{}] [{}] [{}]", "MATH", username, "T", reason);
 				isOk = true;
 				task.setExistNext(false);	// 标记不存在下一轮任务
 			}

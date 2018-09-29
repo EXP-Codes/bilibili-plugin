@@ -18,6 +18,7 @@ import exp.bilibili.protocol.bean.ws.EnergyLottery;
 import exp.bilibili.protocol.bean.ws.GuardBuy;
 import exp.bilibili.protocol.bean.ws.GuardMsg;
 import exp.bilibili.protocol.bean.ws.LiveMsg;
+import exp.bilibili.protocol.bean.ws.NoticeMsg;
 import exp.bilibili.protocol.bean.ws.Preparing;
 import exp.bilibili.protocol.bean.ws.RaffleEnd;
 import exp.bilibili.protocol.bean.ws.RaffleStart;
@@ -67,9 +68,16 @@ public class WSAnalyser {
 	 */
 	public static boolean toMsgBean(JSONObject json, int roomId, boolean onlyListen) {
 		boolean isOk = true;
-		String cmd = JsonUtils.getStr(json, BiliCmdAtrbt.cmd);
-		BiliCmd biliCmd = BiliCmd.toCmd(cmd);
+		BiliCmd biliCmd = BiliCmd.toCmd(JsonUtils.getStr(json, BiliCmdAtrbt.cmd));
 		
+		// 根据通知消息的类型转换成真正的消息对象
+		if(biliCmd == BiliCmd.NOTICE_MSG) {
+			NoticeMsg msg = new NoticeMsg(json);
+			json = msg.toJson();
+			biliCmd = BiliCmd.toCmd(JsonUtils.getStr(json, BiliCmdAtrbt.cmd));
+		}
+		
+		// 把不同的消息对象分发到对应的处理器
 		if(!onlyListen && biliCmd == BiliCmd.DANMU_MSG) {
 			toDo(new ChatMsg(json));
 			
@@ -343,7 +351,10 @@ public class WSAnalyser {
 		UIUtils.chat(msgBean.getMsg());
 		log.info(msgBean.getMsg());
 		
-		RoomMgr.getInstn().addGuardRoom(msgBean.getLiveup());
+		if(msgBean.getRoomId() <= 0) {
+			msgBean.setRoomId(XHRSender.searchRoomId(msgBean.getLiveup()));;
+		}
+		RoomMgr.getInstn().addGuardRoom(msgBean.getRoomId());
 	}
 	
 	/**

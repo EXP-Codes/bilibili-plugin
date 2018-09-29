@@ -223,17 +223,20 @@ public class LotteryStorm extends _Lottery {
 				
 				reason = join(LotteryType.STORM, cookie, STORM_JOIN_URL, roomId, raffleId);
 				if(StrUtils.isEmpty(reason)) {
+					sttclog.info("[{}] [{}] [{}] [{}] [{}]", "STORM", roomId, cookie.NICKNAME(), "T", reason);
 					log.info("[{}] 参与直播间 [{}] 抽奖成功(节奏风暴)", cookie.NICKNAME(), roomId);
 					cookieIts.remove();	// 已经成功抽奖的在本轮无需再抽
 					isExist = true;
 					cnt++;
 					
 				} else if(reason.contains("访问被拒绝")) {
+					sttclog.info("[{}] [{}] [{}] [{}] [{}]", "STORM", roomId, cookie.NICKNAME(), "F", reason);
 					UIUtils.statistics("失败(", reason, "): 账号 [", cookie.NICKNAME(), "]");
 					cookieIts.remove();	// 被临时封禁抽奖的账号无需再抽
 					isExist = true;
 					
 				} else {
+					sttclog.info("[{}] [{}] [{}] [{}] [{}]", "STORM", roomId, cookie.NICKNAME(), "F", reason);
 					log.info("[{}] 参与直播间 [{}] 抽奖失败(节奏风暴)", cookie.NICKNAME(), roomId);
 					isExist = reason.contains("再接再励");
 					if(isExist == false) {

@@ -92,6 +92,25 @@
 		</encoder>
 	</appender>
 	
+	<!-- 统计日志器 -->
+    <appender name="sttc"
+        class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <prudent>false</prudent> <!-- 如果是 true，日志会被安全的写入文件（多线程同步），但效率低，默认是 false。 -->
+        <file>${LOG_HOME}/sttc.log</file> <!-- 可以是相对目录，也可以是绝对目录，如果上级目录不存在会自动创建 -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${BACKUP}/sttc_%d{yyyy-MM-dd}-%i.log.zip
+            </fileNamePattern>
+            <maxHistory>15</maxHistory>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>64MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+        <encoder>
+            <charset>${CHARSET}</charset>
+            <pattern>[%d{yyyy-MM-dd HH:mm:ss SSS}] %m%n</pattern>
+        </encoder>
+    </appender>
+	
 	<!-- 其他日志器 -->
 	<appender name="other"
 		class="ch.qos.logback.core.rolling.RollingFileAppender">
@@ -131,6 +150,11 @@
 		<appender-ref ref="msg-xhr" />
 	</logger>
 	
+	<!-- 统计日志 -->
+    <logger name="STTC" level="info" additivity="false">
+        <appender-ref ref="sttc" />
+    </logger>
+    
 	<!-- 经验库日志 -->
 	<logger name="exp.libs.utils.io" level="debug" additivity="false" />
 	<logger name="exp.libs.utils.format.JsonUtils" level="debug" additivity="false" />

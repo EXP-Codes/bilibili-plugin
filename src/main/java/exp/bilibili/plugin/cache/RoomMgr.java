@@ -97,10 +97,9 @@ public class RoomMgr {
 	
 	/**
 	 * 添加总督房间
-	 * @param liveup 主播名称
+	 * @param roomId 总督房间号
 	 */
-	public void addGuardRoom(String liveup) {
-		int roomId = XHRSender.searchRoomId(liveup);
+	public void addGuardRoom(int roomId) {
 		giftRoomIds.add(new LotteryRoom(roomId, LotteryType.GUARD));
 	}
 	
