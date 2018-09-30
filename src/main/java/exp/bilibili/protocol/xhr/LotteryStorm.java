@@ -111,7 +111,7 @@ public class LotteryStorm extends _Lottery {
 	}
 	
 	/**
-	 * 扫描房间中是否有节奏风暴, 有则加入节奏风暴抽奖
+	 * 扫描房间中是否有节奏风暴, 有则加入节奏风暴抽奖（若有舰队抽奖则顺便加入）
 	 * @param hotRoomIds 热门房间列表
 	 * @param scanInterval 扫描房间间隔
 	 */
@@ -135,6 +135,8 @@ public class LotteryStorm extends _Lottery {
 				List<String> raffleIds = getStormRaffleIds(roomId, response);
 				isExist = join(roomId, raffleIds);
 			}
+			
+			Guard.getGuardGift(roomId);	// 顺便领取舰队奖励
 			ThreadUtils.tSleep(scanInterval);
 		}
 		client.close();

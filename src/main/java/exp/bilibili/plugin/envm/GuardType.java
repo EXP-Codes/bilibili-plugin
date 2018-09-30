@@ -14,13 +14,12 @@ public class GuardType {
 	
 	public final static GuardType CIVILIAN = new GuardType(0, "平民");
 	
-	public final static GuardType CAPTAIN = new GuardType(1, "舰长");
+	public final static GuardType VICEROY = new GuardType(1, "总督");
 	
 	public final static GuardType GOVERNOR = new GuardType(2, "提督");
 	
-	public final static GuardType VICEROY = new GuardType(3, "总督");
+	public final static GuardType CAPTAIN = new GuardType(3, "舰长");
 	
-	/** 权限编号 */
 	private int id;
 	
 	private String desc;

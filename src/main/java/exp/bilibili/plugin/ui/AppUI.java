@@ -302,9 +302,10 @@ public class AppUI extends MainWindow {
 		this.eThxBtn = newButton(">");
 		this.nightBtn = newButton("晚安姬");
 		this.eNightBtn = newButton(">");
-		this.stormBtn = newButton("节奏风暴");
+		this.stormBtn = newButton("节奏|舰队");
+		stormBtn.setToolTipText("[节奏风暴] 与 [舰队奖励] 扫描开关");
 		this.eStormBtn = newButton(">");
-		this.guardBtn = newButton("补领船员奖励");
+		this.guardBtn = newButton("补领舰队奖励");
 		
 		loveBtn.setToolTipText("设为默认");
 		loveBtn.setForeground(Color.MAGENTA);

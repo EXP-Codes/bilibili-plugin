@@ -26,7 +26,7 @@ import exp.libs.warp.ui.layout.VFlowLayout;
 
 /**
  * <PRE>
- * 节奏风暴扫描策略选择窗口
+ * 节奏风暴/舰队亲密奖励 扫描策略选择窗口
  * </PRE>
  * <br/><B>PROJECT : </B> bilibili-plugin
  * <br/><B>SUPPORT : </B> <a href="http://www.exp-blog.com" target="_blank">www.exp-blog.com</a> 
@@ -68,7 +68,7 @@ class _StormModeUI extends PopChildWindow {
 	private JTextField endTF;
 	
 	protected _StormModeUI() {
-		super("节奏风暴扫描范围", WIDTH, HEIGHT, false);
+		super("节奏风暴/舰队 扫描范围", WIDTH, HEIGHT, false);
 	}
 	
 	@Override
