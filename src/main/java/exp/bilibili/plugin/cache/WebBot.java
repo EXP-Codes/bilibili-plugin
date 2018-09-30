@@ -206,6 +206,9 @@ public class WebBot extends LoopThread {
 			for(BiliCookie cookie : cookies) {
 				if(cookie.TASK_STATUS().isAllFinish()) {
 					continue;
+					
+				} else if(!cookie.allowLottery()) {
+					continue;	// FIXME 账号主动冻结期间停止一切行为
 				}
 				
 				long max = -1;
