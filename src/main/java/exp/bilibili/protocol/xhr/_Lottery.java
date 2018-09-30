@@ -58,8 +58,7 @@ class _Lottery extends __XHR {
 		final int RETRY_INTERVAL = 100;
 		String sRoomId = getRealRoomId(roomId);
 		String visitId = getVisitId();
-		Map<String, String> header = POST_HEADER(cookie.toNVCookie(), 
-				StrUtils.concat(sRoomId, "?visit_id=", visitId));
+		Map<String, String> header = POST_HEADER(cookie.toNVCookie(), sRoomId);
 		String reason = "";
 		
 		// 加入高能/小电视抽奖

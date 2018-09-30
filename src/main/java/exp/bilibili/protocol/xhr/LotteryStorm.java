@@ -237,6 +237,7 @@ public class LotteryStorm extends _Lottery {
 				} else if(reason.contains("访问被拒绝")) {
 					sttclog.info("[{}] [{}] [{}] [{}] [{}]", "STORM", roomId, cookie.NICKNAME(), "F", reason);
 					UIUtils.statistics("失败(", reason, "): 账号 [", cookie.NICKNAME(), "]");
+					cookie.freeze();
 					cookieIts.remove();	// 被临时封禁抽奖的账号无需再抽
 					isExist = true;
 					

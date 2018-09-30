@@ -80,8 +80,8 @@ public class BiliCookie extends HttpCookie {
 	/** 累计参与抽奖计数 */
 	private int lotteryCnt;
 	
-	/** 上次抽奖时间 */
-	private long lastLotteryTime;
+	/** 下次抽奖时间 */
+	private long nextLotteryTime;
 	
 	public BiliCookie() {
 		super();
@@ -106,7 +106,7 @@ public class BiliCookie extends HttpCookie {
 		this.feedRoomId = Config.getInstn().SIGN_ROOM_ID();
 		this.taskStatus = new TaskStatus();
 		this.lotteryCnt = 0;
-		this.lastLotteryTime = 0L;
+		this.nextLotteryTime = 0L;
 	}
 	
 	@Override
@@ -261,8 +261,8 @@ public class BiliCookie extends HttpCookie {
 	private boolean frequency() {
 		boolean isOk = false;
 		long now = System.currentTimeMillis();
-		if(now - lastLotteryTime >= UIUtils.getIntervalTime()) {
-			lastLotteryTime = now;
+		if(now >= nextLotteryTime) {
+			nextLotteryTime = now + UIUtils.getIntervalTime();
 			isOk = true;
 		}
 		return isOk;
@@ -285,6 +285,18 @@ public class BiliCookie extends HttpCookie {
 			}
 		}
 		return isOk;
+	}
+	
+	/**
+	 * 主动冻结抽奖一小时.
+	 * 
+	 * B站抓到脚本抽奖后，会突然在某个时间点突然解除冻结，
+	 * 若这个时候马上去抽奖，就会马上被重新冻结（试探机制）
+	 * 
+	 * 因此当章后被B站冻结抽奖后，这边也主动冻结抽奖1小时，以回避这个试探机制。
+	 */
+	public void freeze() {
+		nextLotteryTime = System.currentTimeMillis() + 3600000L;
 	}
 	
 	@Override

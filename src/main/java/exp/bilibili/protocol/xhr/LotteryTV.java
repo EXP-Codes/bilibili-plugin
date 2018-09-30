@@ -128,6 +128,10 @@ public class LotteryTV extends _Lottery {
 				UIUtils.statistics("失败(", reason, "): 直播间 [", roomId, 
 						"],账号[", cookie.NICKNAME(), "]");
 				
+				if(reason.contains("访问被拒绝")) {
+					cookie.freeze();
+				}
+				
 				// 小电视已过期, 其他账号无需参与
 				if(reason.contains("已过期") || reason.contains("不存在")) {
 					break;
