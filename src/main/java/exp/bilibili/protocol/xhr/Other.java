@@ -41,6 +41,9 @@ import exp.libs.warp.net.http.HttpURLUtils;
  */
 public class Other extends __XHR {
 
+	/** 查询服务器配置信息的URL */
+	private final static String SERVER_URL = Config.getInstn().SERVER_URL();
+	
 	/**
 	 * 软件授权页(Bilibili-备用)
 	 * 	实则上是管理员的个人LINK中心
@@ -75,6 +78,9 @@ public class Other extends __XHR {
 	/** 检索主播的直播间URL */
 	private final static String SEARCH_URL = Config.getInstn().SEARCH_URL();
 	
+	/** 进入直播间URL */
+	private final static String ENTRY_ROOM_URL = Config.getInstn().ENTRY_ROOM_URL();
+	
 	/** 私有化构造函数 */
 	protected Other() {}
 	
@@ -97,6 +103,22 @@ public class Other extends __XHR {
 		header.put(HttpHead.KEY.ORIGIN, LINK_HOME);
 		header.put(HttpHead.KEY.REFERER, LINK_HOME.concat("/p/world/index"));
 		return header;
+	}
+	
+	/**
+	 * 获取当前服务器的配置信息：
+	 * 包括B站的服务器集群、WebSocket通知服务器、聊天服务器、直播服务器等.
+	 * 
+	 * 目前此接口仅用于测试
+	 */
+	public static String queryServerConfig(BiliCookie cookie, int roomId) {
+		String sRoomId = getRealRoomId(roomId);
+		Map<String, String> header = GET_HEADER(cookie.toNVCookie(), sRoomId);
+		Map<String, String> request = new HashMap<String, String>();
+		request.put(BiliCmdAtrbt.room_id, sRoomId);
+		request.put(BiliCmdAtrbt.platform, "pc");
+		request.put(BiliCmdAtrbt.player, "web");
+		return HttpURLUtils.doGet(SERVER_URL, header, request);
 	}
 	
 	/**
@@ -461,6 +483,41 @@ public class Other extends __XHR {
 			log.error("搜索主播 [{}] 的房间号失败: {}", liveupName, response, e);
 		}
 		return roomId;
+	}
+	
+	/**
+	 * 模拟进入直播房间
+	 * @param cookie
+	 * @param roomId
+	 * @return
+	 */
+	public static boolean entryRoom(BiliCookie cookie, int roomId) {
+		String sRoomId = getRealRoomId(roomId);
+		Map<String, String> header = POST_HEADER(cookie.toNVCookie(), sRoomId);
+		Map<String, String> request = new HashMap<String, String>();
+		request.put(BiliCmdAtrbt.room_id, sRoomId);
+		request.put(BiliCmdAtrbt.platform, "pc");
+		request.put(BiliCmdAtrbt.csrf_token, cookie.CSRF());
+		request.put(BiliCmdAtrbt.visit_id, getVisitId());
+		
+		boolean isOk = false;
+		String response = HttpURLUtils.doPost(ENTRY_ROOM_URL, header, request);
+		try {
+			JSONObject json = JSONObject.fromObject(response);
+			int code = JsonUtils.getInt(json, BiliCmdAtrbt.code, -1);
+			if(code == 0) {
+				isOk = true;
+				sttclog.info("[{}] [{}] [{}] [{}] [{}]", "ROOM", roomId, cookie.NICKNAME(), "T", "");
+				
+			} else {
+				String reason = JsonUtils.getStr(json, BiliCmdAtrbt.msg);
+				sttclog.info("[{}] [{}] [{}] [{}] [{}]", "ROOM", roomId, cookie.NICKNAME(), "F", reason);
+				log.warn("[{}] 模拟进入直播间 [{}] 失败: {}", cookie.NICKNAME(), roomId, reason);
+			}
+		} catch(Exception e) {
+			log.error("模拟进入直播间 [{}] 失败: {}", roomId, response, e);
+		}
+		return isOk;
 	}
 	
 }

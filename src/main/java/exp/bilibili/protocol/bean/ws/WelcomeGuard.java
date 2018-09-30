@@ -1,6 +1,7 @@
 package exp.bilibili.protocol.bean.ws;
 
 import net.sf.json.JSONObject;
+import exp.bilibili.plugin.envm.GuardType;
 import exp.bilibili.protocol.envm.BiliCmd;
 import exp.bilibili.protocol.envm.BiliCmdAtrbt;
 import exp.libs.utils.format.JsonUtils;
@@ -25,17 +26,11 @@ import exp.libs.utils.format.JsonUtils;
  */
 public class WelcomeGuard extends _Msg {
 
-	protected final static String[] GUARD = {
-		"平民", "总督", "提督", "舰长"
-	};
-	
 	protected String uid;
 	
 	protected String username;
 	
-	protected int guardLevel;
-	
-	protected String guardDesc;
+	protected GuardType guardType;
 	
 	public WelcomeGuard(JSONObject json) {
 		super(json);
@@ -47,9 +42,8 @@ public class WelcomeGuard extends _Msg {
 		JSONObject data = JsonUtils.getObject(json, BiliCmdAtrbt.data); {
 			this.uid = JsonUtils.getStr(data, BiliCmdAtrbt.uid);
 			this.username = JsonUtils.getStr(data, BiliCmdAtrbt.username);
-			this.guardLevel = JsonUtils.getInt(data, BiliCmdAtrbt.guard_level, 0);
-			guardLevel = (guardLevel >= GUARD.length ? 0 : guardLevel);
-			this.guardDesc = GUARD[guardLevel];
+			int guardLevel = JsonUtils.getInt(data, BiliCmdAtrbt.guard_level, 0);
+			this.guardType = GuardType.toGuardType(guardLevel);
 		}
 	}
 
@@ -61,12 +55,8 @@ public class WelcomeGuard extends _Msg {
 		return username;
 	}
 
-	public int getGuardLevel() {
-		return guardLevel;
-	}
-
-	public String getGuardDesc() {
-		return guardDesc;
+	public GuardType getGuardType() {
+		return guardType;
 	}
 
 }

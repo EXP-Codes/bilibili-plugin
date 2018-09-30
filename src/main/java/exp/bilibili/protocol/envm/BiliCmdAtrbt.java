@@ -27,6 +27,8 @@ public class BiliCmdAtrbt {
 	
 	public final static String msg_text = "msg_text";
 	
+	public final static String message = "message";
+	
 	public final static String msg = "msg";
 	
 	public final static String msg_common = "msg_common";
@@ -194,6 +196,8 @@ public class BiliCmdAtrbt {
 	public final static String mode = "mode";
 	
 	public final static String platform = "platform";
+	
+	public final static String player = "player";
 	
 	public final static String content = "content";
 	
@@ -370,5 +374,7 @@ public class BiliCmdAtrbt {
 	public final static String copy_writing = "copy_writing";
 	
 	public final static String combo_id = "combo_id";
+	
+	public final static String privilege_type = "privilege_type";
 	
 }

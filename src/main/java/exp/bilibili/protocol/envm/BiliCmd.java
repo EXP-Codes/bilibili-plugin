@@ -36,7 +36,11 @@ public class BiliCmd {
 	private final static String _GUARD_BUY = "GUARD_BUY";
 	public final static BiliCmd GUARD_BUY = new BiliCmd(_GUARD_BUY);
 	
-	/** (全频道)登船消息 */
+	/** (直播间内)新船员上船抽奖通知 */
+	private final static String _GUARD_LOTTERY_START = "GUARD_LOTTERY_START";
+	public final static BiliCmd GUARD_LOTTERY_START = new BiliCmd(_GUARD_LOTTERY_START);
+	
+	/** (全频道)总督登船消息 */
 	private final static String _GUARD_MSG = "GUARD_MSG";
 	public final static BiliCmd GUARD_MSG = new BiliCmd(_GUARD_MSG);
 	
@@ -130,6 +134,9 @@ public class BiliCmd {
 			
 		} else if(_GUARD_BUY.equals(cmd)) {
 			biliCMD = GUARD_BUY;
+			
+		} else if(_GUARD_LOTTERY_START.equals(cmd)) {
+			biliCMD = GUARD_LOTTERY_START;
 			
 		} else if(_GUARD_MSG.equals(cmd)) {
 			biliCMD = GUARD_MSG;

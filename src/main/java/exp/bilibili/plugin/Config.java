@@ -77,6 +77,10 @@ public class Config {
 		return xConf.getVal("/config/urls/ws");
 	}
 	
+	public String SERVER_URL() {
+		return xConf.getVal("/config/urls/serverURL");
+	}
+	
 	public String MAIN_HOME() {
 		return xConf.getVal("/config/urls/mainHome");
 	}
@@ -253,8 +257,16 @@ public class Config {
 		return xConf.getVal("/config/urls/mathExecURL");
 	}
 	
-	public String HB_URL() {
-		return xConf.getVal("/config/urls/hbURL");
+	public String ENTRY_ROOM_URL() {
+		return xConf.getVal("/config/urls/entryRoomURL");
+	}
+	
+	public String PING_HB_URL() {
+		return xConf.getVal("/config/urls/pingHbURL");
+	}
+	
+	public String PONG_HB_URL() {
+		return xConf.getVal("/config/urls/pongHbURL");
 	}
 	
 	public String HB_GIFT_URL() {

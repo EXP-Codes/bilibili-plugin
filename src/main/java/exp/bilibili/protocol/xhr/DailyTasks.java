@@ -39,10 +39,13 @@ public class DailyTasks extends __XHR {
 	/** 领取日常/周常礼物URL */
 	private final static String GIFT_URL = Config.getInstn().GIFT_URL();
 	
-	/** 活动心跳URL */
-	private final static String HB_URL = Config.getInstn().HB_URL();
+	/** PING心跳URL */
+	private final static String PING_HB_URL = Config.getInstn().PING_HB_URL();
 	
-	/** 领取活动心跳礼物URL */
+	/** PONG心跳URL */
+	private final static String PONG_HB_URL = Config.getInstn().PONG_HB_URL();
+	
+	/** 领取心跳礼物URL */
 	private final static String HB_GIFT_URL = Config.getInstn().HB_GIFT_URL();
 	
 	/** 检查小学数学任务URL */
@@ -200,12 +203,12 @@ public class DailyTasks extends __XHR {
 	@SuppressWarnings("unchecked")
 	public static long receiveHolidayGift(BiliCookie cookie) {
 		String roomId = getRealRoomId();
+		holidayHeartbeat(cookie, roomId);
+		
 		Map<String, String> header = GET_HEADER(cookie.toNVCookie(), roomId);
 		Map<String, String> request = new HashMap<String, String>();
 		request.put(BiliCmdAtrbt.roomid, roomId);
 		request.put(BiliCmdAtrbt.area_v2_id, "0");	// 当前主播所在的直播分区
-		
-		holidayHeartbeat(header);
 		String response = HttpURLUtils.doGet(HB_GIFT_URL, header, request);
 		
 		long nextTaskTime = System.currentTimeMillis() + DELAY_10_MIN;
@@ -238,10 +241,20 @@ public class DailyTasks extends __XHR {
 	 * 活动心跳
 	 * @param cookie
 	 */
-	private static void holidayHeartbeat(Map<String, String> header) {
+	private static void holidayHeartbeat(BiliCookie cookie, String roomId) {
+		
+		// ping心跳
+		Map<String, String> header = POST_HEADER(cookie.toNVCookie(), roomId);
 		Map<String, String> request = new HashMap<String, String>();
+		request.put(BiliCmdAtrbt.csrf_token, cookie.CSRF());
+		HttpURLUtils.doPost(PING_HB_URL, header, request);
+		
+		// pong心跳
+		header.clear();
+		request.clear();
+		header = GET_HEADER(cookie.toNVCookie(), roomId);
 		request.put(BiliCmdAtrbt.underline, String.valueOf(System.currentTimeMillis()));
-		HttpURLUtils.doGet(HB_URL, header, request);
+		HttpURLUtils.doGet(PONG_HB_URL, header, request);
 	}
 	
 	/**

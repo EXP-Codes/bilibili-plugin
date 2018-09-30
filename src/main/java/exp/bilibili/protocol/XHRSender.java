@@ -16,6 +16,7 @@ import exp.bilibili.plugin.cache.CookiesMgr;
 import exp.bilibili.plugin.cache.RoomMgr;
 import exp.bilibili.plugin.envm.Area;
 import exp.bilibili.plugin.envm.Gift;
+import exp.bilibili.plugin.envm.GuardType;
 import exp.bilibili.plugin.utils.TimeUtils;
 import exp.bilibili.plugin.utils.UIUtils;
 import exp.bilibili.protocol.bean.other.User;
@@ -169,7 +170,7 @@ public class XHRSender {
 		if(nextTaskTime > 0) {
 			int roomId = UIUtils.getLiveRoomId();
 			WatchLive.toWatchPCLive(cookie, roomId);	// PC端
-//			WatchLive.toWatchAppLive(cookie, roomId);	// 手机端 (FIXME: 暂时无效)\
+//			WatchLive.toWatchAppLive(cookie, roomId);	// 手机端 (FIXME: 暂时无效)
 			
 		} else {
 			cookie.TASK_STATUS().markAssn();
@@ -229,31 +230,43 @@ public class XHRSender {
 	}
 	
 	/**
-	 * 提取直播间内的总督ID列表.
-	 * 	(已经领取过某个总督奖励的用户, 不会再查询到相关的总督id)
+	 * 模拟进入直播间
+	 * @param cookie
+	 * @param roomId
+	 * @return
+	 */
+	public static boolean entryRoom(BiliCookie cookie, int roomId) {
+		return Other.entryRoom(cookie, roomId);
+	}
+	
+	/**
+	 * 提取直播间内的船员ID列表.
+	 * 	(已经领取过某个船员奖励的用户, 不会再查询到相关的船员id)
 	 * @param cookie
 	 * @param roomId 直播间号
-	 * @return 可以领取奖励总督ID列表
+	 * @return 可以领取奖励船员ID列表: 船员ID->船员类型
 	 */
-	public static List<String> checkGuardIds(BiliCookie cookie, int roomId) {
+	public static Map<String, GuardType> checkGuardIds(BiliCookie cookie, int roomId) {
 		return Guard.checkGuardIds(cookie, roomId);
 	}
 	
 	/**
-	 * 领取总督亲密度奖励
+	 * 领取船员亲密度奖励
 	 * @param cookie
-	 * @param roomId 总督所在房间
-	 * @param guardId 总督编号
+	 * @param roomId 船员所在房间
+	 * @param guardId 船员编号
+	 * @param guardType 船员类型
 	 * @return
 	 */
-	public static boolean getGuardGift(BiliCookie cookie, int roomId, String guardId) {
-		return Guard.getGuardGift(cookie, roomId, guardId);
+	public static boolean getGuardGift(BiliCookie cookie, 
+			int roomId, String guardId, GuardType guardType) {
+		return Guard.getGuardGift(cookie, roomId, guardId, guardType);
 	}
 	
 	/**
-	 * 领取总督亲密度奖励
+	 * 领取船员亲密度奖励
 	 * @param cookie
-	 * @param roomId 总督所在房间
+	 * @param roomId 船员所在房间
 	 * @return 补领个数
 	 */
 	public static int getGuardGift(int roomId) {
@@ -261,11 +274,11 @@ public class XHRSender {
 	}
 	
 	/**
-	 * 为所有登陆用户补领取热门直播间的总督亲密奖励
+	 * 为所有登陆用户补领取热门直播间的船员亲密奖励
 	 */
 	public static int getGuardGift() {
 		
-		// 查询当前热梦直播间
+		// 查询当前热门直播间
 		HotLiveRange range = UIUtils.getHotLiveRange();
 		List<Integer> roomIds = queryTopLiveRoomIds(range);
 		

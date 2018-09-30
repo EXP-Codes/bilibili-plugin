@@ -304,7 +304,7 @@ public class AppUI extends MainWindow {
 		this.eNightBtn = newButton(">");
 		this.stormBtn = newButton("节奏风暴");
 		this.eStormBtn = newButton(">");
-		this.guardBtn = newButton("补领总督奖励");
+		this.guardBtn = newButton("补领船员奖励");
 		
 		loveBtn.setToolTipText("设为默认");
 		loveBtn.setForeground(Color.MAGENTA);
@@ -1087,23 +1087,23 @@ public class AppUI extends MainWindow {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if(!isLogined()) {
-					SwingUtils.warn("先登录才能 [补领总督亲密奖励] 哦~");
+					SwingUtils.warn("先登录才能 [补领船员亲密奖励] 哦~");
 					return;
 					
 				} else if(Identity.less(Identity.UPLIVE)) {
-					SwingUtils.warn("非主播用户无法 [补领总督亲密奖励] 哦~");
+					SwingUtils.warn("非主播用户无法 [补领船员亲密奖励] 哦~");
 					return;
 				}
 				
 				guardBtn.setEnabled(false);
-				UIUtils.log("正在扫描人气直播间的总督列表...");
+				UIUtils.log("正在扫描人气直播间的船员列表...");
 				new Thread() {
 					
 					@Override
 					public void run() {
 						int cnt = XHRSender.getGuardGift();
 						if(cnt <= 0) {
-							UIUtils.log("暂时检索不到未领取的总督奖励.");
+							UIUtils.log("暂时检索不到未领取的船员奖励.");
 						}
 						
 						guardBtn.setEnabled(true);

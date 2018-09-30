@@ -18,6 +18,7 @@ import exp.bilibili.protocol.bean.ws.ComboSend;
 import exp.bilibili.protocol.bean.ws.EnergyLottery;
 import exp.bilibili.protocol.bean.ws.EntryEffect;
 import exp.bilibili.protocol.bean.ws.GuardBuy;
+import exp.bilibili.protocol.bean.ws.GuardLotteryStart;
 import exp.bilibili.protocol.bean.ws.GuardMsg;
 import exp.bilibili.protocol.bean.ws.LiveMsg;
 import exp.bilibili.protocol.bean.ws.NoticeMsg;
@@ -122,6 +123,9 @@ public class WSAnalyser {
 			
 		} else if(!onlyListen && biliCmd == BiliCmd.GUARD_MSG) {
 			toDo(new GuardMsg(json));
+			
+		} else if(!onlyListen && biliCmd == BiliCmd.GUARD_LOTTERY_START) {
+			toDo(new GuardLotteryStart(json));
 			
 		} else if(!onlyListen && biliCmd == BiliCmd.ENTRY_EFFECT) {
 			toDo(new EntryEffect(json));
@@ -327,7 +331,7 @@ public class WSAnalyser {
 	 * @param msgBean
 	 */
 	private static void toDo(WelcomeGuard msgBean) {
-		String msg = StrUtils.concat("[", msgBean.getGuardDesc(), "][", 
+		String msg = StrUtils.concat("[", msgBean.getGuardType().DESC(), "][", 
 				msgBean.getUsername(), "] ", MsgKwMgr.getAdv(), "溜进了直播间"
 		);
 		UIUtils.chat(msg);
@@ -340,8 +344,8 @@ public class WSAnalyser {
 	 */
 	private static void toDo(GuardBuy msgBean) {
 		String msg = StrUtils.concat("[", msgBean.getUsername(), "] ", 
-				MsgKwMgr.getAdv(), "上了", msgBean.getGuardDesc(), ":活跃+",
-				ActivityMgr.showCost(msgBean.getGuardDesc(), 1)
+				MsgKwMgr.getAdv(), "上了", msgBean.getGuardType().DESC(), ":活跃+",
+				ActivityMgr.showCost(msgBean.getGuardType().DESC(), 1)
 		);
 		UIUtils.chat(msg);
 		log.info(msg);
@@ -364,6 +368,16 @@ public class WSAnalyser {
 		if(msgBean.getRoomId() <= 0) {
 			msgBean.setRoomId(XHRSender.searchRoomId(msgBean.getLiveup()));;
 		}
+		RoomMgr.getInstn().addGuardRoom(msgBean.getRoomId());
+	}
+	
+	/**
+	 * (直播间内)新船员上船抽奖消息
+	 * @param msgBean
+	 */
+	private static void toDo(GuardLotteryStart msgBean) {
+		UIUtils.chat(msgBean.getMsg());
+		log.info(msgBean.getMsg());
 		RoomMgr.getInstn().addGuardRoom(msgBean.getRoomId());
 	}
 	

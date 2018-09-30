@@ -352,7 +352,7 @@ public class ActivityMgr {
 		}
 		
 		users.put(gift.getUid(), gift.getUsername());
-		int cost = countCost(gift.getGuardDesc(), 1);
+		int cost = countCost(gift.getGuardType().DESC(), 1);
 		add(gift.getUid(), cost);
 	}
 	
