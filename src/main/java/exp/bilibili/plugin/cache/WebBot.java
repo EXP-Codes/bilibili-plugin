@@ -112,7 +112,9 @@ public class WebBot extends LoopThread {
 	@Override
 	protected void _loopRun() {
 		try {
-			toDo();
+			if(!toSleep()) {
+				toDo();
+			}
 		} catch(Exception e) {
 			log.error("模拟Web行为异常", e);
 		}
@@ -125,14 +127,16 @@ public class WebBot extends LoopThread {
 	}
 	
 	// FIXME: 可配置
-	private void toSleep() {
-		
+	private boolean toSleep() {
+		boolean isSleep = false;
 		// 凌晨3点~4点是B站判定机器人的固定时间，在这段时间的前后2小时不执行任何操作
 		
 		int hour = TimeUtils.getCurHour();
 		if(hour >= 1 && hour < 6) {
+			isSleep = true;
 			UIUtils.log("[机器人休眠中] : 凌晨01:00~06:00是高危时间, 暂停一切行为");
 		}
+		return isSleep;
 	}
 	
 	private void toDo() {
