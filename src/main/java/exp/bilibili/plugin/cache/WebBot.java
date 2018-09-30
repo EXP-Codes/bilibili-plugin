@@ -124,6 +124,17 @@ public class WebBot extends LoopThread {
 		log.info("{} 已停止", getName());
 	}
 	
+	// FIXME: 可配置
+	private void toSleep() {
+		
+		// 凌晨3点~4点是B站判定机器人的固定时间，在这段时间的前后2小时不执行任何操作
+		
+		int hour = TimeUtils.getCurHour();
+		if(hour >= 1 && hour < 6) {
+			UIUtils.log("[机器人休眠中] : 凌晨01:00~06:00是高危时间, 暂停一切行为");
+		}
+	}
+	
 	private void toDo() {
 		
 		// 优先参与直播间抽奖
@@ -197,7 +208,7 @@ public class WebBot extends LoopThread {
 				max = NumUtils.max(XHRSender.toSign(cookie), max);				// 每日签到
 				max = NumUtils.max(XHRSender.receiveDailyGift(cookie), max);	// 每日/每周礼包
 				if(cookie.isBindTel()) {	// 仅绑定了手机的账号才能参与
-//					max = NumUtils.max(XHRSender.receiveHolidayGift(cookie), max);	// 活动心跳礼物
+					max = NumUtils.max(XHRSender.receiveHolidayGift(cookie), max);	// 活动心跳礼物
 					max = NumUtils.max(XHRSender.toAssn(cookie), max);			// 友爱社
 					max = NumUtils.max(XHRSender.doMathTask(cookie), max);		// 小学数学
 				}

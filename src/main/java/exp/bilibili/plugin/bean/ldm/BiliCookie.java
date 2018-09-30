@@ -296,6 +296,7 @@ public class BiliCookie extends HttpCookie {
 	 * 因此当章后被B站冻结抽奖后，这边也主动冻结抽奖1小时，以回避这个试探机制。
 	 */
 	public void freeze() {
+		// FIXME: 可配置
 		nextLotteryTime = System.currentTimeMillis() + 3600000L;
 	}
 	
