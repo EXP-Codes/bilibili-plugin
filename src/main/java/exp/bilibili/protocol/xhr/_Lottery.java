@@ -168,7 +168,7 @@ class _Lottery extends __XHR {
 			}
 		} catch(Exception e) {
 			reason = "服务器异常";
-			log.error("参加抽奖异常: {}", response, e);
+			log.error("参加抽奖异常, 服务器响应内容格式错误: {}", response);
 		}
 		return reason;
 	}
