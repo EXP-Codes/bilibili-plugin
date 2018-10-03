@@ -111,6 +111,7 @@ public class LotteryEnergy extends _Lottery {
 			if(StrUtils.isEmpty(reason)) {
 				sttclog.info("[{}] [{}] [{}] [{}] [{}]", "ENERGY", roomId, cookie.NICKNAME(), "T", reason);
 				log.info("[{}] 参与直播间 [{}] 抽奖成功(高能礼物)", cookie.NICKNAME(), roomId);
+				cookie.updateLotteryTime();
 				cnt++;
 				
 			} else if(!reason.contains("已加入抽奖")) {

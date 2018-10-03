@@ -117,6 +117,7 @@ public class LotteryTV extends _Lottery {
 			if(StrUtils.isEmpty(reason)) {
 				sttclog.info("[{}] [{}] [{}] [{}] [{}]", "TV", roomId, cookie.NICKNAME(), "T", reason);
 				log.info("[{}] 参与直播间 [{}] 抽奖成功(小电视/摩天楼)", cookie.NICKNAME(), roomId);
+				cookie.updateLotteryTime();
 				cnt++;
 				
 			} else {

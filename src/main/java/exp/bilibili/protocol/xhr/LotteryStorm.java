@@ -227,6 +227,7 @@ public class LotteryStorm extends _Lottery {
 				if(StrUtils.isEmpty(reason)) {
 					sttclog.info("[{}] [{}] [{}] [{}] [{}]", "STORM", roomId, cookie.NICKNAME(), "T", reason);
 					log.info("[{}] 参与直播间 [{}] 抽奖成功(节奏风暴)", cookie.NICKNAME(), roomId);
+					cookie.updateLotteryTime();
 					cookieIts.remove();	// 已经成功抽奖的在本轮无需再抽
 					isExist = true;
 					cnt++;

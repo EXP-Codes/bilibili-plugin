@@ -264,9 +264,7 @@ public class BiliCookie extends HttpCookie {
 	 */
 	private boolean frequency() {
 		boolean isOk = false;
-		long now = System.currentTimeMillis();
-		if(now >= nextLotteryTime) {
-			nextLotteryTime = now + UIUtils.getIntervalTime();
+		if(System.currentTimeMillis() >= nextLotteryTime) {
 			freeze = false;
 			isOk = true;
 		}
@@ -290,6 +288,10 @@ public class BiliCookie extends HttpCookie {
 			}
 		}
 		return isOk;
+	}
+	
+	public void updateLotteryTime() {
+		nextLotteryTime = System.currentTimeMillis() + UIUtils.getIntervalTime();
 	}
 	
 	/**
