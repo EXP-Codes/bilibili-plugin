@@ -511,7 +511,9 @@ public class Other extends __XHR {
 	 */
 	public static void entryRoom(BiliCookie cookie, int roomId, String url) {
 		Map<String, String> header = GET_HEADER(cookie.toNVCookie());
-		HttpURLUtils.doGet(url, header, null);
+		Map<String, String> request = new HashMap<String, String>();
+		request.put(BiliCmdAtrbt.visit_id, getVisitId());
+		HttpURLUtils.doGet(url, header, request);
 	}
 	
 }
