@@ -231,6 +231,8 @@ public class NoticeMsg extends _Msg {
 	
 	private int realRoomId;
 	
+	private String url;
+	
 	public NoticeMsg(JSONObject json) {
 		super(json);
 		this.cmd = BiliCmd.SYS_MSG;
@@ -242,6 +244,7 @@ public class NoticeMsg extends _Msg {
 		this.type = JsonUtils.getInt(json, BiliCmdAtrbt.msg_type, -1);
 		this.roomId = JsonUtils.getInt(json, BiliCmdAtrbt.roomid, -1);
 		this.realRoomId = JsonUtils.getInt(json, BiliCmdAtrbt.real_roomid, -1);
+		this.url = JsonUtils.getStr(json, BiliCmdAtrbt.link_url);
 	}
 	
 	public String getMsg() {
@@ -269,17 +272,19 @@ public class NoticeMsg extends _Msg {
 				json.put(BiliCmdAtrbt.msg, msg);
 				break; 
 			}
-			case 2 : { 
+			case 2 : { // 小电视抽奖
 				json.put(BiliCmdAtrbt.cmd, BiliCmd.SYS_MSG.CMD());
 				json.put(BiliCmdAtrbt.msg, msg);
 				json.put(BiliCmdAtrbt.roomid, roomId);
 				json.put(BiliCmdAtrbt.real_roomid, realRoomId);
+				json.put(BiliCmdAtrbt.url, url);
 				break; 
 			}
-			case 3 : { 
+			case 3 : { // 舰长抽奖
 				json.put(BiliCmdAtrbt.cmd, BiliCmd.GUARD_MSG.CMD());
 				json.put(BiliCmdAtrbt.msg, msg);
 				json.put(BiliCmdAtrbt.roomid, realRoomId);
+				json.put(BiliCmdAtrbt.url, url);
 				break; 
 			}
 			case 6 : { 

@@ -507,11 +507,37 @@ public class Other extends __XHR {
 			int code = JsonUtils.getInt(json, BiliCmdAtrbt.code, -1);
 			if(code == 0) {
 				isOk = true;
-				sttclog.info("[{}] [{}] [{}] [{}] [{}]", "ROOM", roomId, cookie.NICKNAME(), "T", "");
 				
 			} else {
 				String reason = JsonUtils.getStr(json, BiliCmdAtrbt.msg);
-				sttclog.info("[{}] [{}] [{}] [{}] [{}]", "ROOM", roomId, cookie.NICKNAME(), "F", reason);
+				log.warn("[{}] 模拟进入直播间 [{}] 失败: {}", cookie.NICKNAME(), roomId, reason);
+			}
+		} catch(Exception e) {
+			log.error("模拟进入直播间 [{}] 失败: {}", roomId, response, e);
+		}
+		return isOk;
+	}
+	
+	/**
+	 * 模拟进入直播房间
+	 * @param cookie
+	 * @param roomId
+	 * @param url
+	 * @return
+	 */
+	public static boolean entryRoom(BiliCookie cookie, int roomId, String url) {
+		Map<String, String> header = GET_HEADER(cookie.toNVCookie());
+		
+		boolean isOk = false;
+		String response = HttpURLUtils.doPost(url, header, null);
+		try {
+			JSONObject json = JSONObject.fromObject(response);
+			int code = JsonUtils.getInt(json, BiliCmdAtrbt.code, -1);
+			if(code == 0) {
+				isOk = true;
+				
+			} else {
+				String reason = JsonUtils.getStr(json, BiliCmdAtrbt.msg);
 				log.warn("[{}] 模拟进入直播间 [{}] 失败: {}", cookie.NICKNAME(), roomId, reason);
 			}
 		} catch(Exception e) {

@@ -40,6 +40,8 @@ public class TvLottery extends SysMsg {
 	
 	private String tvId;
 	
+	private String url;
+	
 	public TvLottery(JSONObject json) {
 		super(json);
 	}
@@ -58,6 +60,7 @@ public class TvLottery extends SysMsg {
 		this.realRoomId = JsonUtils.getInt(json, BiliCmdAtrbt.real_roomid, 0);
 		this.rnd = JsonUtils.getStr(json, BiliCmdAtrbt.rnd);
 		this.tvId = JsonUtils.getStr(json, BiliCmdAtrbt.tv_id);
+		this.url = JsonUtils.getStr(json, BiliCmdAtrbt.url);
 	}
 
 	public String getMsgText() {
@@ -82,6 +85,10 @@ public class TvLottery extends SysMsg {
 
 	public String getTvId() {
 		return tvId;
+	}
+
+	public String getUrl() {
+		return url;
 	}
 
 }

@@ -7,6 +7,7 @@ import java.util.Map;
 
 import exp.bilibili.plugin.Config;
 import exp.bilibili.plugin.envm.Area;
+import exp.bilibili.plugin.utils.Switch;
 import exp.bilibili.plugin.utils.UIUtils;
 import exp.bilibili.protocol.XHRSender;
 import exp.bilibili.protocol.envm.BiliBinary;
@@ -141,7 +142,7 @@ public class BiliWebSocketMgr extends LoopThread {
 
 	@Override
 	protected void _loopRun() {
-		if(UIUtils.isJoinLottery()) {
+		if(Switch.isJoinLottery()) {
 			if(++loopCnt >= REFLASH_LIMIT) {
 				loopCnt = 0;
 				relinkListeners();

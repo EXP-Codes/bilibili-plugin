@@ -81,10 +81,6 @@ public class UIUtils {
 		return AppUI.getInstn().isLogined();
 	}
 	
-	public static boolean isJoinLottery() {
-		return AppUI.getInstn().isJoinLottery();
-	}
-	
 	public static void updateAppTitle(String certificateTime) {
 		AppUI.getInstn().updateTitle(certificateTime);
 	}
@@ -115,10 +111,6 @@ public class UIUtils {
 	
 	public static long getIntervalTime() {
 		return AppUI.getInstn().getIntervalTime();
-	}
-	
-	public static boolean isAutoFeed() {
-		return AppUI.getInstn().isAutoFeed();
 	}
 	
 	public static Colors getCurChatColor() {

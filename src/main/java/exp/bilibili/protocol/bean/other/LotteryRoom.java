@@ -18,6 +18,9 @@ public class LotteryRoom {
 	/** 抽奖房间号 */
 	private int roomId;
 	
+	/** 抽奖所在直播间地址 */
+	private String url;
+	
 	/** 抽奖编号 */
 	private String raffleId;
 	
@@ -27,12 +30,9 @@ public class LotteryRoom {
 	/** 抽奖类型 */
 	private LotteryType type;
 	
-	public LotteryRoom(int roomId, LotteryType type) {
-		this(roomId, "", type);
-	}
-	
-	public LotteryRoom(int roomId, String raffleId, LotteryType type) {
+	public LotteryRoom(int roomId, String url, String raffleId, LotteryType type) {
 		this.roomId = roomId;
+		this.url = url;
 		this.raffleId = (StrUtils.isEmpty(raffleId) ? "" : raffleId);
 		this.startTime = System.currentTimeMillis();
 		this.type = (type == null ? LotteryType.ENGERY : type);
@@ -40,6 +40,10 @@ public class LotteryRoom {
 
 	public int getRoomId() {
 		return roomId;
+	}
+
+	public String getUrl() {
+		return url;
 	}
 
 	public String getRaffleId() {

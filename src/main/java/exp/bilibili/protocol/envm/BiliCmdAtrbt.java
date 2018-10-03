@@ -39,6 +39,8 @@ public class BiliCmdAtrbt {
 	
 	public final static String url = "url";
 	
+	public final static String link_url = "link_url";
+	
 	public final static String durl = "durl";
 	
 	public final static String data = "data";

@@ -10,6 +10,7 @@ import exp.bilibili.plugin.cache.ChatMgr;
 import exp.bilibili.plugin.cache.MsgKwMgr;
 import exp.bilibili.plugin.cache.OnlineUserMgr;
 import exp.bilibili.plugin.cache.RoomMgr;
+import exp.bilibili.plugin.utils.Switch;
 import exp.bilibili.plugin.utils.UIUtils;
 import exp.bilibili.protocol.bean.ws.ActivityEvent;
 import exp.bilibili.protocol.bean.ws.ChatMsg;
@@ -235,7 +236,7 @@ public class WSAnalyser {
 			// Undo: 小电视/C位光环 是全平台公告, 摩天大楼只是分区公告, 此处可避免重复打印 小电视/C位光环 公告
 		}
 		
-		RoomMgr.getInstn().addTvRoom(msgBean.ROOM_ID(), msgBean.getTvId());
+		RoomMgr.getInstn().addTvRoom(msgBean.ROOM_ID(), msgBean.getUrl(), msgBean.getTvId());
 		RoomMgr.getInstn().relate(msgBean.getRoomId(), msgBean.getRealRoomId());
 	}
 	
@@ -283,7 +284,9 @@ public class WSAnalyser {
 		UIUtils.notify(msg);
 		log.info(msg);
 		
-		RoomMgr.getInstn().addStormRoom(roomId, msgBean.getRaffleId());
+		if(Switch.isJoinStorm()) {
+			RoomMgr.getInstn().addStormRoom(roomId, msgBean.getRaffleId());
+		}
 	}
 
 	/**
@@ -351,7 +354,7 @@ public class WSAnalyser {
 		log.info(msg);
 			
 		ChatMgr.getInstn().sendThxGuard(msg);
-		RoomMgr.getInstn().addGuardRoom(msgBean.getRoomId());
+		RoomMgr.getInstn().addGuardRoom(msgBean.getRoomId(), "");
 		
 		OnlineUserMgr.getInstn().addOnlineUser(msgBean.getUsername());
 		ActivityMgr.getInstn().add(msgBean);
@@ -368,7 +371,7 @@ public class WSAnalyser {
 		if(msgBean.getRoomId() <= 0) {
 			msgBean.setRoomId(XHRSender.searchRoomId(msgBean.getLiveup()));;
 		}
-		RoomMgr.getInstn().addGuardRoom(msgBean.getRoomId());
+		RoomMgr.getInstn().addGuardRoom(msgBean.getRoomId(), msgBean.getUrl());
 	}
 	
 	/**
@@ -378,7 +381,7 @@ public class WSAnalyser {
 	private static void toDo(GuardLotteryStart msgBean) {
 		UIUtils.chat(msgBean.getMsg());
 		log.info(msgBean.getMsg());
-		RoomMgr.getInstn().addGuardRoom(msgBean.getRoomId());
+		RoomMgr.getInstn().addGuardRoom(msgBean.getRoomId(), "");
 	}
 	
 	/**

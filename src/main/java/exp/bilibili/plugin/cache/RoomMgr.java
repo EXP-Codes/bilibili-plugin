@@ -71,16 +71,17 @@ public class RoomMgr {
 	 * @param roomId 礼物房间号
 	 */
 	public void addGiftRoom(int roomId) {
-		giftRoomIds.add(new LotteryRoom(roomId, LotteryType.ENGERY));
+		giftRoomIds.add(new LotteryRoom(roomId, "", "", LotteryType.ENGERY));
 	}
 	
 	/**
 	 * 添加小电视房间
 	 * @param roomId 小电视房间号
+	 * @param url 小电视房间地址
 	 * @param tvId 小电视编号
 	 */
-	public void addTvRoom(int roomId, String tvId) {
-		giftRoomIds.add(new LotteryRoom(roomId, tvId, LotteryType.TV));
+	public void addTvRoom(int roomId, String url, String tvId) {
+		giftRoomIds.add(new LotteryRoom(roomId, url, tvId, LotteryType.TV));
 	}
 	
 	/**
@@ -98,9 +99,10 @@ public class RoomMgr {
 	/**
 	 * 添加总督房间
 	 * @param roomId 总督房间号
+	 * @param url 总督房间地址
 	 */
-	public void addGuardRoom(int roomId) {
-		giftRoomIds.add(new LotteryRoom(roomId, LotteryType.GUARD));
+	public void addGuardRoom(int roomId, String url) {
+		giftRoomIds.add(new LotteryRoom(roomId, url, "", LotteryType.GUARD));
 	}
 	
 	/**

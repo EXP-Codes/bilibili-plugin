@@ -221,9 +221,6 @@ public class LotteryStorm extends _Lottery {
 				if(!cookie.isBindTel() || !cookie.isRealName()) {
 					cookieIts.remove();
 					continue;
-					
-				} else if(!Other.entryRoom(cookie, roomId)) {
-					continue;	// 进入房间失败
 				}
 				
 				reason = join(LotteryType.STORM, cookie, STORM_JOIN_URL, roomId, raffleId);

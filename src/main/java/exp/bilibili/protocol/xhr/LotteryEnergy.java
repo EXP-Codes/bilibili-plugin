@@ -105,9 +105,6 @@ public class LotteryEnergy extends _Lottery {
 		for(BiliCookie cookie : cookies) {
 			if(!cookie.allowLottery() || !cookie.isBindTel()) {
 				continue;	// 未绑定手机的账号无法参与高能抽奖
-				
-			} else if(!Other.entryRoom(cookie, roomId)) {
-				continue;	// 进入房间失败
 			}
 			
 			String reason = join(LotteryType.ENGERY, cookie, EG_JOIN_URL, roomId, raffleId);

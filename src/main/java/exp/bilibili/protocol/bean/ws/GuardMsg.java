@@ -28,6 +28,8 @@ public class GuardMsg extends _Msg {
 	
 	private int roomId;
 	
+	private String url;
+	
 	public GuardMsg(JSONObject json) {
 		super(json);
 		this.cmd = BiliCmd.GUARD_MSG;
@@ -38,6 +40,7 @@ public class GuardMsg extends _Msg {
 	protected void analyse(JSONObject json) {
 		this.msg = JsonUtils.getStr(json, BiliCmdAtrbt.msg);
 		this.liveup = RegexUtils.findFirst(msg, "在主播 (\\S+) 的直播间");
+		this.url = JsonUtils.getStr(json, BiliCmdAtrbt.url);
 	}
 
 	public String getMsg() {
@@ -54,6 +57,10 @@ public class GuardMsg extends _Msg {
 
 	public void setRoomId(int roomId) {
 		this.roomId = roomId;
+	}
+
+	public String getUrl() {
+		return url;
 	}
 	
 }

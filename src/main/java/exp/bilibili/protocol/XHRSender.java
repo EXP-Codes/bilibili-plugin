@@ -37,6 +37,7 @@ import exp.bilibili.protocol.xhr.WatchLive;
 import exp.libs.envm.Colors;
 import exp.libs.utils.num.NumUtils;
 import exp.libs.utils.os.ThreadUtils;
+import exp.libs.utils.other.StrUtils;
 
 /**
  * <PRE>
@@ -233,10 +234,22 @@ public class XHRSender {
 	 * 模拟进入直播间
 	 * @param cookie
 	 * @param roomId
+	 * @param url
 	 * @return
 	 */
-	public static boolean entryRoom(BiliCookie cookie, int roomId) {
-		return Other.entryRoom(cookie, roomId);
+	public static void entryRoom(int roomId, String url) {
+		Set<BiliCookie> cookies = CookiesMgr.ALL();
+		for(BiliCookie cookie : cookies) {
+			if(!cookie.allowLottery()) {
+				continue;
+			}
+			
+			if(StrUtils.isTrimEmpty(url)) {
+				Other.entryRoom(cookie, roomId);
+			} else {
+				Other.entryRoom(cookie, roomId, url);
+			}
+		}
 	}
 	
 	/**

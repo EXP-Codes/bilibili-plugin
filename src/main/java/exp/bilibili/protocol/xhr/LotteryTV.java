@@ -111,9 +111,6 @@ public class LotteryTV extends _Lottery {
 		for(BiliCookie cookie : cookies) {
 			if(cookie.allowLottery() == false) {
 				continue;
-				
-			} else if(!Other.entryRoom(cookie, roomId)) {
-				continue;	// 进入房间失败
 			}
 			
 			String reason = join(LotteryType.TV, cookie, TV_JOIN_URL, roomId, raffleId);

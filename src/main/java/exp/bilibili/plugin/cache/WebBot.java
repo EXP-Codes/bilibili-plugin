@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import exp.bilibili.plugin.Config;
 import exp.bilibili.plugin.bean.ldm.BiliCookie;
 import exp.bilibili.plugin.envm.LotteryType;
+import exp.bilibili.plugin.utils.Switch;
 import exp.bilibili.plugin.utils.TimeUtils;
 import exp.bilibili.plugin.utils.UIUtils;
 import exp.bilibili.protocol.XHRSender;
@@ -141,9 +142,9 @@ public class WebBot extends LoopThread {
 	
 	private void toDo() {
 		
-		// 优先参与直播间抽奖
+		// 优先参与抽奖
 		LotteryRoom room = RoomMgr.getInstn().getGiftRoom();
-		if(room != null && UIUtils.isJoinLottery()) {
+		if(room != null) {
 			toLottery(room);
 			
 		// 无抽奖操作则做其他事情
@@ -162,22 +163,24 @@ public class WebBot extends LoopThread {
 		final String raffleId = room.getRaffleId();
 		
 		// 小电视抽奖
-		if(room.TYPE() == LotteryType.TV) {
+		if(room.TYPE() == LotteryType.TV && Switch.isJoinLottery()) {
 			_waitReactionTime(room);
+			XHRSender.entryRoom(roomId, room.getUrl());
 			XHRSender.toTvLottery(roomId, raffleId);
 			
 		// 节奏风暴抽奖
-		} else if(room.TYPE() == LotteryType.STORM) {
+		} else if(room.TYPE() == LotteryType.STORM && Switch.isJoinStorm()) {
 //			_waitReactionTime(room);	// 节奏风暴无需等待, 当前环境太多机器人, 很难抢到前几名导致被捉
 			XHRSender.toStormLottery(roomId, raffleId);
 			
 		// 总督登船领奖
-		} else if(room.TYPE() == LotteryType.GUARD) {
+		} else if(room.TYPE() == LotteryType.GUARD && Switch.isJoinLottery()) {
 			_waitReactionTime(room);
+			XHRSender.entryRoom(roomId, room.getUrl());
 			XHRSender.getGuardGift(roomId);
 			
 		// 高能抽奖
-		} else {
+		} else if(Switch.isJoinLottery()) {
 			_waitReactionTime(room);
 			XHRSender.toEgLottery(roomId);
 		}
@@ -206,9 +209,6 @@ public class WebBot extends LoopThread {
 			for(BiliCookie cookie : cookies) {
 				if(cookie.TASK_STATUS().isAllFinish()) {
 					continue;
-					
-				} else if(!cookie.allowLottery()) {
-					continue;	// FIXME 账号主动冻结期间停止一切行为
 				}
 				
 				long max = -1;
@@ -217,7 +217,10 @@ public class WebBot extends LoopThread {
 				if(cookie.isBindTel()) {	// 仅绑定了手机的账号才能参与
 					max = NumUtils.max(XHRSender.receiveHolidayGift(cookie), max);	// 活动心跳礼物
 					max = NumUtils.max(XHRSender.toAssn(cookie), max);			// 友爱社
-					max = NumUtils.max(XHRSender.doMathTask(cookie), max);		// 小学数学
+					
+					if(!cookie.isFreeze()) {
+						max = NumUtils.max(XHRSender.doMathTask(cookie), max);		// 小学数学
+					}
 				}
 				nextTaskTime = NumUtils.max(nextTaskTime, max);
 				ThreadUtils.tSleep(50);
@@ -273,7 +276,7 @@ public class WebBot extends LoopThread {
 	 * 自动扭蛋机（仅小号）
 	 */
 	private void toCapsule() {
-		if(UIUtils.isAutoFeed() == false) {
+		if(Switch.isAutoFeed() == false) {
 			return;
 		}
 		
@@ -294,7 +297,7 @@ public class WebBot extends LoopThread {
 	 * 自动投喂（仅小号）
 	 */
 	private void toAutoFeed() {
-		if(UIUtils.isAutoFeed() == false) {
+		if(Switch.isAutoFeed() == false) {
 			return;	// 总开关
 		}
 		

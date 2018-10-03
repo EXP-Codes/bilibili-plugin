@@ -83,6 +83,9 @@ public class BiliCookie extends HttpCookie {
 	/** 下次抽奖时间 */
 	private long nextLotteryTime;
 	
+	/** 是否被冻结抽奖 */
+	private boolean freeze;
+	
 	public BiliCookie() {
 		super();
 	}
@@ -107,6 +110,7 @@ public class BiliCookie extends HttpCookie {
 		this.taskStatus = new TaskStatus();
 		this.lotteryCnt = 0;
 		this.nextLotteryTime = 0L;
+		this.freeze = false;
 	}
 	
 	@Override
@@ -263,6 +267,7 @@ public class BiliCookie extends HttpCookie {
 		long now = System.currentTimeMillis();
 		if(now >= nextLotteryTime) {
 			nextLotteryTime = now + UIUtils.getIntervalTime();
+			freeze = false;
 			isOk = true;
 		}
 		return isOk;
@@ -293,11 +298,16 @@ public class BiliCookie extends HttpCookie {
 	 * B站抓到脚本抽奖后，会突然在某个时间点突然解除冻结，
 	 * 若这个时候马上去抽奖，就会马上被重新冻结（试探机制）
 	 * 
-	 * 因此当章后被B站冻结抽奖后，这边也主动冻结抽奖1小时，以回避这个试探机制。
+	 * 因此当章后被B站冻结抽奖后，这边也主动冻结抽奖2小时，以回避这个试探机制。
 	 */
 	public void freeze() {
 		// FIXME: 可配置
-		nextLotteryTime = System.currentTimeMillis() + 3600000L;
+		nextLotteryTime = System.currentTimeMillis() + 7200000L;
+		freeze = true;
+	}
+	
+	public boolean isFreeze() {
+		return freeze;
 	}
 	
 	@Override

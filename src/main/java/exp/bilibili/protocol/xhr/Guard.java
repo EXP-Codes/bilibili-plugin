@@ -103,10 +103,6 @@ public class Guard extends __XHR {
 	 */
 	public static boolean getGuardGift(BiliCookie cookie, 
 			int roomId, String guardId, GuardType guardType) {
-		if(!Other.entryRoom(cookie, roomId)) {
-			return false;
-		}
-		
 		String sRoomId = getRealRoomId(roomId);
 		Map<String, String> header = POST_HEADER(cookie.toNVCookie(), sRoomId);
 		Map<String, String> request = getRequest(cookie.CSRF(), sRoomId, guardId);
