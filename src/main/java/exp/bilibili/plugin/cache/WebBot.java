@@ -161,11 +161,12 @@ public class WebBot extends LoopThread {
 	private void toLottery(LotteryRoom room) {
 		final int roomId = room.getRoomId();
 		final String raffleId = room.getRaffleId();
+		final String url = room.getUrl();
 		
 		// 小电视抽奖
 		if(room.TYPE() == LotteryType.TV && Switch.isJoinLottery()) {
 			_waitReactionTime(room);
-			XHRSender.entryRoom(roomId, room.getUrl());
+//			XHRSender.entryRoom(roomId, url);
 			XHRSender.toTvLottery(roomId, raffleId);
 			
 		// 节奏风暴抽奖
@@ -176,7 +177,7 @@ public class WebBot extends LoopThread {
 		// 总督登船领奖
 		} else if(room.TYPE() == LotteryType.GUARD && Switch.isJoinLottery()) {
 			_waitReactionTime(room);
-			XHRSender.entryRoom(roomId, room.getUrl());
+//			XHRSender.entryRoom(roomId, url);
 			XHRSender.getGuardGift(roomId);
 			
 		// 高能抽奖

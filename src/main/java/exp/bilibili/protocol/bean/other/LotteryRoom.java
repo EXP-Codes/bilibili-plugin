@@ -32,7 +32,7 @@ public class LotteryRoom {
 	
 	public LotteryRoom(int roomId, String url, String raffleId, LotteryType type) {
 		this.roomId = roomId;
-		this.url = url;
+		this.url = (StrUtils.isEmpty(url) ? "" : url);
 		this.raffleId = (StrUtils.isEmpty(raffleId) ? "" : raffleId);
 		this.startTime = System.currentTimeMillis();
 		this.type = (type == null ? LotteryType.ENGERY : type);

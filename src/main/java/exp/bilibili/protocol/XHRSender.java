@@ -240,7 +240,7 @@ public class XHRSender {
 	public static void entryRoom(int roomId, String url) {
 		Set<BiliCookie> cookies = CookiesMgr.ALL();
 		for(BiliCookie cookie : cookies) {
-			if(!cookie.allowLottery()) {
+			if(cookie.isFreeze()) {
 				continue;
 			}
 			

@@ -12,7 +12,7 @@
                            3. 仅手机绑定用户, 若此保护开关关闭, 则依然触发扭蛋、所有礼物、银瓜子投喂
                            4. 无手机绑定用户, 此开关无效, 强制触发扭蛋、永久礼物、银瓜子投喂"
         >true</protectFeed>
-        <reactionTime caption="参与抽奖的反应时间(ms)" hint="过快反应抽奖会被冻结">2000</reactionTime>
+        <reactionTime caption="参与抽奖的反应时间(ms)" hint="过快反应抽奖会被冻结">10000</reactionTime>
         <intervalTime caption="参与抽奖的间隔时间(ms)" hint="抽奖频度过高会被冻结">60000</intervalTime>
     </app>
    

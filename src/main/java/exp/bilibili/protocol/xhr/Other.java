@@ -491,7 +491,7 @@ public class Other extends __XHR {
 	 * @param roomId
 	 * @return
 	 */
-	public static boolean entryRoom(BiliCookie cookie, int roomId) {
+	public static void entryRoom(BiliCookie cookie, int roomId) {
 		String sRoomId = getRealRoomId(roomId);
 		Map<String, String> header = POST_HEADER(cookie.toNVCookie(), sRoomId);
 		Map<String, String> request = new HashMap<String, String>();
@@ -499,23 +499,7 @@ public class Other extends __XHR {
 		request.put(BiliCmdAtrbt.platform, "pc");
 		request.put(BiliCmdAtrbt.csrf_token, cookie.CSRF());
 		request.put(BiliCmdAtrbt.visit_id, getVisitId());
-		
-		boolean isOk = false;
-		String response = HttpURLUtils.doPost(ENTRY_ROOM_URL, header, request);
-		try {
-			JSONObject json = JSONObject.fromObject(response);
-			int code = JsonUtils.getInt(json, BiliCmdAtrbt.code, -1);
-			if(code == 0) {
-				isOk = true;
-				
-			} else {
-				String reason = JsonUtils.getStr(json, BiliCmdAtrbt.msg);
-				log.warn("[{}] 模拟进入直播间 [{}] 失败: {}", cookie.NICKNAME(), roomId, reason);
-			}
-		} catch(Exception e) {
-			log.error("模拟进入直播间 [{}] 失败: {}", roomId, response, e);
-		}
-		return isOk;
+		HttpURLUtils.doPost(ENTRY_ROOM_URL, header, request);
 	}
 	
 	/**
@@ -525,25 +509,9 @@ public class Other extends __XHR {
 	 * @param url
 	 * @return
 	 */
-	public static boolean entryRoom(BiliCookie cookie, int roomId, String url) {
+	public static void entryRoom(BiliCookie cookie, int roomId, String url) {
 		Map<String, String> header = GET_HEADER(cookie.toNVCookie());
-		
-		boolean isOk = false;
-		String response = HttpURLUtils.doPost(url, header, null);
-		try {
-			JSONObject json = JSONObject.fromObject(response);
-			int code = JsonUtils.getInt(json, BiliCmdAtrbt.code, -1);
-			if(code == 0) {
-				isOk = true;
-				
-			} else {
-				String reason = JsonUtils.getStr(json, BiliCmdAtrbt.msg);
-				log.warn("[{}] 模拟进入直播间 [{}] 失败: {}", cookie.NICKNAME(), roomId, reason);
-			}
-		} catch(Exception e) {
-			log.error("模拟进入直播间 [{}] 失败: {}", roomId, response, e);
-		}
-		return isOk;
+		HttpURLUtils.doGet(url, header, null);
 	}
 	
 }
