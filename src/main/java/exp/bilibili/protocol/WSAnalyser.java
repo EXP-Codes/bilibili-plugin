@@ -226,10 +226,14 @@ public class WSAnalyser {
 	 * @param onlyListen
 	 */
 	private static void toDo(TvLottery msgBean, boolean onlyListen) {
-		if(onlyListen == true) {
-			boolean isTV = msgBean.getMsg().contains("电视");
-			String giftName = isTV ? "小电视" : "大楼/活动";
-			String msg = StrUtils.concat("直播间 [", msgBean.ROOM_ID(), "] 正在", giftName, "抽奖中!!!");
+		boolean isTV = msgBean.getMsg().contains("电视");
+		if(onlyListen && !isTV) {
+			String msg = StrUtils.concat("直播间 [", msgBean.ROOM_ID(), "] 正在大楼/活动抽奖中!!!");
+			UIUtils.notify(msg);
+			log.info(msg);
+			
+		} else if(!onlyListen && isTV) {
+			String msg = StrUtils.concat("直播间 [", msgBean.ROOM_ID(), "] 正在小电视抽奖中!!!");
 			UIUtils.notify(msg);
 			log.info(msg);
 			
