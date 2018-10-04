@@ -99,6 +99,11 @@
         <intervalTime caption="参与抽奖的间隔时间(ms)" hint="抽奖频度过高会被冻结">60000</intervalTime>
     </app>
     
+    <ai caption="AI机器人">
+        <chatServer caption="聊天服务器"><![CDATA[http://www.tuling123.com/openapi/api]]></chatServer>
+        <chatKey caption="聊天服务器密钥">969d86d9ab4f4a77984d78308d360090</chatKey>
+    </ai>
+    
     <monitor caption="应用监控">
         <testServer caption="授权管理页面: 测试服务器"><![CDATA[https://lyy289065406.github.io/certificate/]]></testServer>
         <officialServer caption="授权管理页面: 正式服务器"><![CDATA[https://lyy289065406.gitee.io/certificate/]]></officialServer>

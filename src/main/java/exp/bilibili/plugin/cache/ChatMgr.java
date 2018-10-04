@@ -17,6 +17,7 @@ import exp.bilibili.plugin.utils.UIUtils;
 import exp.bilibili.protocol.XHRSender;
 import exp.bilibili.protocol.bean.ws.ChatMsg;
 import exp.bilibili.protocol.bean.ws.SendGift;
+import exp.bilibili.robot.ChatRobot;
 import exp.libs.utils.other.ListUtils;
 import exp.libs.utils.other.RandomUtils;
 import exp.libs.utils.other.StrUtils;
@@ -59,6 +60,8 @@ public class ChatMgr extends LoopThread {
 	
 	private final static String NIGHT_KEY = "晚安(´▽`)ﾉ  ";
 	
+	private final static String AI_KEY = "【AI】";
+	
 	/** 同一时间可以感谢的最大用户数（避免刷屏） */
 	private final static int THX_USER_LIMIT = 2;
 	
@@ -91,6 +94,9 @@ public class ChatMgr extends LoopThread {
 	/** 自动晚安 */
 	private boolean autoGoodNight;
 	
+	/** 自动回复（搭载AI聊天机器人） */
+	private boolean autoReply;
+	
 	/** 已经被晚安过的用户 */
 	private Set<String> nightedUsers;
 	
@@ -116,6 +122,7 @@ public class ChatMgr extends LoopThread {
 		this.autoThankYou = false;
 		this.autoNotice = false;
 		this.autoGoodNight = false;
+		this.autoReply = false;
 		this.nightedUsers = new HashSet<String>();
 		this.userGifts = new LinkedHashMap<String, Map<String, Integer>>();
 	}
@@ -363,6 +370,7 @@ public class ChatMgr extends LoopThread {
 		}
 		
 		countChatCnt(chatMsg.getUsername());	// 登陆用户发言计数器
+		toAI(chatMsg.getUsername(), chatMsg.getMsg());		// 智能回复
 		toNight(chatMsg.getUsername(), chatMsg.getMsg());	// 自动晚安
 		complaint(chatMsg.getUsername(), chatMsg.getMsg());	// 举报处理
 		ban(chatMsg.getUsername(), chatMsg.getMsg());	// 禁言处理
@@ -392,6 +400,7 @@ public class ChatMgr extends LoopThread {
 	private void toNight(String username, String msg) {
 		if(!isAutoGoodNight() || 
 				msg.startsWith(NIGHT_KEY) ||		// 避免跟机器人对话
+				CookiesMgr.MAIN().NICKNAME().equals(username) || // 避免跟自己晚安
 				nightedUsers.contains(username)) { 	// 避免重复晚安
 			return;
 		}
@@ -400,6 +409,28 @@ public class ChatMgr extends LoopThread {
 			String chatMsg = StrUtils.concat(NIGHT_KEY, ", ", username);
 			XHRSender.sendDanmu(chatMsg, UIUtils.getCurChatColor());
 			nightedUsers.add(username);
+		}
+	}
+	
+	/**
+	 * 自动聊天（搭载AI机器人）
+	 * @param username
+	 * @param msg
+	 */
+	private void toAI(String username, String msg) {
+		if(!isAutoReply() || 
+				msg.startsWith(WARN_KEY) ||		// 避免跟机器人对话
+				msg.startsWith(NOTICE_KEY) ||
+				msg.startsWith(NIGHT_KEY) ||
+				msg.startsWith(AI_KEY) ||
+				CookiesMgr.MAIN().NICKNAME().equals(username)) { // 避免跟自己聊天
+			return;
+		}
+		
+		String aiMsg = ChatRobot.send(msg);
+		if(StrUtils.isNotEmpty(aiMsg)) {
+			String chatMsg = StrUtils.concat(AI_KEY, aiMsg);
+			XHRSender.sendDanmu(chatMsg, UIUtils.getCurChatColor());
 		}
 	}
 	
@@ -511,6 +542,14 @@ public class ChatMgr extends LoopThread {
 	
 	public boolean isAutoGoodNight() {
 		return autoGoodNight;
+	}
+	
+	public void setAutoReply() {
+		this.autoReply = !autoReply;
+	}
+	
+	public boolean isAutoReply() {
+		return autoReply;
 	}
 	
 	/**

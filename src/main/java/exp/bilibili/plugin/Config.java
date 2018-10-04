@@ -366,6 +366,14 @@ public class Config {
 		return xConf.getLong("/config/app/intervalTime");
 	}
 	
+	public String CHAT_SERVER() {
+		return xConf.getVal("/config/ai/chatServer");
+	}
+	
+	public String CHAT_KEY() {
+		return xConf.getVal("/config/ai/chatKey");
+	}
+	
 	public String TEST_SERVER() {
 		return xConf.getVal("/config/monitor/testServer");
 	}

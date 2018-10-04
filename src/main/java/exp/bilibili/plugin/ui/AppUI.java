@@ -137,6 +137,8 @@ public class AppUI extends MainWindow {
 	
 	private JButton eNightBtn;
 	
+	private JButton aiChatBtn;
+	
 	private JButton stormBtn;
 	
 	private JButton eStormBtn;
@@ -293,6 +295,7 @@ public class AppUI extends MainWindow {
 		this.sendBtn = newButton("发言");
 		this.colorBtn = newButton("●");
 		this.musicBtn = newButton("随缘点歌姬");
+		this.aiChatBtn = newButton("AI-尬聊姬");
 		this.eMusicBtn = newButton(">");
 		this.callBtn = newButton("小call姬");
 		this.eCallBtn = newButton(">");
@@ -403,6 +406,7 @@ public class AppUI extends MainWindow {
 	
 	private JPanel _getCtrlPanel() {
 		return SwingUtils.getVGridPanel(
+				aiChatBtn, 
 				SwingUtils.getEBorderPanel(callBtn, eCallBtn), 
 				SwingUtils.getEBorderPanel(noticeBtn, eNoticeBtn), 
 				SwingUtils.getEBorderPanel(thxBtn, eThxBtn), 
@@ -470,6 +474,7 @@ public class AppUI extends MainWindow {
 		setCallBtnListener();
 		setThxBtnListener();
 		setNightBtnListener();
+		setAIChatBtnListener();
 		setStormBtnListener();
 		setGuardBtnListener();
 	}
@@ -996,6 +1001,40 @@ public class AppUI extends MainWindow {
 				lockBtn();
 			}
 			
+		});
+	}
+	
+	private void setAIChatBtnListener() {
+		aiChatBtn.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if(!isLogined()) {
+					SwingUtils.warn("您是个有身份的人~ 先登录才能召唤 [尬聊姬] 哦~");
+					return;
+					
+				} else if(Identity.less(Identity.UPLIVE)) {
+					SwingUtils.warn("为了守护直播间秩序, 非主播用户无法召唤 [尬聊姬] 哦~");
+					return;
+					
+				} else if(Identity.less(Identity.ADMIN) && 
+						Config.getInstn().isTabuAutoChat(getLiveRoomId())) {
+					SwingUtils.warn("您未被授权在此直播间使用 [尬聊姬] 哦~");
+					return;
+				}
+				
+				ChatMgr.getInstn()._start();
+				ChatMgr.getInstn().setAutoReply();
+				if(ChatMgr.getInstn().isAutoReply()) {
+					BeautyEyeUtils.setButtonStyle(NormalColor.lightBlue, aiChatBtn);
+					UIUtils.log("[尬聊姬] 被召唤成功O(∩_∩)O");
+					
+				} else {
+					BeautyEyeUtils.setButtonStyle(NormalColor.normal, aiChatBtn);
+					UIUtils.log("[尬聊姬] 被封印啦/(ㄒoㄒ)/");
+				}
+				lockBtn();
+			}
 		});
 	}
 	
