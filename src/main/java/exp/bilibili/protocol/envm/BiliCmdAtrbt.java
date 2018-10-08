@@ -227,6 +227,8 @@ public class BiliCmdAtrbt {
 	
 	public final static String coin_type = "coin_type";
 	
+	public final static String price = "price";
+	
 	public final static String oauthKey = "oauthKey";
 	
 	public final static String gourl = "gourl";

@@ -7,11 +7,11 @@
         
         <mainHome caption="主站首页"><![CDATA[https://www.bilibili.com/]]></mainHome>
         <liveHome caption="直播首页"><![CDATA[https://live.bilibili.com/]]></liveHome>
-        <linkHome caption="Link首页"><![CDATA[http://link.bilibili.com]]></linkHome>
-        <msgHome caption="私信首页"><![CDATA[http://message.bilibili.com]]></msgHome>
+        <linkHome caption="Link首页"><![CDATA[https://link.bilibili.com]]></linkHome>
+        <msgHome caption="私信首页"><![CDATA[https://message.bilibili.com]]></msgHome>
         
         <linkHost caption="Link主机"><![CDATA[api.vc.bilibili.com]]></linkHost>
-        <msgURL caption="私信URL"><![CDATA[http://api.vc.bilibili.com/web_im/v1/web_im/send_msg]]></msgURL>
+        <msgURL caption="私信URL"><![CDATA[https://api.vc.bilibili.com/web_im/v1/web_im/send_msg]]></msgURL>
         
         <loginHost caption="登陆主机"><![CDATA[passport.bilibili.com]]></loginHost>
         <qrcodeURL caption="获取二维码URL"><![CDATA[https://passport.bilibili.com/qrcode/getLoginUrl]]></qrcodeURL>
@@ -23,23 +23,23 @@
         <safeURL caption="安全信息URL"><![CDATA[https://passport.bilibili.com/web/site/index]]></safeURL>
         
         <liveHost caption="直播主机"><![CDATA[api.live.bilibili.com]]></liveHost>
-        <liveURL caption="直播列表URL"><![CDATA[http://api.live.bilibili.com/area/liveList]]></liveURL>
-        <blackURL caption="小黑屋URL"><![CDATA[http://api.live.bilibili.com/liveact/room_block_user]]></blackURL>
+        <liveURL caption="直播列表URL"><![CDATA[https://api.live.bilibili.com/area/liveList]]></liveURL>
+        <blackURL caption="关小黑屋URL"><![CDATA[https://api.live.bilibili.com/liveact/room_block_user]]></blackURL>
         <chatURL caption="版聊URL"><![CDATA[https://api.live.bilibili.com/msg/send]]></chatURL>
         <signURL caption="签到URL"><![CDATA[https://api.live.bilibili.com/sign/doSign]]></signURL>
         <assnURL caption="友爱社URL"><![CDATA[https://api.live.bilibili.com/activity/v1/task/receive_award]]></assnURL>
         <accountURL caption="账号信息URL"><![CDATA[https://api.live.bilibili.com/i/api/liveinfo]]></accountURL>
         <roomURL caption="房间信息URL"><![CDATA[https://api.live.bilibili.com/live_user/v1/UserInfo/get_anchor_in_room]]></roomURL>
         <playerURL caption="账号在特定房间内的信息URL"><![CDATA[https://api.live.bilibili.com/api/player]]></playerURL>
-        <manageURL caption="房管列表URL"><![CDATA[http://api.live.bilibili.com/live_user/v1/RoomAdmin/get_by_anchor]]></manageURL>
+        <manageURL caption="房管列表URL"><![CDATA[https://api.live.bilibili.com/live_user/v1/RoomAdmin/get_by_anchor]]></manageURL>
         <medalURL caption="勋章亲密度URL"><![CDATA[https://api.live.bilibili.com/i/api/medal]]></medalURL>
         <giftURL caption="日常/周常礼物URL"><![CDATA[https://api.live.bilibili.com/gift/v2/live/receive_daily_bag]]></giftURL>
         <bagURL caption="查包裹礼物URL"><![CDATA[https://api.live.bilibili.com/gift/v2/gift/bag_list]]></bagURL>
-        <feedURL caption="投喂URL"><![CDATA[http://api.live.bilibili.com/gift/v2/live/bag_send]]></feedURL>
+        <feedURL caption="投喂URL"><![CDATA[https://api.live.bilibili.com/gift/v2/live/bag_send]]></feedURL>
         <getCapsuleURL caption="查扭蛋币URL">https://api.live.bilibili.com/api/ajaxCapsule</getCapsuleURL>
         <openCapsuleURL caption="打开扭蛋URL">https://api.live.bilibili.com/api/ajaxCapsuleOpen</openCapsuleURL>
         <getAchieveURL caption="查询成就列表URL"><![CDATA[https://api.live.bilibili.com/i/api/ajaxGetAchieve]]></getAchieveURL>
-        <doAchieveURL caption="领取成就奖励URL"><![CDATA[http://api.live.bilibili.com/i/ajaxGetTaskAward]]></doAchieveURL>
+        <doAchieveURL caption="领取成就奖励URL"><![CDATA[https://api.live.bilibili.com/i/ajaxGetTaskAward]]></doAchieveURL>
         <stormCheckURL caption="节奏风暴检测URL"><![CDATA[https://api.live.bilibili.com/lottery/v1/Storm/check]]></stormCheckURL>
         <stormCodeURL caption="节奏风暴验证码URL"><![CDATA[https://api.live.bilibili.com/captcha/v1/Captcha/create]]></stormCodeURL>
         <stormJoinURL caption="节奏风暴抽奖URL"><![CDATA[https://api.live.bilibili.com/lottery/v1/Storm/join]]></stormJoinURL>
@@ -58,9 +58,9 @@
         <pongHbURL caption="PONG心跳URL"><![CDATA[https://api.live.bilibili.com/relation/v1/feed/heartBeat]]></pongHbURL>
         <hbGiftURL caption="领取心跳礼物URL"><![CDATA[https://api.live.bilibili.com/gift/v2/live/heart_gift_receive]]></hbGiftURL>
         
-        <appVideoURL caption="获取手机端视频地址URL"><![CDATA[http://live.bilibili.com/api/playurl]]></appVideoURL>
-        <appWatchURL caption="手机端观看直播URL"><![CDATA[http://live-trace.bilibili.com/heartbeat_ext/v1/Heartbeat/player]]></appWatchURL>
-        <pcWatchURL caption="PC端观看直播URL"><![CDATA[http://api.live.bilibili.com/User/userOnlineHeart]]></pcWatchURL>
+        <appVideoURL caption="获取手机端视频地址URL"><![CDATA[https://live.bilibili.com/api/playurl]]></appVideoURL>
+        <appWatchURL caption="手机端观看直播URL"><![CDATA[https://live-trace.bilibili.com/heartbeat_ext/v1/Heartbeat/player]]></appWatchURL>
+        <pcWatchURL caption="PC端观看直播URL"><![CDATA[https://api.live.bilibili.com/User/userOnlineHeart]]></pcWatchURL>
         
         <gameURL caption="游戏区/手游区房间列表URL"><![CDATA[https://api.live.bilibili.com/room/v1/area/getRoomList]]></gameURL>
         <amuseURL caption="娱乐区房间列表URL"><![CDATA[https://api.live.bilibili.com/room/v1/AmuseArea/allList]]></amuseURL>
