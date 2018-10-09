@@ -178,6 +178,8 @@ public class Gifts extends __XHR {
 		request.put(BiliCmdAtrbt.token, "");
 		request.put(BiliCmdAtrbt.csrf_token, cookie.CSRF());
 		request.put(BiliCmdAtrbt.coin_type, "silver");	// 银瓜子
+		request.put(BiliCmdAtrbt.price, "0");
+		request.put(BiliCmdAtrbt.visit_id, getVisitId());
 		return request;
 	}
 	

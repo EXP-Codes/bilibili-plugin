@@ -390,6 +390,7 @@ public class XHRSender {
 		List<BagGift> feedGifts = filterGifts(cookie, allGifts, medal);
 		
 		// 投喂主播
+		Other.entryRoom(cookie, roomId);
 		User up = Other.queryUpInfo(roomId);
 		Gifts.feed(cookie, roomId, up.ID(), feedGifts);
 	}
