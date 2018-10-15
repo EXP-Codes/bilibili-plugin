@@ -15,7 +15,7 @@ import exp.libs.warp.xls.Sheet;
 
 public class TestSttc {
 
-	private final static String DIR = "C:\\Users\\Administrator\\Desktop\\BACKUP";
+	private final static String DIR = "C:\\Users\\Administrator\\Desktop\\log\\BACKUP";
 	
 	private static Map<String, Sheet> sheets = new HashMap<String, Sheet>();
 	
@@ -29,21 +29,25 @@ public class TestSttc {
 			if(file.isDirectory()) {
 				File[] fs = file.listFiles();
 				for(File f : fs) {
-					if(f.getName().contains("sttc")) {
-						if(f.getName().contains("zip")) {
-							CompressUtils.unZip(f.getPath());
-						}
+					if(f.getName().contains("sttc") && 
+							!f.getName().contains("zip")) {
+//						if(f.getName().contains("zip")) {
+//							CompressUtils.unZip(f.getPath());
+//						}
 						
-						if(!f.getName().contains("zip")) {
-							String path = f.getAbsolutePath().replace(".zip", "");
-							System.out.println(path);
-							todo(excel, path);
-						}
+						String path = f.getAbsolutePath();
+//						if(f.getName().contains("zip")) {
+//							path = path.replace(".zip", "");
+//						}
+						
+						System.out.println(path);
+						todo(excel, path);
 					}
 				}
 			}
 		}
 		
+		excel.hideSheet(0);
 		excel.saveAs(DIR + "\\sttc.xlsx");
 		excel.clear();
 	}
