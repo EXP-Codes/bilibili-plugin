@@ -116,13 +116,13 @@ public class LotteryTV extends _Lottery {
 			String reason = join(LotteryType.TV, cookie, TV_JOIN_URL, roomId, raffleId);
 			if(StrUtils.isEmpty(reason)) {
 				sttclog.info("[{}] [{}] [{}] [{}] [{}]", "TV", roomId, cookie.NICKNAME(), "T", reason);
-				log.info("[{}] 参与直播间 [{}] 抽奖成功(小电视/摩天楼)", cookie.NICKNAME(), roomId);
+				log.info("[{}] 参与直播间 [{}] 抽奖成功(小电视/摩天楼/活动)", cookie.NICKNAME(), roomId);
 				cookie.updateLotteryTime();
 				cnt++;
 				
 			} else {
 				sttclog.info("[{}] [{}] [{}] [{}] [{}]", "TV", roomId, cookie.NICKNAME(), "F", reason);
-				log.info("[{}] 参与直播间 [{}] 抽奖失败(小电视/摩天楼)", cookie.NICKNAME(), roomId);
+				log.info("[{}] 参与直播间 [{}] 抽奖失败(小电视/摩天楼/活动)", cookie.NICKNAME(), roomId);
 				UIUtils.statistics("失败(", reason, "): 直播间 [", roomId, 
 						"],账号[", cookie.NICKNAME(), "]");
 				
@@ -140,7 +140,7 @@ public class LotteryTV extends _Lottery {
 		}
 		
 		if(cnt > 0) {
-			UIUtils.statistics("成功(小电视/摩天楼/C位光环x", cnt, "): 直播间 [", roomId, "]");
+			UIUtils.statistics("成功(小电视/摩天楼/活动x", cnt, "): 直播间 [", roomId, "]");
 			UIUtils.updateLotteryCnt(cnt);
 		}
 	}

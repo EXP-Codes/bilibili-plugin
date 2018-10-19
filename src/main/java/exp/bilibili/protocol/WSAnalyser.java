@@ -90,7 +90,7 @@ public class WSAnalyser {
 			
 		} else if(biliCmd == BiliCmd.SYS_MSG) {
 			if(StrUtils.isNotEmpty(_getRoomId(json))) {
-				toDo(new TvLottery(json), onlyListen);
+				toDo(new TvLottery(json), !onlyListen);
 				
 			} else if(!onlyListen) {
 				toDo(new SysMsg(json));
@@ -221,22 +221,21 @@ public class WSAnalyser {
 	}
 	
 	/**
-	 * 小电视通知
+	 * 小电视/大楼通知
 	 * @param msgBean
-	 * @param onlyListen
+	 * @param chatSession 版聊的会话
 	 */
-	private static void toDo(TvLottery msgBean, boolean onlyListen) {
-		boolean isTV = msgBean.getMsg().contains("电视");
-		if(onlyListen && !isTV) {
-			String msg = StrUtils.concat("直播间 [", msgBean.ROOM_ID(), "] 正在大楼/活动抽奖中!!!");
+	private static void toDo(TvLottery msgBean, boolean chatSession) {
+		if(chatSession && msgBean.getMsg().contains("全区广播")) {
+			String msg = StrUtils.concat("直播间 [", msgBean.ROOM_ID(), "] 正在全区抽奖中!!!");
 			UIUtils.notify(msg);
 			log.info(msg);
 			
-		} else if(!onlyListen && isTV) {
-			String msg = StrUtils.concat("直播间 [", msgBean.ROOM_ID(), "] 正在小电视抽奖中!!!");
+		} else if(!chatSession && msgBean.getMsg().contains("区广播")) {
+			String msg = StrUtils.concat("直播间 [", msgBean.ROOM_ID(), "] 正在分区抽奖中!!!");
 			UIUtils.notify(msg);
 			log.info(msg);
-			
+				
 		} else {
 			// Undo: 小电视 是全平台公告, 摩天大楼只是分区公告, 此处可避免重复打印 小电视公告
 		}
