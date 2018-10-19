@@ -11,7 +11,7 @@
 
     <name>哔哩哔哩插件姬</name>
     <description>直播间抽奖、自动挂机(礼物抽奖+日常)、自动答谢、晚安、打call</description>
-    <url>https://github.com/lyy289065406/expcodes/trunk/java/99-project/bilibili-plugin</url>
+    <url>https://github.com/lyy289065406/bilibili-plugin</url>
     <inceptionYear>2017-12-17</inceptionYear>
 
     <!--项目的问题管理系统(可选)-->
@@ -29,9 +29,9 @@
     <!-- 软件配置管理 -->
     <scm>
         <!-- 项目SVN主干目录（需保证目录已存在） -->
-        <connection>scm:svn:https://github.com/lyy289065406/expcodes/trunk/java/99-project/bilibili-plugin/trunk</connection>
-        <developerConnection>scm:svn:https://github.com/lyy289065406/expcodes/trunk/java/99-project/bilibili-plugin/trunk</developerConnection>
-        <url>scm:svn:https://github.com/lyy289065406/expcodes/trunk/java/99-project/bilibili-plugin/trunk</url>
+        <connection>scm:svn:https://github.com/lyy289065406/bilibili-plugin/trunk</connection>
+        <developerConnection>scm:svn:https://github.com/lyy289065406/bilibili-plugin/trunk</developerConnection>
+        <url>scm:svn:https://github.com/lyy289065406/bilibili-plugin/trunk</url>
     </scm>
 
     <!-- 变量定义 -->
@@ -248,7 +248,7 @@
                 <version>2.3.2</version>
                 <configuration>
                     <!-- 项目的SVN基线目录（需保证目录已存在） -->
-                    <tagBase>https://github.com/lyy289065406/expcodes/trunk/java/99-project/bilibili-plugin/tags</tagBase>
+                    <tagBase>https://github.com/lyy289065406/bilibili-plugin/tags</tagBase>
                 </configuration>
             </plugin>
 
