@@ -226,18 +226,18 @@ public class WSAnalyser {
 	 * @param chatSession 版聊的会话
 	 */
 	private static void toDo(TvLottery msgBean, boolean chatSession) {
-		if(chatSession && msgBean.getMsg().contains("全区广播")) {
+		if(chatSession && msgBean.getMsg().contains("全区")) {
 			String msg = StrUtils.concat("直播间 [", msgBean.ROOM_ID(), "] 正在全区抽奖中!!!");
 			UIUtils.notify(msg);
 			log.info(msg);
 			
-		} else if(!chatSession && msgBean.getMsg().contains("区广播")) {
+		} else if(!chatSession && !msgBean.getMsg().contains("全区")) {
 			String msg = StrUtils.concat("直播间 [", msgBean.ROOM_ID(), "] 正在分区抽奖中!!!");
 			UIUtils.notify(msg);
 			log.info(msg);
 				
 		} else {
-			// Undo: 小电视 是全平台公告, 摩天大楼只是分区公告, 此处可避免重复打印 小电视公告
+			// Undo: 避免其他监听会话重复打印 全区抽奖公告
 		}
 		
 		RoomMgr.getInstn().addTvRoom(msgBean.ROOM_ID(), msgBean.getUrl(), msgBean.getTvId());
