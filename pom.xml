@@ -40,7 +40,7 @@
         <release.dir>${project.build.directory}/${project.artifactId}-${project.version}</release.dir>
         <jdk.version>1.7</jdk.version>
         <explibs.version>1.1-SNAPSHOT</explibs.version>
-        <mrp.plugin.version>1.0-SNAPSHOT</mrp.plugin.version>
+        <mrp.plugin.version>1.0</mrp.plugin.version>
     </properties>
 
     <!-- 项目依赖 -->
