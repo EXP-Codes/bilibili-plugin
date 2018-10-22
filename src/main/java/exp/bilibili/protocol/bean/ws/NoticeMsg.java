@@ -267,19 +267,20 @@ public class NoticeMsg extends _Msg {
 	public JSONObject toJson() {
 		JSONObject json = new JSONObject();
 		switch(type) {
-			case 1 : case 5 : { 
+			case 1 : case 2 : case 5 : { 
 				json.put(BiliCmdAtrbt.cmd, BiliCmd.SYS_MSG.CMD());
 				json.put(BiliCmdAtrbt.msg, msg);
 				break; 
 			}
-			case 2 : { // 小电视抽奖
-				json.put(BiliCmdAtrbt.cmd, BiliCmd.SYS_MSG.CMD());
-				json.put(BiliCmdAtrbt.msg, msg);
-				json.put(BiliCmdAtrbt.roomid, roomId);
-				json.put(BiliCmdAtrbt.real_roomid, realRoomId);
-				json.put(BiliCmdAtrbt.url, url);
-				break; 
-			}
+			// 与 SYS_MSG 的抽奖通知重复，不转换成抽奖消息
+//			case 2 : { // 小电视抽奖
+//				json.put(BiliCmdAtrbt.cmd, BiliCmd.SYS_MSG.CMD());
+//				json.put(BiliCmdAtrbt.msg, msg);
+//				json.put(BiliCmdAtrbt.roomid, roomId);
+//				json.put(BiliCmdAtrbt.real_roomid, realRoomId);
+//				json.put(BiliCmdAtrbt.url, url);
+//				break; 
+//			}
 			case 3 : { // 舰长抽奖
 				json.put(BiliCmdAtrbt.cmd, BiliCmd.GUARD_MSG.CMD());
 				json.put(BiliCmdAtrbt.msg, msg);
