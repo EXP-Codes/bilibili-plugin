@@ -54,5 +54,4 @@ public class ChatRobot {
 		return request;
 	}
 	
-	
 }

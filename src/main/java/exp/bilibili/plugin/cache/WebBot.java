@@ -401,7 +401,7 @@ public class WebBot extends LoopThread {
 					continue;
 				}
 				
-				XHRSender.toWatchLive(cookie);	// PC端
+				XHRSender.toWatchLive(cookie);
 				nextHBTime = XHRSender.onlineHeartbeat(cookie);
 				ThreadUtils.tSleep(50);
 			}
