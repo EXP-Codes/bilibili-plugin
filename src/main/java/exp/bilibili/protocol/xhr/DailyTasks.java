@@ -212,28 +212,28 @@ public class DailyTasks extends __XHR {
 		String response = HttpURLUtils.doGet(HB_GIFT_URL, header, request);
 		
 		long nextTaskTime = System.currentTimeMillis() + DELAY_10_MIN;
-		try {
-			JSONObject json = JSONObject.fromObject(response);
-			JSONObject data = JsonUtils.getObject(json, BiliCmdAtrbt.data);
-			Object obj = data.get(BiliCmdAtrbt.gift_list);
-			if(obj instanceof JSONObject) {
-				JSONObject giftList = (JSONObject) obj;
-				Set<String> keys = giftList.keySet();
-				for(String key : keys) {
-					JSONObject gift = giftList.getJSONObject(key);
-					int dayNum = JsonUtils.getInt(gift, BiliCmdAtrbt.day_num, -1);
-					int dayLimit = JsonUtils.getInt(gift, BiliCmdAtrbt.day_limit, 0);
-					if(dayNum >= dayLimit) {
-						nextTaskTime = -1;
-					}
-					
-					UIUtils.log("[", cookie.NICKNAME(), "] 已领取活动礼物: ", dayNum, "/", dayLimit);
-					break;
-				}
-			}
-		} catch(Exception e) {
-			log.error("[{}] 领取活动礼物失败: {}", cookie.NICKNAME(), response, e);
-		}
+//		try {
+//			JSONObject json = JSONObject.fromObject(response);
+//			JSONObject data = JsonUtils.getObject(json, BiliCmdAtrbt.data);
+//			Object obj = data.get(BiliCmdAtrbt.gift_list);
+//			if(obj instanceof JSONObject) {
+//				JSONObject giftList = (JSONObject) obj;
+//				Set<String> keys = giftList.keySet();
+//				for(String key : keys) {
+//					JSONObject gift = giftList.getJSONObject(key);
+//					int dayNum = JsonUtils.getInt(gift, BiliCmdAtrbt.day_num, -1);
+//					int dayLimit = JsonUtils.getInt(gift, BiliCmdAtrbt.day_limit, 0);
+//					if(dayNum >= dayLimit) {
+//						nextTaskTime = -1;
+//					}
+//					
+//					UIUtils.log("[", cookie.NICKNAME(), "] 已领取活动礼物: ", dayNum, "/", dayLimit);
+//					break;
+//				}
+//			}
+//		} catch(Exception e) {
+//			log.error("[{}] 领取活动礼物失败: {}", cookie.NICKNAME(), response, e);
+//		}
 		return nextTaskTime;
 	}
 	
