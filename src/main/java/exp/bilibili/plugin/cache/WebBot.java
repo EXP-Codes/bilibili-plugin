@@ -76,6 +76,15 @@ public class WebBot extends LoopThread {
 	/** 上次重置每日任务的时间点 */
 	private long resetTaskTime;
 	
+	/** 下次在线心跳时间 */
+	private long nextHBTime;
+	
+	/** 机器人睡眠开始时间点 */
+	private int sleepBgnHour;
+	
+	/** 机器人睡眠结束时间点 */
+	private int sleepEndHour;
+	
 	/** 单例 */
 	private static volatile WebBot instance;
 	
@@ -88,6 +97,12 @@ public class WebBot extends LoopThread {
 		this.lastAddCookieTime = System.currentTimeMillis();
 		this.nextTaskTime = System.currentTimeMillis() + DELAY_TIME;	// 首次打开软件时, 延迟一点时间再执行任务
 		this.resetTaskTime = TimeUtils.getZeroPointMillis(HOUR_OFFSET) + DELAY_TIME;	// 避免临界点时差, 后延一点时间
+		this.nextHBTime = 0;
+		
+		String robotSleepTime = Config.getInstn().ROBOT_SLEEP_TIME();
+		String[] hours = robotSleepTime.split("-");
+		this.sleepBgnHour = NumUtils.toInt(hours[0], 1);
+		this.sleepEndHour = NumUtils.toInt(hours[1], 6);
 	}
 	
 	/**
@@ -127,15 +142,14 @@ public class WebBot extends LoopThread {
 		log.info("{} 已停止", getName());
 	}
 	
-	// FIXME: 可配置
 	private boolean toSleep() {
 		boolean isSleep = false;
 		// 凌晨3点~4点是B站判定机器人的固定时间，在这段时间的前后2小时不执行任何操作
 		
 		int hour = TimeUtils.getCurHour();
-		if(hour >= 1 && hour < 6) {
+		if(hour >= sleepBgnHour && hour < sleepEndHour) {
 			isSleep = true;
-			UIUtils.log("[机器人休眠中] : 凌晨01:00~06:00是高危时间, 暂停一切行为");
+			UIUtils.log("[机器人休眠中] : 高危时间期间暂停一切行为");
 		}
 		return isSleep;
 	}
@@ -151,6 +165,7 @@ public class WebBot extends LoopThread {
 		} else {
 			doDailyTasks();	// 执行每日任务
 			doEvent();		// 定时触发事件
+			doOnlineHB();	// 在线心跳（模拟观看直播）
 		}
 	}
 	
@@ -372,6 +387,25 @@ public class WebBot extends LoopThread {
 				UIUtils.log(msg);
 				UIUtils.notityExit(msg);
 			}
+		}
+	}
+	
+	/**
+	 * 在线心跳（模拟保持直播间在线状态）
+	 */
+	private void doOnlineHB() {
+		if(nextHBTime <= System.currentTimeMillis()) {
+			Set<BiliCookie> cookies = CookiesMgr.ALL(true);
+			for(BiliCookie cookie : cookies) {
+				if(!cookie.isBindTel()) {	// 仅绑定了手机的账号才能参与
+					continue;
+				}
+				
+				XHRSender.toWatchLive(cookie);	// PC端
+				nextHBTime = XHRSender.onlineHeartbeat(cookie);
+				ThreadUtils.tSleep(50);
+			}
+			nextHBTime += System.currentTimeMillis();
 		}
 	}
 	

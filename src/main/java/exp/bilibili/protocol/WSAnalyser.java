@@ -33,6 +33,7 @@ import exp.bilibili.protocol.bean.ws.SendGift;
 import exp.bilibili.protocol.bean.ws.SpecialGift;
 import exp.bilibili.protocol.bean.ws.SysGift;
 import exp.bilibili.protocol.bean.ws.SysMsg;
+import exp.bilibili.protocol.bean.ws.TvEnd;
 import exp.bilibili.protocol.bean.ws.TvLottery;
 import exp.bilibili.protocol.bean.ws.WelcomeGuard;
 import exp.bilibili.protocol.bean.ws.WelcomeMsg;
@@ -157,6 +158,9 @@ public class WSAnalyser {
 			
 		} else if(!onlyListen && biliCmd == BiliCmd.COMBO_END) {
 			toDo(new ComboEnd(json));
+			
+		} else if(!onlyListen && biliCmd == BiliCmd.TV_END) {
+			toDo(new TvEnd(json));
 			
 		} else {
 			isOk = onlyListen;
@@ -480,6 +484,14 @@ public class WSAnalyser {
 	 * @param msgBean
 	 */
 	private static void toDo(ComboEnd msgBean) {
+		// Undo
+	}
+	
+	/**
+	 * 小电视中奖消息
+	 * @param tvEnd
+	 */
+	private static void toDo(TvEnd tvEnd) {
 		// Undo
 	}
 	

@@ -63,6 +63,9 @@ public class DailyTasks extends __XHR {
 	/** 小学数学任务重试间隔(验证码计算成功率只有90%左右, 失败后需重试) */
 	private final static long SLEEP_TIME = 500L;
 	
+	/** 执行下次任务的延迟时间点（60秒后） */
+	private final static long DELAY_60_SEC = 60000L;
+	
 	/** 执行下次任务的延迟时间点（5分钟后） */
 	private final static long DELAY_5_MIN = 300000L;
 	
@@ -203,8 +206,6 @@ public class DailyTasks extends __XHR {
 	@SuppressWarnings("unchecked")
 	public static long receiveHolidayGift(BiliCookie cookie) {
 		String roomId = getRealRoomId();
-		holidayHeartbeat(cookie, roomId);
-		
 		Map<String, String> header = GET_HEADER(cookie.toNVCookie(), roomId);
 		Map<String, String> request = new HashMap<String, String>();
 		request.put(BiliCmdAtrbt.roomid, roomId);
@@ -212,36 +213,37 @@ public class DailyTasks extends __XHR {
 		String response = HttpURLUtils.doGet(HB_GIFT_URL, header, request);
 		
 		long nextTaskTime = System.currentTimeMillis() + DELAY_10_MIN;
-//		try {
-//			JSONObject json = JSONObject.fromObject(response);
-//			JSONObject data = JsonUtils.getObject(json, BiliCmdAtrbt.data);
-//			Object obj = data.get(BiliCmdAtrbt.gift_list);
-//			if(obj instanceof JSONObject) {
-//				JSONObject giftList = (JSONObject) obj;
-//				Set<String> keys = giftList.keySet();
-//				for(String key : keys) {
-//					JSONObject gift = giftList.getJSONObject(key);
-//					int dayNum = JsonUtils.getInt(gift, BiliCmdAtrbt.day_num, -1);
-//					int dayLimit = JsonUtils.getInt(gift, BiliCmdAtrbt.day_limit, 0);
-//					if(dayNum >= dayLimit) {
-//						nextTaskTime = -1;
-//					}
-//					
-//					UIUtils.log("[", cookie.NICKNAME(), "] 已领取活动礼物: ", dayNum, "/", dayLimit);
-//					break;
-//				}
-//			}
-//		} catch(Exception e) {
-//			log.error("[{}] 领取活动礼物失败: {}", cookie.NICKNAME(), response, e);
-//		}
+		try {
+			JSONObject json = JSONObject.fromObject(response);
+			JSONObject data = JsonUtils.getObject(json, BiliCmdAtrbt.data);
+			Object obj = data.get(BiliCmdAtrbt.gift_list);
+			if(obj instanceof JSONObject) {
+				JSONObject giftList = (JSONObject) obj;
+				Set<String> keys = giftList.keySet();
+				for(String key : keys) {
+					JSONObject gift = giftList.getJSONObject(key);
+					int dayNum = JsonUtils.getInt(gift, BiliCmdAtrbt.day_num, -1);
+					int dayLimit = JsonUtils.getInt(gift, BiliCmdAtrbt.day_limit, 0);
+					if(dayNum >= dayLimit) {
+						nextTaskTime = -1;
+					}
+					
+					UIUtils.log("[", cookie.NICKNAME(), "] 已领取活动礼物: ", dayNum, "/", dayLimit);
+					break;
+				}
+			}
+		} catch(Exception e) {
+			log.error("[{}] 领取活动礼物失败: {}", cookie.NICKNAME(), response, e);
+		}
 		return nextTaskTime;
 	}
 	
 	/**
-	 * 活动心跳
+	 * 在线心跳（用于触发在线观看时长经验）
 	 * @param cookie
 	 */
-	private static void holidayHeartbeat(BiliCookie cookie, String roomId) {
+	public static long onlineHeartbeat(BiliCookie cookie) {
+		String roomId = getRealRoomId();
 		
 		// ping心跳
 		Map<String, String> header = POST_HEADER(cookie.toNVCookie(), roomId);
@@ -255,6 +257,8 @@ public class DailyTasks extends __XHR {
 		header = GET_HEADER(cookie.toNVCookie(), roomId);
 		request.put(BiliCmdAtrbt.underline, String.valueOf(System.currentTimeMillis()));
 		HttpURLUtils.doGet(PONG_HB_URL, header, request);
+		
+		return DELAY_60_SEC;
 	}
 	
 	/**

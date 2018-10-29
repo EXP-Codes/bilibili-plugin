@@ -51,7 +51,7 @@ public class WatchLive extends __XHR {
 	 */
 	public static void toWatchPCLive(BiliCookie cookie, int roomId) {
 		Map<String, String> header = POST_HEADER(cookie.toNVCookie(), getRealRoomId(roomId));
-		String response = HttpURLUtils.doGet(PC_WATCH_URL, header, null);
+		String response = HttpURLUtils.doPost(PC_WATCH_URL, header, null);
 		
 		try {
 			JSONObject json = JSONObject.fromObject(response);

@@ -366,6 +366,10 @@ public class Config {
 		return xConf.getLong("/config/app/intervalTime");
 	}
 	
+	public String ROBOT_SLEEP_TIME() {
+		return xConf.getVal("/config/app/robotSleepTime");
+	}
+	
 	public String CHAT_SERVER() {
 		return xConf.getVal("/config/ai/chatServer");
 	}

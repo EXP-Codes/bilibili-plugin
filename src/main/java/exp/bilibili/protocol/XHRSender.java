@@ -166,17 +166,20 @@ public class XHRSender {
 	public static long toAssn(BiliCookie cookie) {
 		long nextTaskTime = (cookie.TASK_STATUS().isFinAssn() ? 
 				-1 : DailyTasks.toAssn(cookie));
-		
-		// 若有爱社签到失败, 则模拟双端观看直播
-		if(nextTaskTime > 0) {
-			int roomId = UIUtils.getLiveRoomId();
-			WatchLive.toWatchPCLive(cookie, roomId);	// PC端
-//			WatchLive.toWatchAppLive(cookie, roomId);	// 手机端 (FIXME: 暂时无效)
-			
-		} else {
+		if(nextTaskTime < 0) {
 			cookie.TASK_STATUS().markAssn();
 		}
 		return nextTaskTime;
+	}
+	
+	/**
+	 * 模拟在线观看直播
+	 * @param cookie
+	 */
+	public static void toWatchLive(BiliCookie cookie) {
+		int roomId = UIUtils.getLiveRoomId();
+		WatchLive.toWatchPCLive(cookie, roomId);	// PC端
+//		WatchLive.toWatchAppLive(cookie, roomId);	// 手机端 (FIXME: 暂时无效)
 	}
 	
 	/**
@@ -191,6 +194,15 @@ public class XHRSender {
 			cookie.TASK_STATUS().markDailyGift();
 		}
 		return nextTaskTime;
+	}
+	
+	/**
+	 * 领取在线时长经验奖励（每90秒一次心跳）
+	 * @param cookie
+	 * @return
+	 */
+	public static long onlineHeartbeat(BiliCookie cookie) {
+		return DailyTasks.onlineHeartbeat(cookie);
 	}
 	
 	/**

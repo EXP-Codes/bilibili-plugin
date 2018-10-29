@@ -108,6 +108,10 @@ public class BiliCmd {
 	private final static String _COMBO_END = "COMBO_END";
 	public final static BiliCmd COMBO_END = new BiliCmd(_COMBO_END);
 	
+	/** 小电视中奖消息 */
+	private final static String _TV_END = "TV_END";
+	public final static BiliCmd TV_END = new BiliCmd(_TV_END);
+	
 	private String cmd;
 	
 	private BiliCmd(String cmd) {
@@ -188,6 +192,9 @@ public class BiliCmd {
 			
 		} else if(_COMBO_END.equals(cmd)) {
 			biliCMD = COMBO_END;
+		
+		} else if(_TV_END.equals(cmd)) {
+			biliCMD = TV_END;
 			
 		}
 		return biliCMD;

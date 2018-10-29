@@ -55,7 +55,7 @@
         
         <entryRoomURL caption="进入房间URL"><![CDATA[https://api.live.bilibili.com/room/v1/Room/room_entry_action]]></entryRoomURL>
         <pingHbURL caption="PING心跳URL"><![CDATA[https://api.vc.bilibili.com/feed_svr/v1/feed_svr/notice]]></pingHbURL>
-        <pongHbURL caption="PONG心跳URL"><![CDATA[https://api.live.bilibili.com/relation/v1/feed/heartBeat]]></pongHbURL>
+        <pongHbURL caption="PONG心跳URL"><![CDATA[https://api.live.bilibili.com/relation/v1/Feed/heartBeat]]></pongHbURL>
         <hbGiftURL caption="领取心跳礼物URL"><![CDATA[https://api.live.bilibili.com/gift/v2/live/heart_gift_receive]]></hbGiftURL>
         
         <appVideoURL caption="获取手机端视频地址URL"><![CDATA[https://live.bilibili.com/api/playurl]]></appVideoURL>
@@ -95,8 +95,9 @@
                            3. 仅手机绑定用户, 若此保护开关关闭, 则依然触发扭蛋、所有礼物、银瓜子投喂
                            4. 无手机绑定用户, 此开关无效, 强制触发扭蛋、永久礼物、银瓜子投喂"
         >true</protectFeed>
-        <reactionTime caption="参与抽奖的反应时间(ms)" hint="过快反应抽奖会被冻结">2000</reactionTime>
-        <intervalTime caption="参与抽奖的间隔时间(ms)" hint="抽奖频度过高会被冻结">60000</intervalTime>
+        <reactionTime caption="参与抽奖的反应时间(ms)" hint="过快反应抽奖会被冻结">10000</reactionTime>
+        <intervalTime caption="参与抽奖的间隔时间(ms)" hint="抽奖频度过高会被冻结">30000</intervalTime>
+        <robotSleepTime caption="机器人休眠时间" hint="x-y：表示从x点到y点, x、y为[0,23]之间的整数">1-6</robotSleepTime>
     </app>
     
     <ai caption="AI机器人">
