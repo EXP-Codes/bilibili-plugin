@@ -64,7 +64,7 @@ public class DailyTasks extends __XHR {
 	private final static long SLEEP_TIME = 500L;
 	
 	/** 执行下次任务的延迟时间点（60秒后） */
-	private final static long DELAY_60_SEC = 60000L;
+	private final static long DELAY_90_SEC = 90000L;
 	
 	/** 执行下次任务的延迟时间点（5分钟后） */
 	private final static long DELAY_5_MIN = 300000L;
@@ -258,7 +258,7 @@ public class DailyTasks extends __XHR {
 		request.put(BiliCmdAtrbt.underline, String.valueOf(System.currentTimeMillis()));
 		HttpURLUtils.doGet(PONG_HB_URL, header, request);
 		
-		return DELAY_60_SEC;
+		return DELAY_90_SEC;
 	}
 	
 	/**
