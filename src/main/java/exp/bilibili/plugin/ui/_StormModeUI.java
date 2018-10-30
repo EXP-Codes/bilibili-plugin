@@ -173,7 +173,7 @@ class _StormModeUI extends PopChildWindow {
 		            e.consume();    // 销毁当前输入字符
 
 		        // 限制不能是0开头
-		        } else if("".equals(text) && ch == '0') {   
+		        } else if(text.startsWith("0")) {   
 		            e.consume();
 		        }
 		    }
