@@ -46,6 +46,7 @@ import exp.libs.envm.Colors;
 import exp.libs.envm.Delimiter;
 import exp.libs.envm.FileType;
 import exp.libs.utils.encode.CompressUtils;
+import exp.libs.utils.encode.CryptoUtils;
 import exp.libs.utils.io.FileUtils;
 import exp.libs.utils.num.NumUtils;
 import exp.libs.utils.os.ThreadUtils;
@@ -231,13 +232,6 @@ public class AppUI extends MainWindow {
 				
 			// 用户
 			} else {
-				String code = SwingUtils.input("请输入注册码");
-				String errMsg = SafetyUtils.checkAC(code);
-				if(StrUtils.isNotEmpty(errMsg)) {
-					SwingUtils.warn(errMsg);
-					isOk = false;
-				}
-				
 				// 主播用户
 				if(Identity.UPLIVE.CMD().equals(args[0])) {
 					Identity.set(Identity.UPLIVE);
@@ -249,6 +243,16 @@ public class AppUI extends MainWindow {
 				// 试用用户(游客)
 				} else {
 					Identity.set(Identity.GUEST);
+					SafetyUtils.certificateForGuest();
+				}
+				
+				// 要求输入授权码
+				String code = SwingUtils.input(CryptoUtils.deDES(
+						"310353578B61BEC4F18A841407E00B2260FE1DB9504607A7"));
+				String errMsg = SafetyUtils.checkAC(code);	// 检查授权码和授权时间
+				if(StrUtils.isNotEmpty(errMsg)) {
+					SwingUtils.warn(errMsg);
+					isOk = false;
 				}
 			}
 		}
@@ -1013,12 +1017,11 @@ public class AppUI extends MainWindow {
 					SwingUtils.warn("您是个有身份的人~ 先登录才能召唤 [尬聊姬] 哦~");
 					return;
 					
-				} else if(Identity.less(Identity.UPLIVE)) {
-					SwingUtils.warn("为了守护直播间秩序, 非主播用户无法召唤 [尬聊姬] 哦~");
+				} else if(Identity.less(Identity.ADMIN)) {
+					SwingUtils.warn("为了守护直播间秩序, 非管理员无法召唤 [尬聊姬] 哦~");
 					return;
 					
-				} else if(Identity.less(Identity.ADMIN) && 
-						Config.getInstn().isTabuAutoChat(getLiveRoomId())) {
+				} else if(Config.getInstn().isTabuAutoChat(getLiveRoomId())) {
 					SwingUtils.warn("您未被授权在此直播间使用 [尬聊姬] 哦~");
 					return;
 				}
@@ -1045,6 +1048,10 @@ public class AppUI extends MainWindow {
 			public void actionPerformed(ActionEvent e) {
 				if(!isLogined()) {
 					SwingUtils.warn("登陆后才能使用此功能");
+					return;
+					
+				} else if(Identity.less(Identity.USER)) {
+					SwingUtils.warn("游客未被授权开启 [节奏|舰队] 扫描哦~");
 					return;
 				}
 				

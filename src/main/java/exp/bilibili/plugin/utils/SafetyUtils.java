@@ -1,5 +1,6 @@
 package exp.bilibili.plugin.utils;
 
+import exp.bilibili.plugin.envm.Identity;
 import exp.libs.envm.Charset;
 import exp.libs.utils.encode.CryptoUtils;
 import exp.libs.utils.io.FileUtils;
@@ -107,10 +108,20 @@ public class SafetyUtils {
 	 * @return 授权截止时间
 	 */
 	public static String certificateToFile(int day) {
+		return certificateToFile(day, C_PATH);
+	}
+	
+	/**
+	 * 生成从现在开始一直到day天的之后的授权时间, 并写入文件
+	 * @param day 有效期
+	 * @param filePath 保存文件位置
+	 * @return 授权截止时间
+	 */
+	public static String certificateToFile(int day, String filePath) {
 		day = (day < 0 ? 0 : day);
 		long time = System.currentTimeMillis() + DAY_MILLIS * day;
 		String certificate = CryptoUtils.toDES(String.valueOf(time));
-		FileUtils.write(C_PATH, certificate, Charset.ISO, false);
+		FileUtils.write(filePath, certificate, Charset.ISO, false);
 		return certificate;
 	}
 	
@@ -119,8 +130,36 @@ public class SafetyUtils {
 	 * @return 授权截止时间
 	 */
 	public static long fileToCertificate() {
-		String certificate = FileUtils.read(C_PATH, Charset.ISO);
+		return fileToCertificate(C_PATH);
+	}
+	
+	/**
+	 * 从文件还原授权时间
+	 *@param filePath 写入了授权时间的文件
+	 * @return 授权截止时间
+	 */
+	public static long fileToCertificate(String filePath) {
+		String certificate = FileUtils.read(filePath, Charset.ISO);
 		return NumUtils.toLong(CryptoUtils.deDES(certificate), 0);
+	}
+	
+	/**
+	 * 生成试用版授权
+	 * 试用版自动生成1天授权（每台机器仅1次）
+	 */
+	public static void certificateForGuest() {
+		if(Identity.CURRENT() == Identity.GUEST) {
+			final String MARK_GUEST = "EXP-BILIBILI-GUEST";
+			final int TRY_DAY = 1;
+			String tmpPath = FileUtils.createTmpFile(MARK_GUEST, false);
+			if(FileUtils.exists(tmpPath)) {
+				long time = fileToCertificate(tmpPath);
+				if(time <= 0) {
+					certificateToFile(TRY_DAY, tmpPath);
+				}
+				FileUtils.copyFile(tmpPath, C_PATH);
+			}
+		}
 	}
 	
 }

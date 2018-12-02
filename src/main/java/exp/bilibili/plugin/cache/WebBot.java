@@ -189,8 +189,9 @@ public class WebBot extends LoopThread {
 //			_waitReactionTime(room);	// 节奏风暴无需等待, 当前环境太多机器人, 很难抢到前几名导致被捉
 			XHRSender.toStormLottery(roomId, raffleId);
 			
-		// 总督登船领奖
-		} else if(room.TYPE() == LotteryType.GUARD && Switch.isJoinLottery()) {
+		// 登船领奖
+		} else if(room.TYPE() == LotteryType.GUARD && 
+				(Switch.isJoinGuard() || Switch.isJoinLottery())) {
 			_waitReactionTime(room);
 			XHRSender.entryRoom(roomId, url);
 			XHRSender.getGuardGift(roomId);

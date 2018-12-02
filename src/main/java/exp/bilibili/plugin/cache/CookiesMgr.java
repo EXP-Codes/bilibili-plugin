@@ -51,9 +51,9 @@ public class CookiesMgr {
 	
 	/** 上限保存的小号Cookie个数 */
 	public final static int MAX_NUM = 
-			(!Identity.less(Identity.ADMIN) ? 233 : 
-			(!Identity.less(Identity.UPLIVE) ? 15 : 
-			(!Identity.less(Identity.USER) ? 8 : 3)));
+			(!Identity.less(Identity.ADMIN) ? 50 : 
+			(!Identity.less(Identity.UPLIVE) ? 10 : 
+			(!Identity.less(Identity.USER) ? 5 : 1)));
 	
 	/** 主号cookie */
 	private BiliCookie mainCookie;
