@@ -66,7 +66,7 @@
         <amuseURL caption="娱乐区房间列表URL"><![CDATA[https://api.live.bilibili.com/room/v1/AmuseArea/allList]]></amuseURL>
         <drawURL caption="绘画区房间列表URL"><![CDATA[https://api.live.bilibili.com/area/liveList]]></drawURL>
         
-        <searchURL caption="搜索直播房间URL"><![CDATA[https://search.bilibili.com/api/search]]></searchURL>
+        <searchURL caption="搜索直播房间URL"><![CDATA[https://api.bilibili.com/x/web-interface/search/type]]></searchURL>
     </urls>
     
     <files caption="本地文件位置">

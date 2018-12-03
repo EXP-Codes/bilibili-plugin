@@ -6,7 +6,7 @@
     <!--项目基本信息(必填)-->
     <groupId>exp.bilibili</groupId>
     <artifactId>bilibili-plugin</artifactId>
-    <version>5.7</version>
+    <version>5.8</version>
     <packaging>jar</packaging>
 
     <name>哔哩哔哩插件姬</name>

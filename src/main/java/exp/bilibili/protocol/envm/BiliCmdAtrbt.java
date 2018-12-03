@@ -347,9 +347,15 @@ public class BiliCmdAtrbt {
 	
 	public final static String gift_list = "gift_list";
 	
+	public final static String jsonp = "jsonp";
+	
 	public final static String search_type = "search_type";
 	
 	public final static String keyword = "keyword";
+	
+	public final static String highlight = "highlight";
+	
+	public final static String callback = "callback";
 	
 	public final static String result = "result";
 	

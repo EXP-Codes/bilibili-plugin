@@ -16,6 +16,8 @@ import org.dom4j.Element;
 
 import exp.bilibili.plugin.Config;
 import exp.bilibili.plugin.bean.ldm.BiliCookie;
+import exp.bilibili.plugin.cache.CookiesMgr;
+import exp.bilibili.plugin.envm.CookieType;
 import exp.bilibili.plugin.envm.Danmu;
 import exp.bilibili.plugin.utils.UIUtils;
 import exp.bilibili.protocol.bean.other.User;
@@ -27,6 +29,7 @@ import exp.libs.utils.format.JsonUtils;
 import exp.libs.utils.num.BODHUtils;
 import exp.libs.utils.num.NumUtils;
 import exp.libs.utils.other.StrUtils;
+import exp.libs.utils.verify.RegexUtils;
 import exp.libs.warp.net.http.HttpURLUtils;
 
 /**
@@ -462,14 +465,19 @@ public class Other extends __XHR {
 	public static int searchRoomId(BiliCookie cookie, String liveupName) {
 		Map<String, String> header = getHeader(cookie.toNVCookie());
 		Map<String, String> request = new HashMap<String, String>();
+		request.put(BiliCmdAtrbt.jsonp, "jsonp");
 		request.put(BiliCmdAtrbt.search_type, "live");
+		request.put(BiliCmdAtrbt.highlight, "1");
 		request.put(BiliCmdAtrbt.keyword, liveupName);
+		request.put(BiliCmdAtrbt.callback, "__jp1");
 		
 		int roomId = -1;
 		String response = HttpURLUtils.doGet(SEARCH_URL, header, request);
+		response = RegexUtils.findFirst(response, "^__jp1\\((.*)\\)$");
 		try {
 			JSONObject json = JSONObject.fromObject(response);
-			JSONObject result = JsonUtils.getObject(json, BiliCmdAtrbt.result);
+			JSONObject data = JsonUtils.getObject(json, BiliCmdAtrbt.data);
+			JSONObject result = JsonUtils.getObject(data, BiliCmdAtrbt.result);
 			JSONArray liveRooms = JsonUtils.getArray(result, BiliCmdAtrbt.live_room);
 			if(liveRooms.size() > 0) {
 				JSONObject liveRoom = liveRooms.getJSONObject(0);
