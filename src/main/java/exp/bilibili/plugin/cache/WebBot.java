@@ -149,7 +149,7 @@ public class WebBot extends LoopThread {
 		int hour = TimeUtils.getCurHour();
 		if(hour >= sleepBgnHour && hour < sleepEndHour) {
 			isSleep = true;
-			UIUtils.log("[机器人休眠中] : 高危时间期间暂停一切行为");
+			UIUtils.log("[机器人休眠中] : 高危时间段，暂停一切行为");
 		}
 		return isSleep;
 	}
