@@ -80,7 +80,7 @@ class _Lottery extends __XHR {
 						new String[] { "", "" } : getStormCaptcha(cookie);
 				Map<String, String> request = getRequest(sRoomId, raffleId, 
 						cookie.CSRF(), visitId, captcha[0], captcha[1]);
-				String response = HttpURLUtils.doPost(url, header, request);
+				String response = HttpURLUtils.doPost(url, header, request);	// B站大概150ms才响应
 				
 				reason = analyse(response);
 				if(StrUtils.isEmpty(reason) || reason.contains("不存在")) {

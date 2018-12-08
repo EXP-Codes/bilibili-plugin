@@ -346,8 +346,12 @@ public class XHRSender {
 	 * @param roomId
 	 * @return
 	 */
-	public static void toStormLottery(int roomId, String raffleId) {
-		LotteryStorm.toLottery(roomId, raffleId);
+	public static void toStormLottery(final int roomId, final String raffleId) {
+		new Thread() {
+			public void run() {
+				LotteryStorm.toLottery(roomId, raffleId);
+			};
+		}.start();
 	}
 	
 	/**
