@@ -433,14 +433,12 @@
                                     </fileset>
                                 </copy>
                                 <echo>拷贝文档</echo>
-                                <!-- copy todir="${release.dir}/运行截图">
-                                    <fileset dir="doc/运行截图" />
-                                </copy -->
                                 <copy todir="${release.dir}">
                                     <fileset dir="doc">
                                       <include name="使用说明.txt" />
                                     </fileset>
                                 </copy>
+                                <copy file="doc/运行截图/00-最新登录方式.png" tofile="${release.dir}/登录凭证使用说明.png" />
                             </target>
                         </configuration>
                     </execution>

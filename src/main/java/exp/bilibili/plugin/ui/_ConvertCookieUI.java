@@ -7,6 +7,7 @@ import java.awt.event.ActionListener;
 import java.util.Date;
 
 import javax.swing.ButtonGroup;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
@@ -20,6 +21,7 @@ import exp.libs.utils.encode.CryptoUtils;
 import exp.libs.utils.io.FileUtils;
 import exp.libs.utils.other.StrUtils;
 import exp.libs.utils.time.TimeUtils;
+import exp.libs.warp.cmd.CmdUtils;
 import exp.libs.warp.tpl.Template;
 import exp.libs.warp.ui.BeautyEyeUtils;
 import exp.libs.warp.ui.SwingUtils;
@@ -48,6 +50,8 @@ class _ConvertCookieUI extends PopChildWindow {
 	private final static long _30_DAY = 3600000L * 24 * 30;
 	
 	private final static String COOKIE_TPL_PATH = "/exp/bilibili/plugin/ui/login/cookie.tpl";
+	
+	private final static String HELP_URL = CryptoUtils.deDES("610BEF99CF948F0DB1542314AC977291892B30802EC5BF3BF196E7DB686EC08B709F15BDCAE49512484DC7F44F2FF99A");
 	
 	private JRadioButton mainBtn;
 	
@@ -126,7 +130,9 @@ class _ConvertCookieUI extends PopChildWindow {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				_hide();
+				
+				// 通过浏览器打开登录凭证说明页面
+				CmdUtils.execute(StrUtils.concat("cmd /c start explorer ", HELP_URL));
 			}
 		});
 
