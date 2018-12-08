@@ -55,8 +55,6 @@ class _Lottery extends __XHR {
 	 */
 	protected static String join(LotteryType type, BiliCookie cookie, 
 			String url, int roomId, String raffleId, long retryInterval) {
-		final int RETRY_LIMIT = 20;
-		
 		String sRoomId = getRealRoomId(roomId);
 		String visitId = getVisitId();
 		Map<String, String> header = POST_HEADER(cookie.toNVCookie(), sRoomId);
@@ -65,7 +63,7 @@ class _Lottery extends __XHR {
 		// 加入高能/小电视抽奖
 		if(LotteryType.STORM != type) {
 			Map<String, String> request = getRequest(cookie.CSRF(), sRoomId, raffleId, visitId);
-			for(int retry = 0; retry < RETRY_LIMIT; retry++) {
+			for(int retry = 0; retry < 20; retry++) {
 				String response = HttpURLUtils.doPost(url, header, request);
 				
 				reason = analyse(response);
@@ -77,7 +75,7 @@ class _Lottery extends __XHR {
 			
 		// 加入节奏风暴抽奖
 		} else {
-			for(int retry = 0; retry < RETRY_LIMIT; retry++) {
+			for(int retry = 0; retry < 100; retry++) {
 				String[] captcha = cookie.isRealName() ? // 实名认证后无需填节奏风暴验证码
 						new String[] { "", "" } : getStormCaptcha(cookie);
 				Map<String, String> request = getRequest(sRoomId, raffleId, 

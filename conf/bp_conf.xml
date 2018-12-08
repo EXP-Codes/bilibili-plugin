@@ -2,7 +2,7 @@
 <config hint="常用配置（覆写全量配置文件的对应项）">
   
     <app caption="应用配置">
-        <signRoomId caption="签到直播间(房间勋章等级越高签到奖励越多)">438</signRoomId>
+        <signRoomId caption="签到直播间(房间勋章等级越高签到奖励越多)">1</signRoomId>
         <stormFrequency caption="节奏风暴扫描频率(单位:ms)" hint="小于100容易被封IP">100</stormFrequency>
         <protectFeed caption="自动投喂保护" 
                      hint="自动投喂打开后, 会每小时触发：自动扭蛋(满100执行)、自动投喂（包裹+银瓜子）
