@@ -112,13 +112,11 @@ public class Guard extends __XHR {
 			JSONObject json = JSONObject.fromObject(response);
 			int code = JsonUtils.getInt(json, BiliCmdAtrbt.code, -1);
 			if(code == 0) {
-				sttclog.info("[{}] [{}] [{}] [{}] [{}]", "GUARD", roomId, cookie.NICKNAME(), "T", "");
 				UIUtils.log("[", cookie.NICKNAME(), "] 领取了直播间 [", 
 						roomId, "] 的", guardType.DESC(), "奖励");
 				
 			} else {
 				String reason = JsonUtils.getStr(json, BiliCmdAtrbt.msg);
-				sttclog.info("[{}] [{}] [{}] [{}] [{}]", "GUARD", roomId, cookie.NICKNAME(), "F", reason);
 				if(!reason.contains("已经领取")) {
 					log.warn("[{}] 领取了直播间 [{}] 的{}奖励失败: {}", 
 							cookie.NICKNAME(), roomId, guardType.DESC(), reason);

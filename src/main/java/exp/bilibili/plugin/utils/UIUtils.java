@@ -105,10 +105,6 @@ public class UIUtils {
 		return AppUI.getInstn().isGrabStorm();
 	}
 	
-	public static boolean isLimitStorm() {
-		return AppUI.getInstn().isLimitStorm();
-	}
-	
 	public static int getLotteryProbability() {
 		return AppUI.getInstn().getLotteryProbability();
 	}

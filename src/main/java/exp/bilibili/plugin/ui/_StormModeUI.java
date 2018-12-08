@@ -68,11 +68,11 @@ class _StormModeUI extends PopChildWindow {
 	
 	private JTextField endTF;
 	
-	/** 疯狂模式(降低抢夺节奏风暴的间隔，容易被关小黑屋) */
-	private JRadioButton grapBtn;
+	/** 正常模式 */
+	private JRadioButton normalBtn;
 	
-	/** 极限模式(进一步降低抢夺节奏风暴的间隔，容易被封IP或关小黑屋) */
-	private JRadioButton limitBtn;
+	/** 疯狂模式(降低抢夺节奏风暴的间隔，容易被封IP或关小黑屋) */
+	private JRadioButton grapBtn;
 	
 	protected _StormModeUI() {
 		super("节奏风暴/舰队 扫描范围", WIDTH, HEIGHT, false);
@@ -105,13 +105,13 @@ class _StormModeUI extends PopChildWindow {
 		this.bgnTF = new JTextField("4");
 		this.endTF = new JTextField("6");
 		
-		this.grapBtn = new JRadioButton("疯狂抢夺模式 (慎用:易被关小黑屋)");
-		this.limitBtn = new JRadioButton("极限抢夺模式 (慎用:易被封IP或关小黑屋)");
+		this.normalBtn = new JRadioButton("正常模式");
+		this.grapBtn = new JRadioButton("疯狂抢夺模式 (慎用:易被封IP或关小黑屋)");
 		grapBtn.setForeground(Color.RED);
-		limitBtn.setForeground(Color.RED);
 		ButtonGroup modeGroup = new ButtonGroup();
+		modeGroup.add(normalBtn);
 		modeGroup.add(grapBtn);
-		modeGroup.add(limitBtn);
+		normalBtn.setSelected(true);
 		
 		
 		if(Identity.less(Identity.UPLIVE)) {
@@ -135,8 +135,8 @@ class _StormModeUI extends PopChildWindow {
 				SwingUtils.getPairsPanel("止页码", endTF)
 		));
 		panel.add(new JLabel(" "));
+		panel.add(normalBtn);
 		panel.add(grapBtn);
-		panel.add(limitBtn);
 		SwingUtils.addBorder(panel);
 		
 		rootPanel.add(panel, BorderLayout.CENTER);
@@ -254,14 +254,6 @@ class _StormModeUI extends PopChildWindow {
 	 */
 	protected boolean isGrab() {
 		return grapBtn.isSelected();
-	}
-	
-	/**
-	 * 是否为极限抢夺模式
-	 * @return
-	 */
-	protected boolean isLimit() {
-		return limitBtn.isSelected();
 	}
 	
 }

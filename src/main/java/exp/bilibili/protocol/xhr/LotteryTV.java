@@ -116,13 +116,11 @@ public class LotteryTV extends _Lottery {
 			
 			String reason = join(LotteryType.TV, cookie, TV_JOIN_URL, roomId, raffleId, RETRY_INTERVAL);
 			if(StrUtils.isEmpty(reason)) {
-				sttclog.info("[{}] [{}] [{}] [{}] [{}]", "TV", roomId, cookie.NICKNAME(), "T", reason);
 				log.info("[{}] 参与直播间 [{}] 抽奖成功(小电视/摩天楼/活动)", cookie.NICKNAME(), roomId);
 				cookie.updateLotteryTime();
 				cnt++;
 				
 			} else {
-				sttclog.info("[{}] [{}] [{}] [{}] [{}]", "TV", roomId, cookie.NICKNAME(), "F", reason);
 				log.info("[{}] 参与直播间 [{}] 抽奖失败(小电视/摩天楼/活动)", cookie.NICKNAME(), roomId);
 				UIUtils.statistics("失败(", reason, "): 直播间 [", roomId, 
 						"],账号[", cookie.NICKNAME(), "]");

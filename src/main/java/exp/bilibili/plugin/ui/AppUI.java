@@ -1344,14 +1344,6 @@ public class AppUI extends MainWindow {
 	}
 	
 	/**
-	 * 节奏风暴是否为极限抢夺模式
-	 * @return
-	 */
-	public boolean isLimitStorm() {
-		return stormUI.isLimit();
-	}
-	
-	/**
 	 * 获取参与抽奖的概率
 	 * @return 参与抽奖的概率
 	 */

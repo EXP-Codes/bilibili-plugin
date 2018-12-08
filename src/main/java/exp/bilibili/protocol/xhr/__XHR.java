@@ -30,9 +30,6 @@ class __XHR {
 	/** XHR原始报文日志器 */
 	protected final static Logger xhrlog = LoggerFactory.getLogger("XHR");
 
-	/** 抽奖统计日志器 */
-	protected final static Logger sttclog = LoggerFactory.getLogger("STTC");
-	
 	/** 直播服务器主机 */
 	protected final static String LIVE_HOST = Config.getInstn().LIVE_HOST();
 	

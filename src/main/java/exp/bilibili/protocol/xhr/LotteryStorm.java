@@ -205,8 +205,7 @@ public class LotteryStorm extends _Lottery {
 	 * @return
 	 */
 	public static boolean toLottery(int roomId, String raffleId) {
-		final long RETRY_INTERVAL = UIUtils.isLimitStorm() ? 1 : 
-			UIUtils.isGrabStorm() ? 10 : 100;
+		final long RETRY_INTERVAL = UIUtils.isGrabStorm() ? 10 : 100;
 		int cnt = 0;
 		String reason = "未知异常";
 		boolean isExist = true;
@@ -227,7 +226,6 @@ public class LotteryStorm extends _Lottery {
 				
 				reason = join(LotteryType.STORM, cookie, STORM_JOIN_URL, roomId, raffleId, RETRY_INTERVAL);
 				if(StrUtils.isEmpty(reason)) {
-					sttclog.info("[{}] [{}] [{}] [{}] [{}]", "STORM", roomId, cookie.NICKNAME(), "T", reason);
 					log.info("[{}] 参与直播间 [{}] 抽奖成功(节奏风暴)", cookie.NICKNAME(), roomId);
 					cookie.updateLotteryTime();
 					cookieIts.remove();	// 已经成功抽奖的在本轮无需再抽
@@ -235,19 +233,13 @@ public class LotteryStorm extends _Lottery {
 					cnt++;
 					
 				} else if(reason.contains("访问被拒绝")) {
-					sttclog.info("[{}] [{}] [{}] [{}] [{}]", "STORM", roomId, cookie.NICKNAME(), "F", reason);
 					UIUtils.statistics("失败(", reason, "): 账号 [", cookie.NICKNAME(), "]");
 					cookie.freeze();
 					cookieIts.remove();	// 被临时封禁抽奖的账号无需再抽
 					isExist = true;
 					
 				} else {
-					sttclog.info("[{}] [{}] [{}] [{}] [{}]", "STORM", roomId, cookie.NICKNAME(), "F", reason);
 					log.info("[{}] 参与直播间 [{}] 抽奖失败(节奏风暴)", cookie.NICKNAME(), roomId);
-					isExist = reason.contains("再接再励");
-					if(isExist == false) {
-						break;	// 节奏风暴已完结
-					}
 				}
 			}
 		}
