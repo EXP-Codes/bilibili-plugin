@@ -370,6 +370,22 @@ public class Config {
 		return xConf.getVal("/config/app/robotSleepTime");
 	}
 	
+	public int MAX_MINI_GUEST() {
+		return xConf.getInt("/config/maxMinis/guest");
+	}
+	
+	public int MAX_MINI_USER() {
+		return xConf.getInt("/config/maxMinis/user");
+	}
+	
+	public int MAX_MINI_UPLIVE() {
+		return xConf.getInt("/config/maxMinis/uplive");
+	}
+	
+	public int MAX_MINI_ADMIN() {
+		return xConf.getInt("/config/maxMinis/admin");
+	}
+
 	public String CHAT_SERVER() {
 		return xConf.getVal("/config/ai/chatServer");
 	}

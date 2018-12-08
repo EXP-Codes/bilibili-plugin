@@ -16,8 +16,6 @@ import org.dom4j.Element;
 
 import exp.bilibili.plugin.Config;
 import exp.bilibili.plugin.bean.ldm.BiliCookie;
-import exp.bilibili.plugin.cache.CookiesMgr;
-import exp.bilibili.plugin.envm.CookieType;
 import exp.bilibili.plugin.envm.Danmu;
 import exp.bilibili.plugin.utils.UIUtils;
 import exp.bilibili.protocol.bean.other.User;

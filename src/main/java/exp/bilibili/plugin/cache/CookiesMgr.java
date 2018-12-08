@@ -16,6 +16,7 @@ import exp.bilibili.protocol.XHRSender;
 import exp.libs.envm.Charset;
 import exp.libs.utils.encode.CryptoUtils;
 import exp.libs.utils.io.FileUtils;
+import exp.libs.utils.num.NumUtils;
 import exp.libs.utils.os.ThreadUtils;
 import exp.libs.utils.other.PathUtils;
 import exp.libs.utils.other.StrUtils;
@@ -33,27 +34,31 @@ import exp.libs.utils.other.StrUtils;
 public class CookiesMgr {
 
 	/** cookie保存目录 */
-	private final static String COOKIE_DIR = Config.getInstn().COOKIE_DIR();
+	public final static String COOKIE_DIR = Config.getInstn().COOKIE_DIR();
 	
 	/**  文件名后缀 */
 	private final static String SUFFIX = ".dat";
 	
 	/** 主号cookie文件路径 */
-	private final static String COOKIE_MAIN_PATH = PathUtils.combine(COOKIE_DIR, 
+	public final static String COOKIE_MAIN_PATH = PathUtils.combine(COOKIE_DIR, 
 			StrUtils.concat("cookie-main", SUFFIX));
 	
 	/** 马甲号cookie文件路径 */
-	private final static String COOKIE_VEST_PATH = PathUtils.combine(COOKIE_DIR, 
+	public final static String COOKIE_VEST_PATH = PathUtils.combine(COOKIE_DIR, 
 			StrUtils.concat("cookie-vest", SUFFIX));
 	
 	/** 小号cookie文件名前缀 */
-	private final static String COOKIE_MINI_PREFIX = "cookie-mini-";
+	public final static String COOKIE_MINI_PREFIX = "cookie-mini-";
 	
-	/** 上限保存的小号Cookie个数 */
-	public final static int MAX_NUM = 
-			(!Identity.less(Identity.ADMIN) ? 50 : 
-			(!Identity.less(Identity.UPLIVE) ? 10 : 
-			(!Identity.less(Identity.USER) ? 5 : 1)));
+	/** 保存小号Cookie的上限个数 */
+	public final static int MAX_MINI_NUM = 
+			(!Identity.less(Identity.ADMIN) ? 
+					NumUtils.min(Config.getInstn().MAX_MINI_ADMIN(), 50) : 
+			(!Identity.less(Identity.UPLIVE) ? 
+					NumUtils.min(Config.getInstn().MAX_MINI_UPLIVE(), 10) : 
+			(!Identity.less(Identity.USER) ? 
+					NumUtils.min(Config.getInstn().MAX_MINI_USER(), 5) : 
+					NumUtils.min(Config.getInstn().MAX_MINI_GUEST(), 1))));
 	
 	/** 主号cookie */
 	private BiliCookie mainCookie;
@@ -111,11 +116,10 @@ public class CookiesMgr {
 			isOk = save(cookie, COOKIE_VEST_PATH);
 			
 		} else {
-			if(miniCookies.size() < MAX_NUM || miniCookies.contains(cookie)) {
+			if(miniCookies.size() < MAX_MINI_NUM || miniCookies.contains(cookie)) {
 				String cookiePath = miniPaths.get(cookie);
 				if(cookiePath == null) {
-					cookiePath = PathUtils.combine(COOKIE_DIR, StrUtils.concat(
-							COOKIE_MINI_PREFIX, cookie.UID(), SUFFIX));
+					cookiePath = COOKIE_MINI_PATH(cookie.UID());
 				}
 				
 				this.miniCookies.add(cookie);
@@ -123,6 +127,11 @@ public class CookiesMgr {
 			}
 		}
 		return isOk;
+	}
+	
+	public static String COOKIE_MINI_PATH(String miniUID) {
+		return PathUtils.combine(COOKIE_DIR, StrUtils.concat(
+				COOKIE_MINI_PREFIX, miniUID, SUFFIX));
 	}
 	
 	private boolean save(BiliCookie cookie, String cookiePath) {
@@ -156,7 +165,7 @@ public class CookiesMgr {
 			File dir = new File(COOKIE_DIR);
 			String[] fileNames = dir.list();
 			for(String fileName : fileNames) {
-				if(fileName.contains(COOKIE_MINI_PREFIX) && miniCookies.size() < MAX_NUM) {
+				if(fileName.contains(COOKIE_MINI_PREFIX) && miniCookies.size() < MAX_MINI_NUM) {
 					String cookiePath = PathUtils.combine(dir.getPath(), fileName);
 					BiliCookie miniCookie = load(cookiePath, type);
 					if(BiliCookie.NULL != miniCookie) {
@@ -227,7 +236,7 @@ public class CookiesMgr {
 	public static Set<BiliCookie> MINIs() {
 		Set<BiliCookie> cookies = new LinkedHashSet<BiliCookie>();
 		Iterator<BiliCookie> minis = getInstn().miniCookies.iterator();
-		for(int i = 0; i < MAX_NUM; i++) {
+		for(int i = 0; i < MAX_MINI_NUM; i++) {
 			if(minis.hasNext()) {
 				cookies.add(minis.next());
 			}

@@ -50,12 +50,14 @@ class _Lottery extends __XHR {
 	 * @param url 抽奖URL
 	 * @param roomId 直播间id
 	 * @param raffleId 抽奖号
+	 * @param retryInterval 抽奖失败重试间隔(ms)
 	 * @return 失败原因（若为空则成功）
 	 */
 	protected static String join(LotteryType type, BiliCookie cookie, 
-			String url, int roomId, String raffleId) {
+			String url, int roomId, String raffleId, long retryInterval) {
 		final int RETRY_LIMIT = 20;
-		final int RETRY_INTERVAL = 100;
+		retryInterval = (retryInterval <= 0 ? 100 : retryInterval);
+		
 		String sRoomId = getRealRoomId(roomId);
 		String visitId = getVisitId();
 		Map<String, String> header = POST_HEADER(cookie.toNVCookie(), sRoomId);
@@ -71,7 +73,7 @@ class _Lottery extends __XHR {
 				if(StrUtils.isEmpty(reason) || !reason.contains("系统繁忙")) {
 					break;
 				}
-				ThreadUtils.tSleep(RETRY_INTERVAL);
+				ThreadUtils.tSleep(retryInterval);
 			}
 			
 		// 加入节奏风暴抽奖
@@ -87,7 +89,7 @@ class _Lottery extends __XHR {
 				if(StrUtils.isEmpty(reason) || reason.contains("不存在")) {
 					break;
 				}
-				ThreadUtils.tSleep(RETRY_INTERVAL);
+				ThreadUtils.tSleep(retryInterval);
 			}
 		}
 		return reason;

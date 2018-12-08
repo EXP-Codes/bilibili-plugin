@@ -100,6 +100,13 @@
         <robotSleepTime caption="机器人休眠时间" hint="x-y：表示从x点到y点, x、y为[0,23]之间的整数">1-6</robotSleepTime>
     </app>
     
+    <maxMinis caption="不同身份的小号下限值(上限值在代码中写死)" hint="用于灵活配置购买需求">
+        <guest default="1" caption="游客" hint="上限值为1">1</guest>
+        <user default="1" caption="游客" hint="上限值为5">5</user>
+        <uplive default="1" caption="游客" hint="上限值为10">10</uplive>
+        <admin default="1" caption="游客" hint="上限值为50">2</admin>
+    </maxMinis>
+    
     <ai caption="AI机器人">
         <chatServer caption="聊天服务器"><![CDATA[http://www.tuling123.com/openapi/api]]></chatServer>
         <chatKey caption="聊天服务器密钥">969d86d9ab4f4a77984d78308d360090</chatKey>

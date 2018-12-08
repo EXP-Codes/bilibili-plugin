@@ -9,6 +9,7 @@ import java.awt.event.KeyListener;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
@@ -49,7 +50,7 @@ class _StormModeUI extends PopChildWindow {
 	
 	private final static int WIDTH = 450;
 	
-	private final static int HEIGHT = 350;
+	private final static int HEIGHT = 450;
 	
 	private JButton okBtn;
 	
@@ -66,6 +67,12 @@ class _StormModeUI extends PopChildWindow {
 	private JTextField bgnTF;
 	
 	private JTextField endTF;
+	
+	/** 疯狂模式(降低抢夺节奏风暴的间隔，容易被关小黑屋) */
+	private JRadioButton grapBtn;
+	
+	/** 极限模式(进一步降低抢夺节奏风暴的间隔，容易被封IP或关小黑屋) */
+	private JRadioButton limitBtn;
 	
 	protected _StormModeUI() {
 		super("节奏风暴/舰队 扫描范围", WIDTH, HEIGHT, false);
@@ -87,22 +94,31 @@ class _StormModeUI extends PopChildWindow {
 		top100Btn.setForeground(Color.BLACK);
 		sec100Btn.setForeground(Color.BLACK);
 		customBtn.setForeground(Color.BLACK);
-		
-		ButtonGroup group = new ButtonGroup();
-		group.add(autoBtn);
-		group.add(top50Btn);
-		group.add(top100Btn);
-		group.add(sec100Btn);
-		group.add(customBtn);
+		ButtonGroup rangeGroup = new ButtonGroup();
+		rangeGroup.add(autoBtn);
+		rangeGroup.add(top50Btn);
+		rangeGroup.add(top100Btn);
+		rangeGroup.add(sec100Btn);
+		rangeGroup.add(customBtn);
 		autoBtn.setSelected(true);
 		
 		this.bgnTF = new JTextField("4");
 		this.endTF = new JTextField("6");
 		
+		this.grapBtn = new JRadioButton("疯狂抢夺模式 (慎用:易被关小黑屋)");
+		this.limitBtn = new JRadioButton("极限抢夺模式 (慎用:易被封IP或关小黑屋)");
+		grapBtn.setForeground(Color.RED);
+		limitBtn.setForeground(Color.RED);
+		ButtonGroup modeGroup = new ButtonGroup();
+		modeGroup.add(grapBtn);
+		modeGroup.add(limitBtn);
+		
+		
 		if(Identity.less(Identity.UPLIVE)) {
 			customBtn.setEnabled(false);
 			bgnTF.setEditable(false);
 			endTF.setEditable(false);
+			grapBtn.setEnabled(false);
 		}
 	}
 
@@ -118,6 +134,9 @@ class _StormModeUI extends PopChildWindow {
 				SwingUtils.getPairsPanel("始页码", bgnTF), 
 				SwingUtils.getPairsPanel("止页码", endTF)
 		));
+		panel.add(new JLabel(" "));
+		panel.add(grapBtn);
+		panel.add(limitBtn);
 		SwingUtils.addBorder(panel);
 		
 		rootPanel.add(panel, BorderLayout.CENTER);
@@ -229,4 +248,20 @@ class _StormModeUI extends PopChildWindow {
 		return range;
 	}
 
+	/**
+	 * 是否为疯狂抢夺模式
+	 * @return
+	 */
+	protected boolean isGrab() {
+		return grapBtn.isSelected();
+	}
+	
+	/**
+	 * 是否为极限抢夺模式
+	 * @return
+	 */
+	protected boolean isLimit() {
+		return limitBtn.isSelected();
+	}
+	
 }

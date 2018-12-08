@@ -41,7 +41,7 @@ public class _MiniUserMgrUI extends PopChildWindow {
 	private final static int HEIGHT = 600;
 	
 	/** 上限挂机人数 */
-	private final static int MAX_USER = CookiesMgr.MAX_NUM;
+	private final static int MAX_USER = CookiesMgr.MAX_MINI_NUM;
 	
 	private JLabel userLabel;
 	

@@ -185,6 +185,14 @@ public class VCLoginUI extends PopChildWindow {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				if(true) {
+					SwingUtils.warn("此登录通道已被B站关闭\r\n"
+							+ "请通过主界面右上角【凭】按钮生成登录凭证\r\n"
+							+ "（试用版用户建议直接使用【扫码登录】）");
+					return;
+				}
+				
+				
 				loginBtn.setEnabled(false);
 				
 				String username = usernameTXT.getText();

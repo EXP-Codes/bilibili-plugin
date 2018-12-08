@@ -96,11 +96,13 @@ public class AppUI extends MainWindow {
 	
 	private JButton loginBtn;
 	
-	private JButton percentBtn;
+	private JButton settingBtn;
 	
 	private JButton logoutBtn;
 	
 	private JButton addUserBtn;
+	
+	private JButton convertBtn;
 	
 	private JButton exportBtn;
 	
@@ -165,6 +167,8 @@ public class AppUI extends MainWindow {
 	private JLabel lotteryLabel;
 	
 	private BiliWebSocketMgr wsMgr;
+	
+	private _ConvertCookieUI convertUI;
 	
 	private _ProbabilityUI probabilityUI;
 	
@@ -286,10 +290,11 @@ public class AppUI extends MainWindow {
 		
 		this.loginUser = "";
 		this.isLogined = false;
-		this.percentBtn = newButton("%");
+		this.settingBtn = newButton("۞");
 		this.loginBtn = newButton("扫码/帐密登陆");
 		this.logoutBtn = newButton("销");
 		this.addUserBtn = newButton("╋");
+		this.convertBtn = newButton("凭");
 		this.exportBtn = newButton("备");
 		this.importBtn = newButton("导");
 		this.loveBtn = newButton("★");
@@ -334,6 +339,7 @@ public class AppUI extends MainWindow {
 		lotteryLabel.setForeground(Color.RED);
 		
 		this.wsMgr = new BiliWebSocketMgr();
+		this.convertUI = new _ConvertCookieUI();
 		this.probabilityUI = new _ProbabilityUI();
 		this.miniLoginMgrUI = new _MiniUserMgrUI();
 		this.lotteryUI = new _LotteryUI();
@@ -432,9 +438,9 @@ public class AppUI extends MainWindow {
 		JPanel panel = new JPanel(new BorderLayout());
 		SwingUtils.addBorder(panel);
 		panel.add(SwingUtils.getWBorderPanel(
-				loginBtn, percentBtn), BorderLayout.CENTER);
+				loginBtn, settingBtn), BorderLayout.CENTER);
 		panel.add(SwingUtils.getHGridPanel(
-				addUserBtn, exportBtn, importBtn, logoutBtn), BorderLayout.EAST);
+				addUserBtn, convertBtn, exportBtn, importBtn, logoutBtn), BorderLayout.EAST);
 		return panel;
 	}
 	
@@ -460,10 +466,11 @@ public class AppUI extends MainWindow {
 
 	@Override
 	protected void setComponentsListener(JPanel rootPanel) {
-		setPercentBtnListener();
+		setSettingBtnListener();
 		setLoginBtnListener();
 		setLogoutBtnListener();
 		setAddUserBtnListener();
+		setConvertBtnListener();
 		setExportBtnListener();
 		setImportBtnListener();
 		setLoveBtnListener();
@@ -483,8 +490,8 @@ public class AppUI extends MainWindow {
 		setGuardBtnListener();
 	}
 	
-	private void setPercentBtnListener() {
-		percentBtn.addActionListener(new ActionListener() {
+	private void setSettingBtnListener() {
+		settingBtn.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -584,6 +591,16 @@ public class AppUI extends MainWindow {
 				}
 				
 				miniLoginMgrUI._view();
+			}
+		});
+	}
+	
+	private void setConvertBtnListener() {
+		convertBtn.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				convertUI._view();
 			}
 		});
 	}
@@ -1316,6 +1333,22 @@ public class AppUI extends MainWindow {
 	 */
 	public HotLiveRange getHotLiveRange() {
 		return stormUI.getHotLiveRange();
+	}
+	
+	/**
+	 * 节奏风暴是否为疯狂抢夺模式
+	 * @return
+	 */
+	public boolean isGrabStorm() {
+		return stormUI.isGrab();
+	}
+	
+	/**
+	 * 节奏风暴是否为极限抢夺模式
+	 * @return
+	 */
+	public boolean isLimitStorm() {
+		return stormUI.isLimit();
 	}
 	
 	/**

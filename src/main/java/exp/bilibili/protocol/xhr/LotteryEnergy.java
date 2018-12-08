@@ -100,6 +100,7 @@ public class LotteryEnergy extends _Lottery {
 	 * @param raffleId
 	 */
 	private static void join(int roomId, String raffleId) {
+		final long RETRY_INTERVAL = 100;
 		int cnt = 0;
 		Set<BiliCookie> cookies = CookiesMgr.ALL();
 		for(BiliCookie cookie : cookies) {
@@ -107,7 +108,7 @@ public class LotteryEnergy extends _Lottery {
 				continue;	// 未绑定手机的账号无法参与高能抽奖
 			}
 			
-			String reason = join(LotteryType.ENGERY, cookie, EG_JOIN_URL, roomId, raffleId);
+			String reason = join(LotteryType.ENGERY, cookie, EG_JOIN_URL, roomId, raffleId, RETRY_INTERVAL);
 			if(StrUtils.isEmpty(reason)) {
 				sttclog.info("[{}] [{}] [{}] [{}] [{}]", "ENERGY", roomId, cookie.NICKNAME(), "T", reason);
 				log.info("[{}] 参与直播间 [{}] 抽奖成功(高能礼物)", cookie.NICKNAME(), roomId);

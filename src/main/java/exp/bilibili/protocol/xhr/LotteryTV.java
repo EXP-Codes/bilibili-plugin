@@ -106,6 +106,7 @@ public class LotteryTV extends _Lottery {
 	 * @return
 	 */
 	public static void toLottery(int roomId, String raffleId) {
+		final long RETRY_INTERVAL = 100;
 		int cnt = 0;
 		Set<BiliCookie> cookies = CookiesMgr.ALL();
 		for(BiliCookie cookie : cookies) {
@@ -113,7 +114,7 @@ public class LotteryTV extends _Lottery {
 				continue;
 			}
 			
-			String reason = join(LotteryType.TV, cookie, TV_JOIN_URL, roomId, raffleId);
+			String reason = join(LotteryType.TV, cookie, TV_JOIN_URL, roomId, raffleId, RETRY_INTERVAL);
 			if(StrUtils.isEmpty(reason)) {
 				sttclog.info("[{}] [{}] [{}] [{}] [{}]", "TV", roomId, cookie.NICKNAME(), "T", reason);
 				log.info("[{}] 参与直播间 [{}] 抽奖成功(小电视/摩天楼/活动)", cookie.NICKNAME(), roomId);
