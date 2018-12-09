@@ -89,7 +89,7 @@ class _Lottery extends __XHR {
 					}
 					ThreadUtils.tSleep(10);	// 模拟连续点击，不能低于10ms，不然服务器会在一段时间拒绝响应
 				}
-				ThreadUtils.tSleep(200);	// 停一段时间再继续连续点击
+				ThreadUtils.tSleep(100);	// 停一段时间再继续连续点击
 			}
 		}
 		return reason;
