@@ -75,7 +75,7 @@ class _Lottery extends __XHR {
 			
 		// 加入节奏风暴抽奖
 		} else {
-			for(int pause = 0; pause <= 5; pause++) {
+			for(int pause = 0; pause <= 10; pause++) {
 				for(int retry = 0; retry < 10; retry++) {
 					String[] captcha = cookie.isRealName() ? // 实名认证后无需填节奏风暴验证码
 							new String[] { "", "" } : getStormCaptcha(cookie);
@@ -89,7 +89,7 @@ class _Lottery extends __XHR {
 					}
 					ThreadUtils.tSleep(10);	// 模拟连续点击，不能低于10ms，不然服务器会在一段时间拒绝响应
 				}
-				ThreadUtils.tSleep(300);	// 停一段时间再继续连续点击
+				ThreadUtils.tSleep(200);	// 停一段时间再继续连续点击
 			}
 		}
 		return reason;
