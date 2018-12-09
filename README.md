@@ -81,7 +81,7 @@
 - 01.　安装JDK环境【[jdk-7u72-windows-x64.exe](https://github.com/lyy289065406/environment/tree/master/environment/java/JDK/windows/x64/jdk-7u72-windows-x64.exe)】，一直 下一步 到完成即可（无需修改安装路径）
 - 02.　解压并运行【哔哩哔哩插件姬.exe】（面向不同人群，分别提供了试用版/大众版/主播版/管理员版）
 - 03.　为限制随意传播，会要求输入注册码，请加QQ群131637823申请
-- 04.　2018.12.07日开始B站关闭了原本的【账号+密码+验证码】的后台登录通道，最新的登录方式 [点这里](https://raw.githubusercontent.com/lyy289065406/bilibili-plugin/master/doc/%E8%BF%90%E8%A1%8C%E6%88%AA%E5%9B%BE/00-%E6%9C%80%E6%96%B0%E7%99%BB%E5%BD%95%E6%96%B9%E5%BC%8F.png)
+- 04.　2018.12.07开始B站关闭了原本的【账号+密码+验证码】的后台登录通道，最新的登录方式 [点这里](https://raw.githubusercontent.com/lyy289065406/bilibili-plugin/master/doc/%E8%BF%90%E8%A1%8C%E6%88%AA%E5%9B%BE/00-%E6%9C%80%E6%96%B0%E7%99%BB%E5%BD%95%E6%96%B9%E5%BC%8F.png)
    
   
 ## 全功能一览
