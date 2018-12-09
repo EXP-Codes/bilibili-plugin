@@ -7,7 +7,6 @@ import java.awt.event.ActionListener;
 import java.util.Date;
 
 import javax.swing.ButtonGroup;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
@@ -82,8 +81,8 @@ class _ConvertCookieUI extends PopChildWindow {
 	@Override
 	protected void initComponents(Object... args) {
 		this.mainBtn = new JRadioButton("主号");
-		this.vestBtn = new JRadioButton("小号");
-		this.miniBtn = new JRadioButton("马甲");
+		this.vestBtn = new JRadioButton("马甲");
+		this.miniBtn = new JRadioButton("小号");
 		mainBtn.setForeground(Color.BLACK);
 		vestBtn.setForeground(Color.BLACK);
 		miniBtn.setForeground(Color.BLACK);
@@ -111,7 +110,7 @@ class _ConvertCookieUI extends PopChildWindow {
 	@Override
 	protected void setComponentsLayout(JPanel rootPanel) {
 		rootPanel.add(SwingUtils.addBorder(SwingUtils.getHGridPanel(
-				mainBtn, miniBtn, vestBtn), "凭证类型"), BorderLayout.NORTH);
+				mainBtn, vestBtn, miniBtn), "凭证类型"), BorderLayout.NORTH);
 		
 		JPanel panel = new JPanel(new VFlowLayout(VFlowLayout.LEFT));
 		panel.add(SwingUtils.getPairsPanel("DedeUserID", uidTF));
@@ -185,8 +184,7 @@ class _ConvertCookieUI extends PopChildWindow {
 
 	@Override
 	protected void beforeHide() {
-		// TODO Auto-generated method stub
-		
+		SwingUtils.warn("新添加的登录凭证在重启插件后生效");
 	}
 	
 }

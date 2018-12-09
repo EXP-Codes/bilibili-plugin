@@ -12,6 +12,7 @@ import net.sf.json.JSONObject;
 import exp.bilibili.plugin.Config;
 import exp.bilibili.plugin.bean.ldm.BiliCookie;
 import exp.bilibili.plugin.bean.ldm.HotLiveRange;
+import exp.bilibili.plugin.bean.ldm.RaffleIDs;
 import exp.bilibili.plugin.cache.CookiesMgr;
 import exp.bilibili.plugin.cache.RoomMgr;
 import exp.bilibili.plugin.envm.LotteryType;
@@ -43,8 +44,8 @@ public class LotteryStorm extends _Lottery {
 	/** 节奏风暴抽奖URL */
 	private final static String STORM_JOIN_URL = Config.getInstn().STORM_JOIN_URL();
 	
-	/** 最上一次抽奖过的节奏风暴编号(礼物编号是递增的) */
-	private static long LAST_STORMID = 0L;
+	/** 已经抽过的节奏风暴ID */
+	private final static RaffleIDs RAFFLEIDS = new RaffleIDs();
 	
 	/** 私有化构造函数 */
 	protected LotteryStorm() {}
@@ -124,17 +125,9 @@ public class LotteryStorm extends _Lottery {
 			Map<String, String> header = GET_HEADER(
 					CookiesMgr.VEST().toNVCookie(), sRoomId);
 			
-			boolean isExist = true;
-			while(isExist == true) {	// 对于存在节奏风暴的房间, 继续扫描(可能有人连续送节奏风暴)
-				String response = client.doGet(STORM_CHECK_URL, header, request);
-				if(StrUtils.isTrimEmpty(response)) {
-					log.error("提取直播间 [{}] 的节奏风暴信息失败: 请求频率过高", roomId);
-					ThreadUtils.tSleep(scanInterval);
-					break;
-				}
-				List<String> raffleIds = getStormRaffleIds(roomId, response);
-				isExist = join(roomId, raffleIds);
-			}
+			String response = client.doGet(STORM_CHECK_URL, header, request);
+			List<String> raffleIds = getStormRaffleIds(roomId, response);
+			join(roomId, raffleIds);	// 参加节奏风暴抽奖
 			
 			Guard.getGuardGift(roomId);	// 顺便领取舰队奖励
 			ThreadUtils.tSleep(scanInterval);
@@ -155,20 +148,18 @@ public class LotteryStorm extends _Lottery {
 			Object data = json.get(BiliCmdAtrbt.data);
 			if(data instanceof JSONObject) {
 				JSONObject room = (JSONObject) data;
-				long raffleId = JsonUtils.getLong(room, BiliCmdAtrbt.id, 0);
-				if(raffleId > LAST_STORMID) {
-					LAST_STORMID = raffleId;
-					raffleIds.add(String.valueOf(raffleId));
+				String raffleId = JsonUtils.getStr(room, BiliCmdAtrbt.id);
+				if(RAFFLEIDS.add(raffleId)) {
+					raffleIds.add(raffleId);
 				}
 						
 			} else if(data instanceof JSONArray) {
 				JSONArray array = (JSONArray) data;
 				for(int i = 0 ; i < array.size(); i++) {
 					JSONObject room = array.getJSONObject(i);
-					long raffleId = JsonUtils.getLong(room, BiliCmdAtrbt.id, 0);
-					if(raffleId > LAST_STORMID) {
-						LAST_STORMID = raffleId;
-						raffleIds.add(String.valueOf(raffleId));
+					String raffleId = JsonUtils.getStr(room, BiliCmdAtrbt.id);
+					if(RAFFLEIDS.add(raffleId)) {
+						raffleIds.add(raffleId);
 					}
 				}
 			}
@@ -184,18 +175,20 @@ public class LotteryStorm extends _Lottery {
 	 * @param raffleIds
 	 * @return
 	 */
-	private static boolean join(int roomId, List<String> raffleIds) {
-		boolean isOk = false;
+	private static void join(final int roomId, final List<String> raffleIds) {
 		if(raffleIds.size() > 0) {
 			String msg = StrUtils.concat("直播间 [", roomId, 
 					"] 开启了节奏风暴 [x", raffleIds.size(), "] !!!");
 			UIUtils.notify(msg);
 			
-			for(String raffleId : raffleIds) {
-				isOk |= toLottery(roomId, raffleId);
-			}
+			new Thread() {
+				public void run() {
+					for(String raffleId : raffleIds) {
+						toLottery(roomId, raffleId);
+					}
+				};
+			}.start();
 		}
-		return isOk;
 	}
 	
 	/**
@@ -205,42 +198,34 @@ public class LotteryStorm extends _Lottery {
 	 * @return
 	 */
 	public static boolean toLottery(int roomId, String raffleId) {
-		final long RETRY_INTERVAL = UIUtils.isGrabStorm() ? 10 : 100;
 		int cnt = 0;
 		String reason = "未知异常";
-		boolean isExist = true;
 		Set<BiliCookie> cookies = CookiesMgr.ALL(false);
 		
-		while(isExist && !cookies.isEmpty()) {	// 理论上节奏风暴可以在完结前一直抢到成功为止
-			isExist = false;	// 避免cookies队列没人参与陷入死循环
+		Iterator<BiliCookie> cookieIts = cookies.iterator();
+		while(cookieIts.hasNext()) {
+			BiliCookie cookie = cookieIts.next();
 			
-			Iterator<BiliCookie> cookieIts = cookies.iterator();
-			while(cookieIts.hasNext()) {
-				BiliCookie cookie = cookieIts.next();
+			// 未绑定手机或未实名认证的账号无法参与节奏风暴  (FIXME 未实名也可参加, 但是需要填验证码, 目前未能自动识别验证码)
+			if(!cookie.isBindTel() || !cookie.isRealName()) {
+				cookieIts.remove();
+				continue;
+			}
+			
+			reason = join(LotteryType.STORM, cookie, STORM_JOIN_URL, roomId, raffleId);
+			if(StrUtils.isEmpty(reason)) {
+				log.info("[{}] 参与直播间 [{}] 抽奖成功(节奏风暴)", cookie.NICKNAME(), roomId);
+				cookie.updateLotteryTime();
+				cookieIts.remove();	// 已经成功抽奖的在本轮无需再抽
+				cnt++;
 				
-				// 未绑定手机或未实名认证的账号无法参与节奏风暴  (FIXME 未实名也可参加, 但是需要填验证码, 目前未能自动识别验证码)
-				if(!cookie.isBindTel() || !cookie.isRealName()) {
-					cookieIts.remove();
-					continue;
-				}
+			} else if(reason.contains("访问被拒绝")) {
+				UIUtils.statistics("失败(", reason, "): 账号 [", cookie.NICKNAME(), "]");
+				cookie.freeze();
+				cookieIts.remove();	// 被临时封禁抽奖的账号无需再抽
 				
-				reason = join(LotteryType.STORM, cookie, STORM_JOIN_URL, roomId, raffleId, RETRY_INTERVAL);
-				if(StrUtils.isEmpty(reason)) {
-					log.info("[{}] 参与直播间 [{}] 抽奖成功(节奏风暴)", cookie.NICKNAME(), roomId);
-					cookie.updateLotteryTime();
-					cookieIts.remove();	// 已经成功抽奖的在本轮无需再抽
-					isExist = true;
-					cnt++;
-					
-				} else if(reason.contains("访问被拒绝")) {
-					UIUtils.statistics("失败(", reason, "): 账号 [", cookie.NICKNAME(), "]");
-					cookie.freeze();
-					cookieIts.remove();	// 被临时封禁抽奖的账号无需再抽
-					isExist = true;
-					
-				} else {
-					log.info("[{}] 参与直播间 [{}] 抽奖失败(节奏风暴)", cookie.NICKNAME(), roomId);
-				}
+			} else {
+				log.info("[{}] 参与直播间 [{}] 抽奖失败(节奏风暴)", cookie.NICKNAME(), roomId);
 			}
 		}
 		

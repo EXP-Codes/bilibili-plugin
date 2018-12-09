@@ -9,12 +9,12 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import exp.bilibili.plugin.Config;
 import exp.bilibili.plugin.bean.ldm.BiliCookie;
+import exp.bilibili.plugin.bean.ldm.RaffleIDs;
 import exp.bilibili.plugin.cache.CookiesMgr;
 import exp.bilibili.plugin.envm.LotteryType;
 import exp.bilibili.plugin.utils.UIUtils;
 import exp.bilibili.protocol.envm.BiliCmdAtrbt;
 import exp.libs.utils.format.JsonUtils;
-import exp.libs.utils.num.NumUtils;
 import exp.libs.utils.os.ThreadUtils;
 import exp.libs.utils.other.StrUtils;
 import exp.libs.warp.net.http.HttpURLUtils;
@@ -37,8 +37,8 @@ public class LotteryEnergy extends _Lottery {
 	/** 高能礼物抽奖URL */
 	private final static String EG_JOIN_URL = Config.getInstn().EG_JOIN_URL();
 	
-	/** 最上一次抽奖过的礼物编号(礼物编号是递增的) */
-	private static int LAST_RAFFLEID = 0;
+	/** 已经抽过的高能礼物ID */
+	private final static RaffleIDs RAFFLEIDS = new RaffleIDs();
 	
 	/** 私有化构造函数 */
 	protected LotteryEnergy() {}
@@ -52,9 +52,7 @@ public class LotteryEnergy extends _Lottery {
 		List<String> raffleIds = getRaffleId(EG_CHECK_URL, roomId, 
 				CookiesMgr.MAIN().toNVCookie());
 		for(String raffleId : raffleIds) {
-			int id = NumUtils.toInt(raffleId, 0);
-			if(id > LAST_RAFFLEID) {	// 礼物编号是递增的
-				LAST_RAFFLEID = id;
+			if(RAFFLEIDS.add(raffleId)) {
 				join(roomId, raffleId);
 			}
 		}
@@ -100,7 +98,6 @@ public class LotteryEnergy extends _Lottery {
 	 * @param raffleId
 	 */
 	private static void join(int roomId, String raffleId) {
-		final long RETRY_INTERVAL = 100;
 		int cnt = 0;
 		Set<BiliCookie> cookies = CookiesMgr.ALL();
 		for(BiliCookie cookie : cookies) {
@@ -108,7 +105,7 @@ public class LotteryEnergy extends _Lottery {
 				continue;	// 未绑定手机的账号无法参与高能抽奖
 			}
 			
-			String reason = join(LotteryType.ENGERY, cookie, EG_JOIN_URL, roomId, raffleId, RETRY_INTERVAL);
+			String reason = join(LotteryType.ENGERY, cookie, EG_JOIN_URL, roomId, raffleId);
 			if(StrUtils.isEmpty(reason)) {
 				log.info("[{}] 参与直播间 [{}] 抽奖成功(高能礼物)", cookie.NICKNAME(), roomId);
 				cookie.updateLotteryTime();

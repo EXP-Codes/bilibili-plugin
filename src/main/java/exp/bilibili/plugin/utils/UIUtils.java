@@ -101,10 +101,6 @@ public class UIUtils {
 		return AppUI.getInstn().getHotLiveRange();
 	}
 	
-	public static boolean isGrabStorm() {
-		return AppUI.getInstn().isGrabStorm();
-	}
-	
 	public static int getLotteryProbability() {
 		return AppUI.getInstn().getLotteryProbability();
 	}

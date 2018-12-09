@@ -1,6 +1,5 @@
 package exp.bilibili.protocol.xhr;
 
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -10,6 +9,7 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import exp.bilibili.plugin.Config;
 import exp.bilibili.plugin.bean.ldm.BiliCookie;
+import exp.bilibili.plugin.bean.ldm.RaffleIDs;
 import exp.bilibili.plugin.cache.CookiesMgr;
 import exp.bilibili.plugin.envm.LotteryType;
 import exp.bilibili.plugin.utils.UIUtils;
@@ -37,8 +37,8 @@ public class LotteryTV extends _Lottery {
 	/** 小电视抽奖URL */
 	private final static String TV_JOIN_URL = Config.getInstn().TV_JOIN_URL();
 	
-	/** 已经抽过的小电视ID (服务返还的是乱序列表, 不能使用递增ID流水方式进行筛选) */
-	private final static Set<String> RAFFLEIDS = new HashSet<String>();
+	/** 已经抽过的小电视ID */
+	private final static RaffleIDs RAFFLEIDS = new RaffleIDs();
 	
 	/** 私有化构造函数 */
 	protected LotteryTV() {}
@@ -55,11 +55,6 @@ public class LotteryTV extends _Lottery {
 			if(RAFFLEIDS.add(raffleId)) {
 				toLottery(roomId, raffleId);
 			}
-		}
-		
-		// 避免内存溢出, 最多缓存128个小电视ID
-		if(RAFFLEIDS.size() >= 128) {
-			RAFFLEIDS.clear();
 		}
 	}
 	
@@ -106,7 +101,6 @@ public class LotteryTV extends _Lottery {
 	 * @return
 	 */
 	public static void toLottery(int roomId, String raffleId) {
-		final long RETRY_INTERVAL = 100;
 		int cnt = 0;
 		Set<BiliCookie> cookies = CookiesMgr.ALL();
 		for(BiliCookie cookie : cookies) {
@@ -114,7 +108,7 @@ public class LotteryTV extends _Lottery {
 				continue;
 			}
 			
-			String reason = join(LotteryType.TV, cookie, TV_JOIN_URL, roomId, raffleId, RETRY_INTERVAL);
+			String reason = join(LotteryType.TV, cookie, TV_JOIN_URL, roomId, raffleId);
 			if(StrUtils.isEmpty(reason)) {
 				log.info("[{}] 参与直播间 [{}] 抽奖成功(小电视/摩天楼/活动)", cookie.NICKNAME(), roomId);
 				cookie.updateLotteryTime();

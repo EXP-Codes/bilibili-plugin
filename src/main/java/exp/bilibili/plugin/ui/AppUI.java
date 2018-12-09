@@ -1336,14 +1336,6 @@ public class AppUI extends MainWindow {
 	}
 	
 	/**
-	 * 节奏风暴是否为疯狂抢夺模式
-	 * @return
-	 */
-	public boolean isGrabStorm() {
-		return stormUI.isGrab();
-	}
-	
-	/**
 	 * 获取参与抽奖的概率
 	 * @return 参与抽奖的概率
 	 */

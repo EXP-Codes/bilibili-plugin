@@ -104,7 +104,7 @@
         <guest default="1" caption="游客" hint="上限值为1">1</guest>
         <user default="1" caption="游客" hint="上限值为5">5</user>
         <uplive default="1" caption="游客" hint="上限值为10">10</uplive>
-        <admin default="1" caption="游客" hint="上限值为50">2</admin>
+        <admin default="1" caption="游客" hint="上限值为50">50</admin>
     </maxMinis>
     
     <ai caption="AI机器人">
