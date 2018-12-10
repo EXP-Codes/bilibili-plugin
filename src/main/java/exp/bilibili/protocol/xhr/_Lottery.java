@@ -75,21 +75,18 @@ class _Lottery extends __XHR {
 			
 		// 加入节奏风暴抽奖
 		} else {
-			for(int pause = 0; pause <= 10; pause++) {
-				for(int retry = 0; retry < 10; retry++) {
-					String[] captcha = cookie.isRealName() ? // 实名认证后无需填节奏风暴验证码
-							new String[] { "", "" } : getStormCaptcha(cookie);
-					Map<String, String> request = getRequest(sRoomId, raffleId, 
-							cookie.CSRF(), visitId, captcha[0], captcha[1]);
-					String response = HttpURLUtils.doPost(url, header, request);	// B站大概150ms才响应
-					
-					reason = analyse(response);
-					if(StrUtils.isEmpty(reason) || reason.contains("不存在")) {
-						break;
-					}
-					ThreadUtils.tSleep(10);	// 模拟连续点击，不能低于10ms，不然服务器会在一段时间拒绝响应
+			for(int retry = 0; retry < 100; retry++) {
+				String[] captcha = cookie.isRealName() ? // 实名认证后无需填节奏风暴验证码
+						new String[] { "", "" } : getStormCaptcha(cookie);
+				Map<String, String> request = getRequest(sRoomId, raffleId, 
+						cookie.CSRF(), visitId, captcha[0], captcha[1]);
+				String response = HttpURLUtils.doPost(url, header, request);	// B站大概150ms才响应
+				
+				reason = analyse(response);
+				if(StrUtils.isEmpty(reason) || reason.contains("不存在")) {
+					break;
 				}
-				ThreadUtils.tSleep(100);	// 停一段时间再继续连续点击
+				ThreadUtils.tSleep(10);	// 模拟连续点击，不能低于10ms，不然服务器会在一段时间拒绝响应
 			}
 		}
 		return reason;
@@ -139,6 +136,7 @@ class _Lottery extends __XHR {
 		request.put(BiliCmdAtrbt.captcha_token, captchaToken);
 		request.put(BiliCmdAtrbt.captcha_phrase, captchaValue);
 		request.put(BiliCmdAtrbt.csrf_token, csrf);
+		request.put(BiliCmdAtrbt.csrf, csrf);
 		request.put(BiliCmdAtrbt.visit_id, visitId);
 		return request;
 	}
