@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 
 import exp.bilibili.plugin.Config;
 import exp.bilibili.plugin.bean.ldm.BiliCookie;
+import exp.bilibili.plugin.envm.Identity;
 import exp.bilibili.plugin.envm.LotteryType;
 import exp.bilibili.plugin.utils.Switch;
 import exp.bilibili.plugin.utils.TimeUtils;
@@ -15,6 +16,7 @@ import exp.bilibili.protocol.XHRSender;
 import exp.bilibili.protocol.bean.other.LotteryRoom;
 import exp.libs.utils.num.NumUtils;
 import exp.libs.utils.os.ThreadUtils;
+import exp.libs.utils.other.BoolUtils;
 import exp.libs.utils.other.StrUtils;
 import exp.libs.warp.thread.LoopThread;
 
@@ -280,6 +282,7 @@ public class WebBot extends LoopThread {
 				takeFinishAchieve();	// 领取成就奖励
 			}
 			
+			reissueGuardGift();		// 补领舰长亲密度
 			reflashActivity();		// 刷新活跃值到数据库
 			checkCookieExpires();	// 检查Cookie有效期
 			
@@ -388,6 +391,22 @@ public class WebBot extends LoopThread {
 				UIUtils.log(msg);
 				UIUtils.notityExit(msg);
 			}
+		}
+	}
+	
+	/**
+	 * 当没有打开舰长扫描开关时，
+	 * 每小时有一定几率触发补领舰长亲密度行为
+	 */
+	private void reissueGuardGift() {
+		if(!Switch.isJoinGuard() && !Identity.less(Identity.UPLIVE) && BoolUtils.hit(20)) {
+			new Thread() {
+				
+				@Override
+				public void run() {
+					XHRSender.reissueGuardGift();
+				};
+			}.start();
 		}
 	}
 	

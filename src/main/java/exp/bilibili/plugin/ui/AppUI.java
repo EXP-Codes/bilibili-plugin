@@ -1165,7 +1165,7 @@ public class AppUI extends MainWindow {
 					
 					@Override
 					public void run() {
-						int cnt = XHRSender.getGuardGift();
+						int cnt = XHRSender.reissueGuardGift();
 						if(cnt <= 0) {
 							UIUtils.log("暂时检索不到未领取的船员奖励.");
 						}

@@ -301,7 +301,7 @@ public class XHRSender {
 	/**
 	 * 为所有登陆用户补领取热门直播间的船员亲密奖励
 	 */
-	public static int getGuardGift() {
+	public static int reissueGuardGift() {
 		
 		// 查询当前热门直播间
 		HotLiveRange range = UIUtils.getHotLiveRange();
