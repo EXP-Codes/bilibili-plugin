@@ -1328,6 +1328,14 @@ public class AppUI extends MainWindow {
 	}
 	
 	/**
+	 * 仅被冻结账号参与节奏风暴
+	 * @return
+	 */
+	public boolean isOnlyFreeze() {
+		return stormUI.isOnlyFreeze();
+	}
+	
+	/**
 	 * 根据节奏风暴策略获取人气直播间的扫描范围
 	 * @return
 	 */

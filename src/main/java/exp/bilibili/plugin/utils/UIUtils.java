@@ -97,6 +97,10 @@ public class UIUtils {
 		return AppUI.getInstn().getLiveRoomId();
 	}
 	
+	public static boolean isOnlyFreeze() {
+		return AppUI.getInstn().isOnlyFreeze();
+	}
+	
 	public static HotLiveRange getHotLiveRange() {
 		return AppUI.getInstn().getHotLiveRange();
 	}

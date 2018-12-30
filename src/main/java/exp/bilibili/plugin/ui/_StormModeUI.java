@@ -9,6 +9,7 @@ import java.awt.event.KeyListener;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
@@ -49,9 +50,16 @@ class _StormModeUI extends PopChildWindow {
 	
 	private final static int WIDTH = 450;
 	
-	private final static int HEIGHT = 350;
+	private final static int HEIGHT = 380;
 	
 	private JButton okBtn;
+	
+	/**
+	 * 仅被冻结账号参与节奏风暴.
+	 * B站允许被关小黑屋的账号可以正常参与节奏风暴和部分舰长抽奖, 
+	 * 打开此开关既可保证被关账号也有一定收益， 也可降低其他账号被抓到的几率。
+	 */
+	private JCheckBox onlyFreezeBtn;
 	
 	private JRadioButton autoBtn;
 	
@@ -76,6 +84,11 @@ class _StormModeUI extends PopChildWindow {
 		this.okBtn = new JButton("确 认");
 		BeautyEyeUtils.setButtonStyle(NormalColor.lightBlue, okBtn);
 		okBtn.setForeground(Color.BLACK);
+		
+		this.onlyFreezeBtn = new JCheckBox("仅被关小黑屋的账号参与节奏风暴");
+		onlyFreezeBtn.setToolTipText("打开此开关既可保证被关小黑屋账号也有一定收益， 也可降低其他账号被抓到的几率");
+		onlyFreezeBtn.setForeground(Color.BLACK);
+		onlyFreezeBtn.setSelected(true);
 		
 		this.autoBtn = new JRadioButton("自动  ( 根据早晚时间段智能筛选人气直播间 )");
 		this.top50Btn = new JRadioButton("TOP-50  ( 固定扫描排名1-50的人气直播间 )");
@@ -108,6 +121,7 @@ class _StormModeUI extends PopChildWindow {
 	@Override
 	protected void setComponentsLayout(JPanel rootPanel) {
 		JPanel panel = new JPanel(new VFlowLayout(VFlowLayout.LEFT));
+		panel.add(onlyFreezeBtn);
 		panel.add(autoBtn);
 		panel.add(top50Btn);
 		panel.add(top100Btn);
@@ -199,6 +213,16 @@ class _StormModeUI extends PopChildWindow {
 	protected void beforeHide() {
 		// TODO Auto-generated method stub
 		
+	}
+	
+	/**
+	 * 仅被冻结账号参与节奏风暴.
+	 * B站允许被关小黑屋的账号可以正常参与节奏风暴和部分舰长抽奖, 
+	 * 打开此开关既可保证被关账号也有一定收益， 也可降低其他账号被抓到的几率。
+	 * @return
+	 */
+	protected boolean isOnlyFreeze() {
+		return onlyFreezeBtn.isSelected();
 	}
 	
 	/**

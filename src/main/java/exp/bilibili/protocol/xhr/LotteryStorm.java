@@ -212,6 +212,12 @@ public class LotteryStorm extends _Lottery {
 				continue;
 			}
 			
+			// 仅被关小黑屋的账号才能参与节奏风暴
+			if(UIUtils.isOnlyFreeze() && !cookie.isFreeze()) {
+				cookieIts.remove();
+				continue;
+			}
+			
 			reason = join(LotteryType.STORM, cookie, STORM_JOIN_URL, roomId, raffleId);
 			if(StrUtils.isEmpty(reason)) {
 				log.info("[{}] 参与直播间 [{}] 抽奖成功(节奏风暴)", cookie.NICKNAME(), roomId);

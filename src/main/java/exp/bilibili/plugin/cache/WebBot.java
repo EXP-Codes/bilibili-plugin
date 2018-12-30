@@ -188,7 +188,7 @@ public class WebBot extends LoopThread {
 			
 		// 节奏风暴抽奖
 		} else if(room.TYPE() == LotteryType.STORM && Switch.isJoinStorm()) {
-//			_waitReactionTime(room);	// 节奏风暴无需等待, 当前环境太多机器人, 很难抢到前几名导致被捉
+//			_waitReactionTime(room);	// 节奏风暴无需等待, 当前环境太多机器人, 很难因为抢到前几名导致被捉
 			XHRSender.toStormLottery(roomId, raffleId);
 			
 		// 登船领奖
