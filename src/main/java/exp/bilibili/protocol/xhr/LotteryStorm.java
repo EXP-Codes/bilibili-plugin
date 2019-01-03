@@ -50,13 +50,17 @@ public class LotteryStorm extends _Lottery {
 	/** 私有化构造函数 */
 	protected LotteryStorm() {}
 	
+	public static void main(String[] args) {
+		System.out.println(queryHotLiveRoomIds(new HotLiveRange(1, 2)));
+	}
+	
 	/**
 	 * 扫描当前的人气直播间房号列表
 	 * @param range 扫描范围
 	 * @return
 	 */
 	public static List<Integer> queryHotLiveRoomIds(HotLiveRange range) {
-		Map<String, String> header = GET_HEADER("", "all");
+		Map<String, String> header = GET_HEADER("", "all?visit_id=".concat(getVisitId()));
 		Map<String, String> request = getRequest();
 		
 		List<Integer> roomIds = new LinkedList<Integer>();
@@ -76,8 +80,9 @@ public class LotteryStorm extends _Lottery {
 	 */
 	private static Map<String, String> getRequest() {
 		Map<String, String> request = new HashMap<String, String>();
-		request.put(BiliCmdAtrbt.area, "all");
-		request.put(BiliCmdAtrbt.order, "online");
+		request.put(BiliCmdAtrbt.areaId, "0");
+		request.put(BiliCmdAtrbt.sort, "online");
+		request.put(BiliCmdAtrbt.pageSize, "30");
 		return request;
 	}
 	

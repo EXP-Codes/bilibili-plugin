@@ -247,9 +247,13 @@ public class BiliCmdAtrbt {
 	
 	public final static String area = "area";
 	
+	public final static String areaId = "areaId";
+	
 	public final static String parent_area = "parent_area";
 	
 	public final static String order = "order";
+	
+	public final static String sort = "sort";
 	
 	public final static String page = "page";
 	

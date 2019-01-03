@@ -23,7 +23,7 @@
         <safeURL caption="安全信息URL"><![CDATA[https://passport.bilibili.com/web/site/index]]></safeURL>
         
         <liveHost caption="直播主机"><![CDATA[api.live.bilibili.com]]></liveHost>
-        <liveURL caption="直播列表URL"><![CDATA[https://api.live.bilibili.com/area/liveList]]></liveURL>
+        <liveURL caption="直播列表URL"><![CDATA[https://api.live.bilibili.com/room/v1/Area/getListByAreaID]]></liveURL>
         <blackURL caption="关小黑屋URL"><![CDATA[https://api.live.bilibili.com/liveact/room_block_user]]></blackURL>
         <chatURL caption="版聊URL"><![CDATA[https://api.live.bilibili.com/msg/send]]></chatURL>
         <signURL caption="签到URL"><![CDATA[https://api.live.bilibili.com/sign/doSign]]></signURL>
