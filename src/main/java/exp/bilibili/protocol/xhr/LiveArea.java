@@ -25,13 +25,11 @@ import exp.libs.warp.net.http.HttpURLUtils;
 public class LiveArea extends __XHR {
 
 	/** 游戏区/手游区房间列表URL */
-	private final static String GAME_URL = Config.getInstn().GAME_URL();
+	private final static String AREA_URL = Config.getInstn().AREA_URL();
 
-	/** 娱乐区房间列表URL */
-	private final static String AMUSE_URL = Config.getInstn().AMUSE_URL();
-	
-	/** 绘画区房间列表URL */
-	private final static String DRAW_URL = Config.getInstn().DRAW_URL();
+	public static void main(String[] args) {
+		getAreaTopOnes();
+	}
 	
 	/**
 	 * 获取每个直播分区的TOP1房间号
@@ -39,47 +37,48 @@ public class LiveArea extends __XHR {
 	 */
 	public static Map<Area, Integer> getAreaTopOnes() {
 		Map<Area, Integer> roomIds = new HashMap<Area, Integer>();
-		roomIds.put(Area.PC_GAME, getGameTopOne(false));
-		roomIds.put(Area.APP_GAME, getGameTopOne(true));
-		roomIds.put(Area.AMUSE, getAmuseTopOne());
-		roomIds.put(Area.DRAW, getDrawTopOne());
+		roomIds.put(Area.PC_GAME, getAreaTopOne(Area.PC_GAME));
+		roomIds.put(Area.APP_GAME, getAreaTopOne(Area.APP_GAME));
+		roomIds.put(Area.AMUSE, getAreaTopOne(Area.AMUSE));
+		roomIds.put(Area.DRAW, getAreaTopOne(Area.DRAW));
+		roomIds.put(Area.RADIO, getAreaTopOne(Area.RADIO));
 		return roomIds;
 	}
 	
 	/**
-	 * 获取游戏区top1房间号
-	 * @param isApp true:手机平台（对应手游区）; false:PC平台（对应游戏区）
+	 * 获取分区top1房间号
+	 * @param Area true:手机平台（对应手游区）; false:PC平台（对应游戏区）
 	 * @return top1房间号
 	 */
-	private static int getGameTopOne(boolean isApp) {
-		final Area AREA = isApp ? Area.APP_GAME : Area.PC_GAME;
+	private static int getAreaTopOne(Area area) {
 		final String SUB_AREA_ID = "0";	// 子分区号(0表示所有子分区)
 		final String URI = StrUtils.concat("/p/eden/area-tags?parentAreaId=", 
-				AREA.ID(), "&areaId=", SUB_AREA_ID, "&visit_id=", getVisitId());
+				area.ID(), "&areaId=", SUB_AREA_ID, "&visit_id=", getVisitId());
 		Map<String, String> header = GET_HEADER("", URI);
-		Map<String, String> request = getRequest(AREA.ID(), SUB_AREA_ID);
-		String response = HttpURLUtils.doGet(GAME_URL, header, request);
-		
+		Map<String, String> request = getRequest(area.ID(), SUB_AREA_ID);
+		String response = HttpURLUtils.doGet(AREA_URL, header, request);
+
 		int roomId = 0;
 		try {
 			JSONObject json = JSONObject.fromObject(response);
 			int code = JsonUtils.getInt(json, BiliCmdAtrbt.code, -1);
 			if(code == 0) {
-				JSONArray array = JsonUtils.getArray(json, BiliCmdAtrbt.data);
-				roomId = JsonUtils.getInt(array.getJSONObject(0), BiliCmdAtrbt.roomid, 0);
+				JSONObject data = JsonUtils.getObject(json, BiliCmdAtrbt.data);
+				JSONArray list = JsonUtils.getArray(data, BiliCmdAtrbt.list);
+				roomId = JsonUtils.getInt(list.getJSONObject(0), BiliCmdAtrbt.roomid, 0);
 				
 			} else {
 				String reason = JsonUtils.getStr(json, BiliCmdAtrbt.msg);
-				log.warn("获取 {} Top1 房间失败: {}", AREA.DESC(), reason);
+				log.warn("获取 {} Top1 房间失败: {}", area.DESC(), reason);
 			}
 		} catch(Exception e) {
-			log.error("获取 {} Top1 房间异常: {}", AREA.DESC(), response, e);
+			log.error("获取 {} Top1 房间异常: {}", area.DESC(), response, e);
 		}
 		return roomId;
 	}
 	
 	/**
-	 * 获取游戏分区TOP1房间号的请求参数
+	 * 获取分区TOP1房间号的请求参数
 	 * @param pAreaId
 	 * @param areaId
 	 * @return
@@ -96,72 +95,4 @@ public class LiveArea extends __XHR {
 		return request;
 	}
 	         
- 	/**
-	 * 获取娱乐区top1房间号
-	 * @return top1房间号
-	 */
-	private static int getAmuseTopOne() {
-		Map<String, String> header = GET_HEADER("", "/pages/area/ent");
-		String response = HttpURLUtils.doGet(AMUSE_URL, header, null);
-		
-		int roomId = 0;
-		try {
-			JSONObject json = JSONObject.fromObject(response);
-			int code = JsonUtils.getInt(json, BiliCmdAtrbt.code, -1);
-			if(code == 0) {
-				JSONObject data = JsonUtils.getObject(json, BiliCmdAtrbt.data);
-				JSONArray array = JsonUtils.getArray(data, BiliCmdAtrbt.top_recommend);
-				roomId = JsonUtils.getInt(array.getJSONObject(0), BiliCmdAtrbt.roomid, 0);
-				
-			} else {
-				String reason = JsonUtils.getStr(json, BiliCmdAtrbt.msg);
-				log.warn("获取 {} Top1 房间失败: {}", Area.AMUSE.DESC(), reason);
-			}
-		} catch(Exception e) {
-			log.error("获取 {} Top1 房间异常: {}", Area.AMUSE.DESC(), response, e);
-		}
-		return roomId;
-	}
-	
-	/**
-	 * 获取绘画区top1房间号
-	 * @return top1房间号
-	 */
-	private static int getDrawTopOne() {
-		Map<String, String> header = GET_HEADER("", "/pages/area/draw");
-		Map<String, String> request = getRequest();
-		String response = HttpURLUtils.doGet(DRAW_URL, header, request);
-		
-		int roomId = 0;
-		try {
- 			JSONObject json = JSONObject.fromObject(response);
- 			int code = JsonUtils.getInt(json, BiliCmdAtrbt.code, -1);
- 			if(code == 0) {
- 				JSONArray array = JsonUtils.getArray(json, BiliCmdAtrbt.data);
- 				roomId = JsonUtils.getInt(array.getJSONObject(0), BiliCmdAtrbt.roomid, 0);
- 				
- 			} else {
- 				String reason = JsonUtils.getStr(json, BiliCmdAtrbt.msg);
- 				log.warn("获取 {} Top1 房间失败: {}", Area.DRAW.DESC(), reason);
- 			}
- 		} catch(Exception e) {
- 			log.error("获取 {} Top1 房间异常: {}", Area.DRAW.DESC(), response, e);
- 		}
-		return roomId;
-	}
-	
-	/**
-	 * 获取绘画分区TOP1房间号的请求参数
-	 * @param pAreaId
-	 * @param areaId
-	 * @return
-	 */
-	private static Map<String, String> getRequest() {
-		Map<String, String> request = new HashMap<String, String>();
-		request.put(BiliCmdAtrbt.area, "draw");
-		request.put(BiliCmdAtrbt.order, "live_time");
-		request.put(BiliCmdAtrbt.page, "1");		// 取首页
-		return request;
-	}
-	
 }

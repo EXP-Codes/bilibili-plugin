@@ -285,16 +285,8 @@ public class Config {
 		return xConf.getVal("/config/urls/pcWatchURL");
 	}
 	
-	public String GAME_URL() {
-		return xConf.getVal("/config/urls/gameURL");
-	}
-	
-	public String AMUSE_URL() {
-		return xConf.getVal("/config/urls/amuseURL");
-	}
-	
-	public String DRAW_URL() {
-		return xConf.getVal("/config/urls/drawURL");
+	public String AREA_URL() {
+		return xConf.getVal("/config/urls/areaURL");
 	}
 	
 	public String SEARCH_URL() {

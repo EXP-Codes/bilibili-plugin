@@ -20,6 +20,8 @@ public class Area {
 	
 	public final static Area DRAW = new Area("4", "绘画区");
 	
+	public final static Area RADIO = new Area("5", "电台区");
+	
 	private String id;
 	
 	private String desc;
