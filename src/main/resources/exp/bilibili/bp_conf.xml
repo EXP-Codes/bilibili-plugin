@@ -93,7 +93,7 @@
                            4. 无手机绑定用户, 此开关无效, 强制触发扭蛋、永久礼物、银瓜子投喂"
         >true</protectFeed>
         <reactionTime caption="参与抽奖的反应时间(ms)" hint="过快反应抽奖会被冻结">10000</reactionTime>
-        <intervalTime caption="参与抽奖的间隔时间(ms)" hint="抽奖频度过高会被冻结">30000</intervalTime>
+        <intervalTime caption="参与抽奖的间隔时间(ms)" hint="抽奖频度过高会被冻结">20000</intervalTime>
         <robotSleepTime caption="机器人休眠时间" hint="x-y：表示从x点到y点, x、y为[0,23]之间的整数">1-6</robotSleepTime>
     </app>
     
