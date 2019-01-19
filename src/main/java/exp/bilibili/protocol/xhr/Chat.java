@@ -70,7 +70,9 @@ public class Chat extends __XHR {
 		params.put(BiliCmdAtrbt.roomid, roomId);	// 接收消息的房间号
 		params.put(BiliCmdAtrbt.fontsize, "25");
 		params.put(BiliCmdAtrbt.mode, "1");
+		params.put(BiliCmdAtrbt.bubble, "0");
 		params.put(BiliCmdAtrbt.csrf_token, csrf);
+		params.put(BiliCmdAtrbt.csrf, csrf);
 		return params;
 	}
 	

@@ -199,6 +199,8 @@ public class BiliCmdAtrbt {
 	
 	public final static String mode = "mode";
 	
+	public final static String bubble = "bubble";
+	
 	public final static String platform = "platform";
 	
 	public final static String player = "player";
