@@ -5,8 +5,8 @@ import java.awt.BorderLayout;
 import javax.swing.JEditorPane;
 import javax.swing.JPanel;
 
+import exp.bilibili.plugin.utils.SwingUtils;
 import exp.libs.utils.other.StrUtils;
-import exp.libs.warp.ui.SwingUtils;
 import exp.libs.warp.ui.cpt.win.NoticeWindow;
 
 /**

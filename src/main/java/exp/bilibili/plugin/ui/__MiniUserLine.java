@@ -15,10 +15,10 @@ import exp.bilibili.plugin.cache.CookiesMgr;
 import exp.bilibili.plugin.cache.RoomMgr;
 import exp.bilibili.plugin.envm.CookieType;
 import exp.bilibili.plugin.ui.login.LoginBtn;
+import exp.bilibili.plugin.utils.SwingUtils;
 import exp.bilibili.plugin.utils.UIUtils;
 import exp.libs.utils.num.NumUtils;
 import exp.libs.utils.other.StrUtils;
-import exp.libs.warp.ui.SwingUtils;
 
 /**
  * <PRE>

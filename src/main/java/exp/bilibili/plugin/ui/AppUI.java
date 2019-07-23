@@ -39,6 +39,7 @@ import exp.bilibili.plugin.envm.Identity;
 import exp.bilibili.plugin.monitor.SafetyMonitor;
 import exp.bilibili.plugin.ui.login.LoginBtn;
 import exp.bilibili.plugin.utils.SafetyUtils;
+import exp.bilibili.plugin.utils.SwingUtils;
 import exp.bilibili.plugin.utils.UIUtils;
 import exp.bilibili.protocol.XHRSender;
 import exp.bilibili.protocol.ws.BiliWebSocketMgr;
@@ -49,6 +50,7 @@ import exp.libs.utils.encode.CompressUtils;
 import exp.libs.utils.encode.CryptoUtils;
 import exp.libs.utils.io.FileUtils;
 import exp.libs.utils.num.NumUtils;
+import exp.libs.utils.os.OSUtils;
 import exp.libs.utils.os.ThreadUtils;
 import exp.libs.utils.other.ListUtils;
 import exp.libs.utils.other.PathUtils;
@@ -56,7 +58,6 @@ import exp.libs.utils.other.RandomUtils;
 import exp.libs.utils.other.StrUtils;
 import exp.libs.warp.thread.ThreadPool;
 import exp.libs.warp.ui.BeautyEyeUtils;
-import exp.libs.warp.ui.SwingUtils;
 import exp.libs.warp.ui.cpt.win.MainWindow;
 
 /**
@@ -198,19 +199,38 @@ public class AppUI extends MainWindow {
 	 * @param args main入参
 	 */
 	public static void createInstn(String[] args) {
-		if(checkIdentity(args)) {
-			
-			// 非试用用户才 导出自动升级入口
-			if(!Identity.less(Identity.USER)) {
-				AppVerInfo.export(Config.APP_NAME);
-			}
-			
-			// 启动程序实例
-			getInstn();
-			
-		} else {
-			System.exit(0);
+//		if(OSUtils.isWin()) {
+//			if(checkIdentity(args)) {
+//				
+//				// 非试用用户才 导出自动升级入口
+//				if(!Identity.less(Identity.USER)) {
+//					AppVerInfo.export(Config.APP_NAME);
+//				}
+//				
+//				// 启动程序实例
+//				getInstn();
+//				
+//			} else {
+//				System.exit(0);
+//			}
+//		} else {
+			createInstnByUnix();
+//		}
+	}
+	
+	private static void createInstnByUnix() {
+		Identity.set(Identity.ADMIN);
+		BiliWebSocketMgr wsMgr = new BiliWebSocketMgr();
+		wsMgr.relinkLive(51108);	// 连接到版聊直播间
+		
+		if(CookiesMgr.getInstn().load(CookieType.MAIN)) {
+			SwingUtils.info("欢迎肥来: ".concat(CookiesMgr.MAIN().NICKNAME()));
+			XHRSender.queryUserAuthorityInfo(CookiesMgr.MAIN());
 		}
+		CookiesMgr.getInstn().load(CookieType.MAIN);
+		
+		WebBot.getInstn()._start();	// 启动仿真机器人
+		wsMgr._start();	// 启动分区监听
 	}
 	
 	/**

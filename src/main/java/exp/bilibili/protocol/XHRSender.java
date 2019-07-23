@@ -178,7 +178,7 @@ public class XHRSender {
 	 */
 	public static void toWatchLive(BiliCookie cookie) {
 		int roomId = UIUtils.getLiveRoomId();
-		WatchLive.toWatchPCLive(cookie, roomId);	// PC端
+//		WatchLive.toWatchPCLive(cookie, roomId);	// PC端
 //		WatchLive.toWatchAppLive(cookie, roomId);	// 手机端 (FIXME: 暂时无效)
 	}
 	

@@ -17,6 +17,7 @@ import javax.swing.JTextField;
 import org.jb2011.lnf.beautyeye.ch3_button.BEButtonUI.NormalColor;
 
 import exp.bilibili.plugin.cache.OnlineUserMgr;
+import exp.bilibili.plugin.utils.SwingUtils;
 import exp.libs.envm.Charset;
 import exp.libs.utils.io.FileUtils;
 import exp.libs.utils.os.ThreadUtils;
@@ -26,7 +27,6 @@ import exp.libs.warp.cmd.CmdUtils;
 import exp.libs.warp.thread.LoopThread;
 import exp.libs.warp.tpl.Template;
 import exp.libs.warp.ui.BeautyEyeUtils;
-import exp.libs.warp.ui.SwingUtils;
 import exp.libs.warp.ui.cpt.win.PopChildWindow;
 
 /**

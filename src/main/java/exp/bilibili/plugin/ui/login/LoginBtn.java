@@ -12,7 +12,7 @@ import exp.bilibili.plugin.bean.ldm.BiliCookie;
 import exp.bilibili.plugin.cache.CookiesMgr;
 import exp.bilibili.plugin.envm.CookieType;
 import exp.bilibili.plugin.ui.__LoginCallback;
-import exp.libs.warp.ui.SwingUtils;
+import exp.bilibili.plugin.utils.SwingUtils;
 
 /**
  * <PRE>

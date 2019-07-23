@@ -1,11 +1,11 @@
 package exp.bilibili.plugin;
 
 import exp.bilibili.plugin.ui.AppUI;
+import exp.bilibili.plugin.utils.SwingUtils;
 import exp.libs.utils.os.OSUtils;
 import exp.libs.utils.other.LogUtils;
 import exp.libs.utils.time.TimeUtils;
 import exp.libs.warp.ui.BeautyEyeUtils;
-import exp.libs.warp.ui.SwingUtils;
 
 /**
  * <PRE>

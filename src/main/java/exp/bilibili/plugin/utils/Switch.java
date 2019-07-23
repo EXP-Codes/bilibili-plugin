@@ -22,7 +22,8 @@ public class Switch {
 	 * @return
 	 */
 	public static boolean isJoinLottery() {
-		return AppUI.getInstn().isJoinLottery();
+//		return AppUI.getInstn().isJoinLottery();
+		return true;
 	}
 	
 	/**
@@ -46,7 +47,8 @@ public class Switch {
 	 * @return
 	 */
 	public static boolean isAutoFeed() {
-		return AppUI.getInstn().isAutoFeed();
+//		return AppUI.getInstn().isAutoFeed();
+		return false;
 	}
 	
 }

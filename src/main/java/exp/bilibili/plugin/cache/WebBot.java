@@ -130,9 +130,9 @@ public class WebBot extends LoopThread {
 	@Override
 	protected void _loopRun() {
 		try {
-			if(!toSleep()) {
+//			if(!toSleep()) {
 				toDo();
-			}
+//			}
 		} catch(Exception e) {
 			log.error("模拟Web行为异常", e);
 		}

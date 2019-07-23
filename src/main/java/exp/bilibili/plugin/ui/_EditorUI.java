@@ -11,9 +11,9 @@ import javax.swing.JTextArea;
 
 import exp.bilibili.plugin.Config;
 import exp.bilibili.plugin.cache.MsgKwMgr;
+import exp.bilibili.plugin.utils.SwingUtils;
 import exp.libs.utils.io.FileUtils;
 import exp.libs.utils.other.StrUtils;
-import exp.libs.warp.ui.SwingUtils;
 import exp.libs.warp.ui.cpt.win.PopChildWindow;
 
 /**

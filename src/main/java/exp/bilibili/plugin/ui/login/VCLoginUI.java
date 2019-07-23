@@ -20,10 +20,10 @@ import exp.bilibili.plugin.Config;
 import exp.bilibili.plugin.bean.ldm.BiliCookie;
 import exp.bilibili.plugin.cache.CookiesMgr;
 import exp.bilibili.plugin.envm.CookieType;
+import exp.bilibili.plugin.utils.SwingUtils;
 import exp.libs.utils.os.ThreadUtils;
 import exp.libs.utils.other.StrUtils;
 import exp.libs.warp.ui.BeautyEyeUtils;
-import exp.libs.warp.ui.SwingUtils;
 import exp.libs.warp.ui.cpt.win.PopChildWindow;
 
 /**
