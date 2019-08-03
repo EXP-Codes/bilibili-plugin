@@ -283,7 +283,7 @@ public class AppUI extends MainWindow {
 		this.tp = new ThreadPool(10);
 		
 		this.chatTF = new JTextField();
-		this.httpTF = new JTextField("http://live.bilibili.com/");
+		this.httpTF = new JTextField(Config.getInstn().LIVE_HOME());
 		this.liveRoomTF = new JTextField(String.valueOf(Config.getInstn().SIGN_ROOM_ID()), 15);
 		chatTF.setToolTipText("内容长度限制: ".concat(String.valueOf(Danmu.LEN_LIMIT)));
 		httpTF.setEditable(false);
