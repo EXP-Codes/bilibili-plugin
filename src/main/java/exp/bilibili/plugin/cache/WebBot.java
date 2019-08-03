@@ -395,11 +395,10 @@ public class WebBot extends LoopThread {
 	}
 	
 	/**
-	 * 当没有打开舰长扫描开关时，
 	 * 每小时有一定几率触发补领舰长亲密度行为
 	 */
 	private void reissueGuardGift() {
-		if(!Switch.isJoinGuard() && !Identity.less(Identity.UPLIVE) && BoolUtils.hit(50)) {
+		if(Switch.isJoinGuard() && !Identity.less(Identity.UPLIVE) && BoolUtils.hit(50)) {
 			new Thread() {
 				
 				@Override

@@ -35,7 +35,7 @@ public class Switch {
 	 * @return
 	 */
 	public static boolean isJoinStorm() {
-		boolean isJoin = false;
+		boolean isJoin = true;
 		if(OSUtils.isWin()) {
 			isJoin = StormScanner.getInstn().isScan();
 		}
@@ -47,7 +47,7 @@ public class Switch {
 	 * @return
 	 */
 	public static boolean isJoinGuard() {
-		boolean isJoin = false;
+		boolean isJoin = true;
 		if(OSUtils.isWin()) {
 			isJoin = StormScanner.getInstn().isScan();
 		}
