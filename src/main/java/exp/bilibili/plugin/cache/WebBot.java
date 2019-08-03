@@ -399,7 +399,7 @@ public class WebBot extends LoopThread {
 	 * 每小时有一定几率触发补领舰长亲密度行为
 	 */
 	private void reissueGuardGift() {
-		if(!Switch.isJoinGuard() && !Identity.less(Identity.UPLIVE) && BoolUtils.hit(20)) {
+		if(!Switch.isJoinGuard() && !Identity.less(Identity.UPLIVE) && BoolUtils.hit(50)) {
 			new Thread() {
 				
 				@Override
