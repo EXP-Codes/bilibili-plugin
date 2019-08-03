@@ -14,7 +14,9 @@ import exp.libs.utils.format.JsonUtils;
  	msg_type=1 : 普通通知
  	msg_type=2 : 小电视抽奖
  	msg_type=3 : 总督抽奖通知
+ 	msg_type=5 : 中奖通知
  	msg_type=6 : 礼物通知
+ 	msg_type=8 : 全区任意门抽奖
  	
 =======================================================================================================
 
@@ -101,10 +103,10 @@ import exp.libs.utils.format.JsonUtils;
 	{
 	  "cmd": "NOTICE_MSG",
 	  "full": {
-	    "head_icon": "http:\/\/i0.hdslb.com\/bfs\/live\/d63e78ade2319108390b1d6a59a81b2abe46925d.png",
-	    "tail_icon": "http:\/\/i0.hdslb.com\/bfs\/live\/822da481fdaba986d738db5d8fd469ffa95a8fa1.webp",
-	    "head_icon_fa": "http:\/\/i0.hdslb.com\/bfs\/live\/d63e78ade2319108390b1d6a59a81b2abe46925d.png",
-	    "tail_icon_fa": "http:\/\/i0.hdslb.com\/bfs\/live\/38cb2a9f1209b16c0f15162b0b553e3b28d9f16f.png",
+	    "head_icon": "http://i0.hdslb.com/bfs/live/d63e78ade2319108390b1d6a59a81b2abe46925d.png",
+	    "tail_icon": "http://i0.hdslb.com/bfs/live/822da481fdaba986d738db5d8fd469ffa95a8fa1.webp",
+	    "head_icon_fa": "http://i0.hdslb.com/bfs/live/d63e78ade2319108390b1d6a59a81b2abe46925d.png",
+	    "tail_icon_fa": "http://i0.hdslb.com/bfs/live/38cb2a9f1209b16c0f15162b0b553e3b28d9f16f.png",
 	    "head_icon_fan": 1,
 	    "tail_icon_fan": 4,
 	    "background": "#FFB03CFF",
@@ -121,7 +123,7 @@ import exp.libs.utils.format.JsonUtils;
 	    "time": 8
 	  },
 	  "side": {
-	    "head_icon": "http:\/\/i0.hdslb.com\/bfs\/live\/17c5353140045345f31c7475432920df08351837.png",
+	    "head_icon": "http://i0.hdslb.com/bfs/live/17c5353140045345f31c7475432920df08351837.png",
 	    "background": "#FFE9C8FF",
 	    "color": "#EF903AFF",
 	    "highlight": "#D54900FF",
@@ -131,7 +133,7 @@ import exp.libs.utils.format.JsonUtils;
 	  "real_roomid": 3495920,
 	  "msg_common": "<%晚安亲亲亲%> 在 <%绝不早到小吱吱%> 的房间开通了总督并触发了抽奖，点击前往TA的房间去抽奖吧",
 	  "msg_self": "<%晚安亲亲亲%> 在本房间开通了总督并触发了抽奖，快来抽奖吧",
-	  "link_url": "https:\/\/live.bilibili.com\/3495920?live_lottery_type=2&broadcast_type=0&from=28003&extra_jump_from=28003",
+	  "link_url": "https://live.bilibili.com/3495920?live_lottery_type=2&broadcast_type=0&from=28003&extra_jump_from=28003",
 	  "msg_type": 3,
 	  "shield_uid": -1
 	}
@@ -216,6 +218,46 @@ import exp.libs.utils.format.JsonUtils;
 	  "shield_uid": -1
 	}
 
+=======================================================================================================
+
+	{
+	  "cmd": "NOTICE_MSG",
+	  "full": {
+	    "head_icon": "http://i0.hdslb.com/bfs/live/a3e164513bd030f1113a8fbe1165454880c3ee4c.webp",
+	    "tail_icon": "http://i0.hdslb.com/bfs/live/822da481fdaba986d738db5d8fd469ffa95a8fa1.webp",
+	    "head_icon_fa": "http://i0.hdslb.com/bfs/live/28c2f3dd68170391d173ca2efd02bdabc917df26.png",
+	    "tail_icon_fa": "http://i0.hdslb.com/bfs/live/38cb2a9f1209b16c0f15162b0b553e3b28d9f16f.png",
+	    "head_icon_fan": 1,
+	    "tail_icon_fan": 4,
+	    "background": "#8675F5FF",
+	    "color": "#FFFFFFFF",
+	    "highlight": "#FDFF2FFF",
+	    "time": 20
+	  },
+	  "half": {
+	    "head_icon": "http://i0.hdslb.com/bfs/live/df00be5ee88c4cd53514090a58f8702368b9a324.png",
+	    "tail_icon": "",
+	    "background": "#9299F2FF",
+	    "color": "#FFFFFFFF",
+	    "highlight": "#FDFF2FFF",
+	    "time": 15
+	  },
+	  "side": {
+	    "head_icon": "",
+	    "background": "",
+	    "color": "",
+	    "highlight": "",
+	    "border": ""
+	  },
+	  "roomid": 147,
+	  "real_roomid": 24541,
+	  "msg_common": "全区广播：主播<%你的苏暖%>开启了“全区任意门”，点击即可传送到直播间抽奖！",
+	  "msg_self": "全区广播：主播<%你的苏暖%>开启了“全区任意门”，快来抽奖吧！",
+	  "link_url": "http://live.bilibili.com/147?live_lottery_type=1&broadcast_type=0&from=28003&extra_jump_from=28003",
+	  "msg_type": 8,
+	  "shield_uid": -1
+	}
+
  * </PRE>
  * @version   2018-09-29
  * @author    EXP: 272629724@qq.com
@@ -267,13 +309,12 @@ public class NoticeMsg extends _Msg {
 	public JSONObject toJson() {
 		JSONObject json = new JSONObject();
 		switch(type) {
-			case 1 : case 2 : case 5 : { 
+			case 1 : case 2 : case 5 : { // 系统通知
 				json.put(BiliCmdAtrbt.cmd, BiliCmd.SYS_MSG.CMD());
 				json.put(BiliCmdAtrbt.msg, msg);
 				break; 
 			}
-			// 与 SYS_MSG 的抽奖通知重复，不转换成抽奖消息
-//			case 2 : { // 小电视抽奖
+//			case 2 : { // 小电视抽奖 ： 与 SYS_MSG 的抽奖通知重复，不转换成抽奖消息
 //				json.put(BiliCmdAtrbt.cmd, BiliCmd.SYS_MSG.CMD());
 //				json.put(BiliCmdAtrbt.msg, msg);
 //				json.put(BiliCmdAtrbt.roomid, roomId);
@@ -288,10 +329,18 @@ public class NoticeMsg extends _Msg {
 				json.put(BiliCmdAtrbt.url, url);
 				break; 
 			}
-			case 6 : { 
+			case 6 : { // 礼物通知
 				json.put(BiliCmdAtrbt.cmd, BiliCmd.SYS_GIFT.CMD());
 				json.put(BiliCmdAtrbt.msg, msg);
 				json.put(BiliCmdAtrbt.msg_text, msg);
+				break; 
+			}
+			case 8 : { // 全区任意门抽奖
+				json.put(BiliCmdAtrbt.cmd, BiliCmd.SYS_GIFT.CMD());
+				json.put(BiliCmdAtrbt.msg, msg);
+				json.put(BiliCmdAtrbt.roomid, roomId);
+				json.put(BiliCmdAtrbt.real_roomid, realRoomId);
+				json.put(BiliCmdAtrbt.url, url);
 				break; 
 			}
 		}

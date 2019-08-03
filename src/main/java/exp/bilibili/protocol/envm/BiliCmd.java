@@ -112,6 +112,14 @@ public class BiliCmd {
 	private final static String _TV_END = "TV_END";
 	public final static BiliCmd TV_END = new BiliCmd(_TV_END);
 	
+	/** 凌晨 00:00 新一天的通知事件 */
+	private final static String _DAILY_QUEST_NEWDAY = "DAILY_QUEST_NEWDAY";
+	public final static BiliCmd DAILY_QUEST_NEWDAY = new BiliCmd(_DAILY_QUEST_NEWDAY);
+	
+	/** 红色活动横幅通知事件 */
+	private final static String _ACTIVITY_BANNER_RED_NOTICE_CLOSE = "ACTIVITY_BANNER_RED_NOTICE_CLOSE";
+	public final static BiliCmd ACTIVITY_BANNER_RED_NOTICE_CLOSE = new BiliCmd(_ACTIVITY_BANNER_RED_NOTICE_CLOSE);
+	
 	private String cmd;
 	
 	private BiliCmd(String cmd) {
@@ -195,6 +203,12 @@ public class BiliCmd {
 		
 		} else if(_TV_END.equals(cmd)) {
 			biliCMD = TV_END;
+		
+		} else if(_DAILY_QUEST_NEWDAY.equals(cmd)) {
+			biliCMD = DAILY_QUEST_NEWDAY;
+			
+		} else if(_ACTIVITY_BANNER_RED_NOTICE_CLOSE.equals(cmd)) {
+			biliCMD = ACTIVITY_BANNER_RED_NOTICE_CLOSE;
 			
 		}
 		return biliCMD;

@@ -1,7 +1,5 @@
 package exp.bilibili.protocol;
 
-import net.sf.json.JSONObject;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,10 +10,12 @@ import exp.bilibili.plugin.cache.OnlineUserMgr;
 import exp.bilibili.plugin.cache.RoomMgr;
 import exp.bilibili.plugin.utils.Switch;
 import exp.bilibili.plugin.utils.UIUtils;
+import exp.bilibili.protocol.bean.ws.ActivityBannerRedNoticeClose;
 import exp.bilibili.protocol.bean.ws.ActivityEvent;
 import exp.bilibili.protocol.bean.ws.ChatMsg;
 import exp.bilibili.protocol.bean.ws.ComboEnd;
 import exp.bilibili.protocol.bean.ws.ComboSend;
+import exp.bilibili.protocol.bean.ws.DailyQuestNewday;
 import exp.bilibili.protocol.bean.ws.EnergyLottery;
 import exp.bilibili.protocol.bean.ws.EntryEffect;
 import exp.bilibili.protocol.bean.ws.GuardBuy;
@@ -42,6 +42,7 @@ import exp.bilibili.protocol.envm.BiliCmd;
 import exp.bilibili.protocol.envm.BiliCmdAtrbt;
 import exp.libs.utils.format.JsonUtils;
 import exp.libs.utils.other.StrUtils;
+import net.sf.json.JSONObject;
 
 /**
  * <PRE>
@@ -161,6 +162,12 @@ public class WSAnalyser {
 			
 		} else if(!onlyListen && biliCmd == BiliCmd.TV_END) {
 			toDo(new TvEnd(json));
+			
+		} else if(!onlyListen && biliCmd == BiliCmd.DAILY_QUEST_NEWDAY) {
+			toDo(new DailyQuestNewday(json));
+			
+		} else if(!onlyListen && biliCmd == BiliCmd.ACTIVITY_BANNER_RED_NOTICE_CLOSE) {
+			toDo(new ActivityBannerRedNoticeClose(json));
 			
 		} else {
 			isOk = onlyListen;
@@ -489,9 +496,25 @@ public class WSAnalyser {
 	
 	/**
 	 * 小电视中奖消息
-	 * @param tvEnd
+	 * @param msgBean
 	 */
-	private static void toDo(TvEnd tvEnd) {
+	private static void toDo(TvEnd msgBean) {
+		// Undo
+	}
+	
+	/**
+	 * 凌晨 00:00 新一天的通知消息
+	 * @param msgBean
+	 */
+	private static void toDo(DailyQuestNewday msgBean) {
+		// Undo
+	}
+	
+	/**
+	 * 红色活动横幅通知事件
+	 * @param msgBean
+	 */
+	private static void toDo(ActivityBannerRedNoticeClose msgBean) {
 		// Undo
 	}
 	
