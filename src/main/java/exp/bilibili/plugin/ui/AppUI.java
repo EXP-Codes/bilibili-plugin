@@ -50,7 +50,6 @@ import exp.libs.utils.encode.CompressUtils;
 import exp.libs.utils.encode.CryptoUtils;
 import exp.libs.utils.io.FileUtils;
 import exp.libs.utils.num.NumUtils;
-import exp.libs.utils.os.OSUtils;
 import exp.libs.utils.os.ThreadUtils;
 import exp.libs.utils.other.ListUtils;
 import exp.libs.utils.other.PathUtils;
@@ -199,38 +198,19 @@ public class AppUI extends MainWindow {
 	 * @param args main入参
 	 */
 	public static void createInstn(String[] args) {
-//		if(OSUtils.isWin()) {
-//			if(checkIdentity(args)) {
-//				
-//				// 非试用用户才 导出自动升级入口
-//				if(!Identity.less(Identity.USER)) {
-//					AppVerInfo.export(Config.APP_NAME);
-//				}
-//				
-//				// 启动程序实例
-//				getInstn();
-//				
-//			} else {
-//				System.exit(0);
-//			}
-//		} else {
-			createInstnByUnix();
-//		}
-	}
-	
-	private static void createInstnByUnix() {
-		Identity.set(Identity.ADMIN);
-		BiliWebSocketMgr wsMgr = new BiliWebSocketMgr();
-		wsMgr.relinkLive(51108);	// 连接到版聊直播间
-		
-		if(CookiesMgr.getInstn().load(CookieType.MAIN)) {
-			SwingUtils.info("欢迎肥来: ".concat(CookiesMgr.MAIN().NICKNAME()));
-			XHRSender.queryUserAuthorityInfo(CookiesMgr.MAIN());
+		if(checkIdentity(args)) {
+			
+			// 非试用用户才 导出自动升级入口
+			if(!Identity.less(Identity.USER)) {
+				AppVerInfo.export(Config.APP_NAME);
+			}
+			
+			// 启动程序实例
+			getInstn();
+			
+		} else {
+			System.exit(0);
 		}
-		CookiesMgr.getInstn().load(CookieType.MAIN);
-		
-		WebBot.getInstn()._start();	// 启动仿真机器人
-		wsMgr._start();	// 启动分区监听
 	}
 	
 	/**

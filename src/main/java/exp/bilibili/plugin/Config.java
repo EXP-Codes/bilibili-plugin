@@ -386,12 +386,12 @@ public class Config {
 		return xConf.getVal("/config/ai/chatKey");
 	}
 	
-	public String TEST_SERVER() {
-		return xConf.getVal("/config/monitor/testServer");
+	public String STAGING_SERVER() {
+		return xConf.getVal("/config/monitor/stagingServer");
 	}
 	
-	public String OFFICIAL_SERVER() {
-		return xConf.getVal("/config/monitor/officialServer");
+	public String PRODUCE_SERVER() {
+		return xConf.getVal("/config/monitor/produceServer");
 	}
 	
 	/**

@@ -36,11 +36,11 @@ public class SafetyMonitor extends LoopThread {
 
 	private final static Logger log = LoggerFactory.getLogger(SafetyMonitor.class);
 	
-	/** 软件授权页(Github) : 测试服务器 (需支持TLSv1.2协议才能访问此网址) */
-	private final static String GITHUB_URL = Config.getInstn().TEST_SERVER();
+	/** 软件授权页(Gitee) : 测试服务器 (需支持TLSv1.2协议才能访问此网址) */
+	private final static String GITEE_URL = Config.getInstn().STAGING_SERVER();
 	
-	/** 软件授权页(Gitee) : 正式服务器 */
-	private final static String GITEE_URL = Config.getInstn().OFFICIAL_SERVER();
+	/** 软件授权页(Github) : 正式服务器 */
+	private final static String GITHUB_URL = Config.getInstn().PRODUCE_SERVER();
 	
 	/** 免检原因 */
 	private final static String UNCHECK_CAUSE = "UNCHECK";
@@ -149,10 +149,10 @@ public class SafetyMonitor extends LoopThread {
 		if(++loopCnt >= LOOP_LIMIT) {
 			loopCnt = 0;
 			
-			// 先尝试用Gitee(国内)获取授权页, 若失败则从GitHub(国际)获取授权页
-			AppInfo appInfo = Certificate.getAppInfo(GITEE_URL, appName);
+			// 先尝试用GitHub(国际)获取授权页, 若失败则从Gitee(国内)获取授权页
+			AppInfo appInfo = Certificate.getAppInfo(GITHUB_URL, appName);
 			if(appInfo == null) {
-				appInfo = Certificate.getAppInfo(GITHUB_URL, appName);
+				appInfo = Certificate.getAppInfo(GITEE_URL, appName);
 			}
 			
 			if(appInfo == null) {

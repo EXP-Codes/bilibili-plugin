@@ -1,11 +1,16 @@
 package exp.bilibili.plugin.utils;
 
+import java.awt.Toolkit;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import exp.bilibili.plugin.Config;
 import exp.bilibili.plugin.bean.ldm.HotLiveRange;
 import exp.bilibili.plugin.ui.AppUI;
+import exp.bilibili.plugin.ui._NoticeUI;
 import exp.libs.envm.Colors;
+import exp.libs.utils.os.OSUtils;
 import exp.libs.utils.other.StrUtils;
 
 /**
@@ -31,7 +36,9 @@ public class UIUtils {
 	public static void log(String msg) {
 		log.info(msg);
 		msg = StrUtils.concat(TimeUtils.getCurTime(), msg);
-//		AppUI.getInstn().toConsole(msg);
+		if(OSUtils.isWin()) {
+			AppUI.getInstn().toConsole(msg);
+		}
 	}
 	
 	public static void chat(Object... msgs) {
@@ -40,7 +47,9 @@ public class UIUtils {
 	
 	public static void chat(String msg) {
 		msg = StrUtils.concat(TimeUtils.getCurTime(), msg);
-//		AppUI.getInstn().toChat(msg);
+		if(OSUtils.isWin()) {
+			AppUI.getInstn().toChat(msg);
+		}
 	}
 	
 	public static void notify(Object... msgs) {
@@ -49,7 +58,9 @@ public class UIUtils {
 	
 	public static void notify(String msg) {
 		msg = StrUtils.concat(TimeUtils.getCurTime(), msg);
-//		AppUI.getInstn().toNotify(msg);
+		if(OSUtils.isWin()) {
+			AppUI.getInstn().toNotify(msg);
+		}
 	}
 	
 	public static void statistics(Object... msgs) {
@@ -58,7 +69,9 @@ public class UIUtils {
 	
 	public static void statistics(String msg) {
 		msg = StrUtils.concat(TimeUtils.getCurTime(), msg);
-//		AppUI.getInstn().toStatistics(msg);
+		if(OSUtils.isWin()) {
+			AppUI.getInstn().toStatistics(msg);
+		}
 	}
 	
 	public static void updateLotteryCnt() {
@@ -66,11 +79,15 @@ public class UIUtils {
 	}
 	
 	public static void updateLotteryCnt(int num) {
-//		AppUI.getInstn().updateLotteryCnt(num);
+		if(OSUtils.isWin()) {
+			AppUI.getInstn().updateLotteryCnt(num);
+		}
 	}
 	
 	public static void markLogin(String username) {
-//		AppUI.getInstn().markLogin(username);
+		if(OSUtils.isWin()) {
+			AppUI.getInstn().markLogin(username);
+		}
 	}
 	
 	public static boolean isLogined() {
@@ -78,61 +95,93 @@ public class UIUtils {
 	}
 	
 	public static void updateAppTitle(String certificateTime) {
-//		AppUI.getInstn().updateTitle(certificateTime);
+		if(OSUtils.isWin()) {
+			AppUI.getInstn().updateTitle(certificateTime);
+		}
 	}
 	
 	public static void printVersionInfo() {
-//		AppUI.getInstn().printVersionInfo();
+		if(OSUtils.isWin()) {
+			AppUI.getInstn().printVersionInfo();
+		}
 	}
 	
 	public static String getCurLiveURL() {
-//		return AppUI.getInstn().getLiveUrl();
-		return "";
+		String url = StrUtils.concat(Config.getInstn().LIVE_HOME(), Config.getInstn().SIGN_ROOM_ID());
+		if(OSUtils.isWin()) {
+			url = AppUI.getInstn().getLiveUrl();
+		}
+		return url;
 	}
 	
 	public static int getLiveRoomId() {
-//		return AppUI.getInstn().getLiveRoomId();
-		return 51108;
+		int roomId = Config.getInstn().SIGN_ROOM_ID();
+		if(OSUtils.isWin()) {
+			roomId = AppUI.getInstn().getLiveRoomId();
+		}
+		return roomId;
 	}
 	
 	public static boolean isOnlyFreeze() {
-//		return AppUI.getInstn().isOnlyFreeze();
-		return false;
+		boolean isOnlyFreeze = true;
+		if(OSUtils.isWin()) {
+			isOnlyFreeze = AppUI.getInstn().isOnlyFreeze();
+		}
+		return isOnlyFreeze;
 	}
 	
 	public static HotLiveRange getHotLiveRange() {
-//		return AppUI.getInstn().getHotLiveRange();
-		return new HotLiveRange(2, 3);
+		HotLiveRange range = new HotLiveRange(2, 3);
+		if(OSUtils.isWin()) {
+			range = AppUI.getInstn().getHotLiveRange();
+		}
+		return range;
 	}
 	
 	public static int getLotteryProbability() {
-//		return AppUI.getInstn().getLotteryProbability();
-		return 100;
+		int probability = 100;
+		if(OSUtils.isWin()) {
+			probability = AppUI.getInstn().getLotteryProbability();
+		}
+		return probability;
 	}
 	
 	public static long getReactionTime() {
-//		return AppUI.getInstn().getReactionTime();
-		return 100;
+		long reactionTime = Config.getInstn().REACTION_TIME();
+		if(OSUtils.isWin()) {
+			reactionTime = AppUI.getInstn().getReactionTime();
+		}
+		return reactionTime;
 	}
 	
 	public static long getIntervalTime() {
-//		return AppUI.getInstn().getIntervalTime();
-		return 100;
+		long intervalTime = Config.getInstn().INTERVAL_TIME();
+		if(OSUtils.isWin()) {
+			intervalTime = AppUI.getInstn().getIntervalTime();
+		}
+		return intervalTime;
 	}
 	
 	public static Colors getCurChatColor() {
-//		return AppUI.getInstn().getCurChatColor();
-		return Colors.WHITE;
+		Colors color = Colors.WHITE;
+		if(OSUtils.isWin()) {
+			color = AppUI.getInstn().getCurChatColor();
+		}
+		return color;
 	}
 	
 	public static void notityLive(int roomId) {
-//		new _NoticeUI(roomId)._view();		// 右下角通知提示
-//		Toolkit.getDefaultToolkit().beep();	// 蜂鸣音提示
+		if(OSUtils.isWin()) {
+			new _NoticeUI(roomId)._view();		// 右下角通知提示
+			Toolkit.getDefaultToolkit().beep();	// 蜂鸣音提示
+		}
 	}
 	
 	public static void notityExit(String msg) {
-		SwingUtils.warn(msg);
-		System.exit(0);
+		if(OSUtils.isWin()) {
+			SwingUtils.warn(msg);
+			System.exit(0);
+		}
 	}
 	
 }

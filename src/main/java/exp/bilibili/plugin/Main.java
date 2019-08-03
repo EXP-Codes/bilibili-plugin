@@ -1,5 +1,6 @@
 package exp.bilibili.plugin;
 
+import exp.bilibili.plugin.ui.App;
 import exp.bilibili.plugin.ui.AppUI;
 import exp.bilibili.plugin.utils.SwingUtils;
 import exp.libs.utils.os.OSUtils;
@@ -28,18 +29,24 @@ public class Main {
 		BeautyEyeUtils.init();
 		Config.getInstn();
 		
-		if(OSUtils.getStartlock(2333)) {
-			if(TimeUtils.isCalibrated(3600000)) {
-				AppUI.createInstn(args);
-				
+		if(OSUtils.isWin()) {
+			if(OSUtils.getStartlock(2333)) {
+				if(TimeUtils.isCalibrated(3600000)) {
+					AppUI.createInstn(args);
+					
+				} else {
+					System.err.println("本地时间异常，请校准北京时间再启动");
+					SwingUtils.warn("本地时间异常，请校准北京时间再启动");
+				}
 			} else {
-				System.err.println("本地时间异常，请校准北京时间再启动");
-				SwingUtils.warn("本地时间异常，请校准北京时间再启动");
+				System.err.println("禁止重复启动");
+				SwingUtils.warn("禁止重复启动");
 			}
+			
 		} else {
-			System.err.println("禁止重复启动");
-			SwingUtils.warn("禁止重复启动");
+			App.createInstn(args);
 		}
+		
 	}
 	
 }
