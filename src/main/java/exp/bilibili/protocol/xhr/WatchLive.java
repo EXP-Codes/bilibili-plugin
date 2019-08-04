@@ -3,8 +3,6 @@ package exp.bilibili.protocol.xhr;
 import java.util.HashMap;
 import java.util.Map;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 import exp.bilibili.plugin.Config;
 import exp.bilibili.plugin.bean.ldm.BiliCookie;
 import exp.bilibili.protocol.bean.other.AppVideo;
@@ -14,6 +12,8 @@ import exp.libs.utils.format.JsonUtils;
 import exp.libs.utils.num.IDUtils;
 import exp.libs.utils.other.StrUtils;
 import exp.libs.warp.net.http.HttpURLUtils;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 /**
  * <PRE>
@@ -30,7 +30,7 @@ public class WatchLive extends __XHR {
 	/** 手机端浏览器头 */
 	private final static String APP_USER_AGENT = "Mozilla/5.0 BiliDroid/5.22.1 (bbcallen@gmail.com)";
 	
-	/** 模拟PC端在线观看直播的心跳URL */
+	/** 模拟PC端在线观看直播URL */
 	private final static String PC_WATCH_URL = Config.getInstn().PC_WATCH_URL();
 	
 	/** 取手机端直播视频地址URL(每次获取有效期为半小时) */
@@ -51,7 +51,8 @@ public class WatchLive extends __XHR {
 	 */
 	public static void toWatchPCLive(BiliCookie cookie, int roomId) {
 		Map<String, String> header = POST_HEADER(cookie.toNVCookie(), getRealRoomId(roomId));
-		String response = HttpURLUtils.doPost(PC_WATCH_URL, header, null);
+		Map<String, String> request = getRequest(cookie.CSRF());
+		String response = HttpURLUtils.doPost(PC_WATCH_URL, header, request);
 		
 		try {
 			JSONObject json = JSONObject.fromObject(response);
@@ -66,6 +67,19 @@ public class WatchLive extends __XHR {
 		} catch(Exception e) {
 			log.error("[{}] 模拟PC端在线观看直播失败: {}", cookie.NICKNAME(), response, e);
 		}
+	}
+	
+	/**
+	 * PC端在线观看直播的请求参数
+	 * @param csrf
+	 * @return
+	 */
+	private static Map<String, String> getRequest(String csrf) {
+		Map<String, String> request = new HashMap<String, String>();
+		request.put(BiliCmdAtrbt.csrf_token, csrf);
+		request.put(BiliCmdAtrbt.csrf, csrf);
+		request.put(BiliCmdAtrbt.visit_id, getVisitId());
+		return request;
 	}
 	
 	/**
