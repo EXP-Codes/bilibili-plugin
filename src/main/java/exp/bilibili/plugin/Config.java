@@ -9,6 +9,7 @@ import exp.bilibili.plugin.cache.RoomMgr;
 import exp.libs.envm.Charset;
 import exp.libs.utils.io.FileUtils;
 import exp.libs.utils.num.NumUtils;
+import exp.libs.utils.os.OSUtils;
 import exp.libs.utils.other.StrUtils;
 import exp.libs.utils.verify.RegexUtils;
 import exp.libs.warp.conf.xml.XConfig;
@@ -71,6 +72,10 @@ public class Config {
 			}
 		}
 		return instance;
+	}
+	
+	public static boolean USE_UI() {
+		return OSUtils.isWin();
 	}
 	
 	public String WEBSOCKET() {

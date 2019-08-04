@@ -10,7 +10,6 @@ import exp.bilibili.plugin.bean.ldm.HotLiveRange;
 import exp.bilibili.plugin.ui.AppUI;
 import exp.bilibili.plugin.ui._NoticeUI;
 import exp.libs.envm.Colors;
-import exp.libs.utils.os.OSUtils;
 import exp.libs.utils.other.StrUtils;
 
 /**
@@ -36,7 +35,7 @@ public class UIUtils {
 	public static void log(String msg) {
 		log.info(msg);
 		msg = StrUtils.concat(TimeUtils.getCurTime(), msg);
-		if(OSUtils.isWin()) {
+		if(Config.USE_UI()) {
 			AppUI.getInstn().toConsole(msg);
 		}
 	}
@@ -47,7 +46,7 @@ public class UIUtils {
 	
 	public static void chat(String msg) {
 		msg = StrUtils.concat(TimeUtils.getCurTime(), msg);
-		if(OSUtils.isWin()) {
+		if(Config.USE_UI()) {
 			AppUI.getInstn().toChat(msg);
 		}
 	}
@@ -58,7 +57,7 @@ public class UIUtils {
 	
 	public static void notify(String msg) {
 		msg = StrUtils.concat(TimeUtils.getCurTime(), msg);
-		if(OSUtils.isWin()) {
+		if(Config.USE_UI()) {
 			AppUI.getInstn().toNotify(msg);
 		}
 	}
@@ -69,7 +68,7 @@ public class UIUtils {
 	
 	public static void statistics(String msg) {
 		msg = StrUtils.concat(TimeUtils.getCurTime(), msg);
-		if(OSUtils.isWin()) {
+		if(Config.USE_UI()) {
 			AppUI.getInstn().toStatistics(msg);
 		}
 	}
@@ -79,13 +78,13 @@ public class UIUtils {
 	}
 	
 	public static void updateLotteryCnt(int num) {
-		if(OSUtils.isWin()) {
+		if(Config.USE_UI()) {
 			AppUI.getInstn().updateLotteryCnt(num);
 		}
 	}
 	
 	public static void markLogin(String username) {
-		if(OSUtils.isWin()) {
+		if(Config.USE_UI()) {
 			AppUI.getInstn().markLogin(username);
 		}
 	}
@@ -95,20 +94,20 @@ public class UIUtils {
 	}
 	
 	public static void updateAppTitle(String certificateTime) {
-		if(OSUtils.isWin()) {
+		if(Config.USE_UI()) {
 			AppUI.getInstn().updateTitle(certificateTime);
 		}
 	}
 	
 	public static void printVersionInfo() {
-		if(OSUtils.isWin()) {
+		if(Config.USE_UI()) {
 			AppUI.getInstn().printVersionInfo();
 		}
 	}
 	
 	public static String getCurLiveURL() {
 		String url = StrUtils.concat(Config.getInstn().LIVE_HOME(), Config.getInstn().SIGN_ROOM_ID());
-		if(OSUtils.isWin()) {
+		if(Config.USE_UI()) {
 			url = AppUI.getInstn().getLiveUrl();
 		}
 		return url;
@@ -116,7 +115,7 @@ public class UIUtils {
 	
 	public static int getLiveRoomId() {
 		int roomId = Config.getInstn().SIGN_ROOM_ID();
-		if(OSUtils.isWin()) {
+		if(Config.USE_UI()) {
 			roomId = AppUI.getInstn().getLiveRoomId();
 		}
 		return roomId;
@@ -124,7 +123,7 @@ public class UIUtils {
 	
 	public static boolean isOnlyFreeze() {
 		boolean isOnlyFreeze = true;
-		if(OSUtils.isWin()) {
+		if(Config.USE_UI()) {
 			isOnlyFreeze = AppUI.getInstn().isOnlyFreeze();
 		}
 		return isOnlyFreeze;
@@ -132,7 +131,7 @@ public class UIUtils {
 	
 	public static HotLiveRange getHotLiveRange() {
 		HotLiveRange range = new HotLiveRange(2, 3);
-		if(OSUtils.isWin()) {
+		if(Config.USE_UI()) {
 			range = AppUI.getInstn().getHotLiveRange();
 		}
 		return range;
@@ -140,7 +139,7 @@ public class UIUtils {
 	
 	public static int getLotteryProbability() {
 		int probability = 100;
-		if(OSUtils.isWin()) {
+		if(Config.USE_UI()) {
 			probability = AppUI.getInstn().getLotteryProbability();
 		}
 		return probability;
@@ -148,7 +147,7 @@ public class UIUtils {
 	
 	public static long getReactionTime() {
 		long reactionTime = Config.getInstn().REACTION_TIME();
-		if(OSUtils.isWin()) {
+		if(Config.USE_UI()) {
 			reactionTime = AppUI.getInstn().getReactionTime();
 		}
 		return reactionTime;
@@ -156,7 +155,7 @@ public class UIUtils {
 	
 	public static long getIntervalTime() {
 		long intervalTime = Config.getInstn().INTERVAL_TIME();
-		if(OSUtils.isWin()) {
+		if(Config.USE_UI()) {
 			intervalTime = AppUI.getInstn().getIntervalTime();
 		}
 		return intervalTime;
@@ -164,21 +163,21 @@ public class UIUtils {
 	
 	public static Colors getCurChatColor() {
 		Colors color = Colors.WHITE;
-		if(OSUtils.isWin()) {
+		if(Config.USE_UI()) {
 			color = AppUI.getInstn().getCurChatColor();
 		}
 		return color;
 	}
 	
 	public static void notityLive(int roomId) {
-		if(OSUtils.isWin()) {
+		if(Config.USE_UI()) {
 			new _NoticeUI(roomId)._view();		// 右下角通知提示
 			Toolkit.getDefaultToolkit().beep();	// 蜂鸣音提示
 		}
 	}
 	
 	public static void notityExit(String msg) {
-		if(OSUtils.isWin()) {
+		if(Config.USE_UI()) {
 			SwingUtils.warn(msg);
 			System.exit(0);
 		}

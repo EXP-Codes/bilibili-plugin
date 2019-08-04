@@ -29,7 +29,7 @@ public class Main {
 		BeautyEyeUtils.init();
 		Config.getInstn();
 		
-		if(OSUtils.isWin()) {
+		if(Config.USE_UI()) {
 			if(OSUtils.getStartlock(2333)) {
 				if(TimeUtils.isCalibrated(3600000)) {
 					AppUI.createInstn(args);

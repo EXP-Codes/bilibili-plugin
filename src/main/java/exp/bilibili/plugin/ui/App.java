@@ -1,6 +1,7 @@
 package exp.bilibili.plugin.ui;
 
 import exp.bilibili.plugin.Config;
+import exp.bilibili.plugin.bean.ldm.BiliCookie;
 import exp.bilibili.plugin.cache.CookiesMgr;
 import exp.bilibili.plugin.cache.WebBot;
 import exp.bilibili.plugin.envm.CookieType;
@@ -27,21 +28,41 @@ public class App {
 	 */
 	public static void createInstn(String[] args) {
 		
+		// 登陆所有账号
+		loginAll();
+		
+		
 		// 授权并连接到版聊直播间
 		Identity.set(Identity.ADMIN);
 		BiliWebSocketMgr wsMgr = new BiliWebSocketMgr();
 		wsMgr.relinkLive(Config.getInstn().SIGN_ROOM_ID());
+		wsMgr._start();	// 启动分区监听
 		
-		// 加载 cookies
+		
+		// 启动仿真机器人
+		WebBot.getInstn()._start();
+	}
+	
+	/**
+	 * 登陆所有账号
+	 */
+	private static void loginAll() {
 		if(CookiesMgr.getInstn().load(CookieType.MAIN)) {
-			SwingUtils.info("欢迎肥来: ".concat(CookiesMgr.MAIN().NICKNAME()));
+			SwingUtils.info("已登陆主号: ".concat(CookiesMgr.MAIN().NICKNAME()));
 			XHRSender.queryUserAuthorityInfo(CookiesMgr.MAIN());
 		}
-		CookiesMgr.getInstn().load(CookieType.VEST);
-		CookiesMgr.getInstn().load(CookieType.MINI);
 		
-		WebBot.getInstn()._start();	// 启动仿真机器人
-		wsMgr._start();	// 启动分区监听
+		if(CookiesMgr.getInstn().load(CookieType.MINI)) {
+			for(BiliCookie mini : CookiesMgr.MINIs()) {
+				SwingUtils.info("已登陆小号: ".concat(mini.NICKNAME()));
+				XHRSender.queryUserAuthorityInfo(mini);
+			}
+		}
+		
+		if(CookiesMgr.getInstn().load(CookieType.VEST)) {
+			SwingUtils.info("已登陆马甲号: ".concat(CookiesMgr.VEST().NICKNAME()));
+			XHRSender.queryUserAuthorityInfo(CookiesMgr.VEST());
+		}
 	}
 	
 }

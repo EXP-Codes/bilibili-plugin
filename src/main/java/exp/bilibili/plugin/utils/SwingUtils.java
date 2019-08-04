@@ -5,7 +5,7 @@ import javax.swing.JOptionPane;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import exp.libs.utils.os.OSUtils;
+import exp.bilibili.plugin.Config;
 
 public class SwingUtils extends exp.libs.warp.ui.SwingUtils {
 
@@ -16,7 +16,7 @@ public class SwingUtils extends exp.libs.warp.ui.SwingUtils {
 	 * @param msg 普通消息
 	 */
 	public static void info(String msg) {
-		if(OSUtils.isWin()) {
+		if(Config.USE_UI()) {
 			JOptionPane.showMessageDialog(
 				    null, msg, "INFO", JOptionPane.INFORMATION_MESSAGE);
 		} else {
@@ -29,7 +29,7 @@ public class SwingUtils extends exp.libs.warp.ui.SwingUtils {
 	 * @param msg 警告消息
 	 */
 	public static void warn(String msg) {
-		if(OSUtils.isWin()) {
+		if(Config.USE_UI()) {
 			JOptionPane.showMessageDialog(
 				    null, msg, "WARN", JOptionPane.WARNING_MESSAGE);
 		} else {
@@ -43,7 +43,7 @@ public class SwingUtils extends exp.libs.warp.ui.SwingUtils {
 	 * @param msg 异常消息
 	 */
 	public static void error(Throwable e, String msg) {
-		if(OSUtils.isWin()) {
+		if(Config.USE_UI()) {
 			JOptionPane.showMessageDialog(
 				    null, msg, "ERROR", JOptionPane.ERROR_MESSAGE);
 			if(e != null) {

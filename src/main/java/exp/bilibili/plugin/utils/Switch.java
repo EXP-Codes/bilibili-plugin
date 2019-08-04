@@ -1,8 +1,8 @@
 package exp.bilibili.plugin.utils;
 
+import exp.bilibili.plugin.Config;
 import exp.bilibili.plugin.cache.StormScanner;
 import exp.bilibili.plugin.ui.AppUI;
-import exp.libs.utils.os.OSUtils;
 
 /**
  * <PRE>
@@ -24,7 +24,7 @@ public class Switch {
 	 */
 	public static boolean isJoinLottery() {
 		boolean isJoin = true;
-		if(OSUtils.isWin()) {
+		if(Config.USE_UI()) {
 			isJoin = AppUI.getInstn().isJoinLottery();
 		}
 		return isJoin;
@@ -36,7 +36,7 @@ public class Switch {
 	 */
 	public static boolean isJoinStorm() {
 		boolean isJoin = true;
-		if(OSUtils.isWin()) {
+		if(Config.USE_UI()) {
 			isJoin = StormScanner.getInstn().isScan();
 		}
 		return isJoin;
@@ -48,7 +48,7 @@ public class Switch {
 	 */
 	public static boolean isJoinGuard() {
 		boolean isJoin = true;
-		if(OSUtils.isWin()) {
+		if(Config.USE_UI()) {
 			isJoin = StormScanner.getInstn().isScan();
 		}
 		return isJoin;
@@ -60,7 +60,7 @@ public class Switch {
 	 */
 	public static boolean isAutoFeed() {
 		boolean isAuto = false;
-		if(OSUtils.isWin()) {
+		if(Config.USE_UI()) {
 			isAuto = AppUI.getInstn().isAutoFeed();
 		}
 		return isAuto;
