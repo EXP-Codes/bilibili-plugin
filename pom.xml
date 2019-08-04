@@ -425,9 +425,16 @@
                                       <exclude name="img/tesseract.log" />
                                     </fileset>
                                 </copy>
+                                <echo>拷贝 Cookie</echo>
                                 <copy todir="${release.dir}/cookies">
                                     <fileset dir="cookies">
                                       <exclude name="*" />
+                                    </fileset>
+                                </copy>
+                                <echo>拷贝脚本</echo>
+                                <copy todir="${release.dir}">
+                                    <fileset dir="script">
+                                      <include name="*" />
                                     </fileset>
                                 </copy>
                                 <echo>拷贝文档</echo>

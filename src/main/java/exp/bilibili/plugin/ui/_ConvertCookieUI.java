@@ -29,7 +29,7 @@ import exp.libs.warp.ui.layout.VFlowLayout;
 
 /**
  * <PRE>
- * 节奏风暴/舰队亲密奖励 扫描策略选择窗口
+ * Cookie 登录凭证转换器窗口
  * </PRE>
  * <br/><B>PROJECT : </B> bilibili-plugin
  * <br/><B>SUPPORT : </B> <a href="http://www.exp-blog.com" target="_blank">www.exp-blog.com</a> 

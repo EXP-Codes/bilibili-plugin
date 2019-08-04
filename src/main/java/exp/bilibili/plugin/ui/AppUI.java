@@ -226,38 +226,36 @@ public class AppUI extends MainWindow {
 	public static boolean checkIdentity(String[] args) {
 		boolean isOk = true;
 		if(StrUtils.isEmpty(args) || args.length != 1) {
-			isOk = false;
+			args = new String[] { Identity.GUEST.CMD() };
+		}
 			
+		// 管理员: 无条件开启所有功能
+		if(Identity.ADMIN.CMD().equals(args[0])) {
+			Identity.set(Identity.ADMIN);
+			
+		// 用户
 		} else {
-			
-			// 管理员: 无条件开启所有功能
-			if(Identity.ADMIN.CMD().equals(args[0])) {
-				Identity.set(Identity.ADMIN);
+			// 主播用户
+			if(Identity.UPLIVE.CMD().equals(args[0])) {
+				Identity.set(Identity.UPLIVE);
 				
-			// 用户
+			// 普通用户
+			} else if(Identity.USER.CMD().equals(args[0])) {
+				Identity.set(Identity.USER);
+				
+			// 试用用户(游客)
 			} else {
-				// 主播用户
-				if(Identity.UPLIVE.CMD().equals(args[0])) {
-					Identity.set(Identity.UPLIVE);
-					
-				// 普通用户
-				} else if(Identity.USER.CMD().equals(args[0])) {
-					Identity.set(Identity.USER);
-					
-				// 试用用户(游客)
-				} else {
-					Identity.set(Identity.GUEST);
-					SafetyUtils.certificateForGuest();
-				}
-				
-				// 要求输入授权码
-				String code = SwingUtils.input(CryptoUtils.deDES(
-						"310353578B61BEC4F18A841407E00B2260FE1DB9504607A7"));
-				String errMsg = SafetyUtils.checkAC(code);	// 检查授权码和授权时间
-				if(StrUtils.isNotEmpty(errMsg)) {
-					SwingUtils.warn(errMsg);
-					isOk = false;
-				}
+				Identity.set(Identity.GUEST);
+				SafetyUtils.certificateForGuest();
+			}
+			
+			// 要求输入授权码
+			String code = SwingUtils.input(CryptoUtils.deDES(
+					"310353578B61BEC4F18A841407E00B2260FE1DB9504607A7"));
+			String errMsg = SafetyUtils.checkAC(code);	// 检查授权码和授权时间
+			if(StrUtils.isNotEmpty(errMsg)) {
+				SwingUtils.warn(errMsg);
+				isOk = false;
 			}
 		}
 		return isOk;

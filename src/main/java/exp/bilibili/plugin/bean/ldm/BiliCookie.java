@@ -315,8 +315,8 @@ public class BiliCookie extends HttpCookie {
 	@Override
 	public String toHeaderCookie() {
 		return StrUtils.concat(super.toHeaderCookie(), 
-				LFCR, FEED_KEY, "=", (isAutoFeed() ? "true" : "false"), 
-				LFCR, RID_KEY, "=", getFeedRoomId());
+				CR, FEED_KEY, "=", (isAutoFeed() ? "true" : "false"), 
+				CR, RID_KEY, "=", getFeedRoomId());
 	}
 	
 	@Override

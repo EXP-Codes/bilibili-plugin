@@ -5,8 +5,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 import exp.bilibili.plugin.Config;
 import exp.bilibili.plugin.bean.ldm.BiliCookie;
 import exp.bilibili.plugin.utils.UIUtils;
@@ -16,6 +14,8 @@ import exp.bilibili.protocol.envm.BiliCmdAtrbt;
 import exp.libs.envm.HttpHead;
 import exp.libs.utils.format.JsonUtils;
 import exp.libs.warp.net.http.HttpURLUtils;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 /**
  * <PRE>
@@ -56,7 +56,8 @@ public class Gifts extends __XHR {
 	public static List<BagGift> queryBagList(BiliCookie cookie, int roomId) {
 		String sRoomId = getRealRoomId(roomId);
 		Map<String, String> header = GET_HEADER(cookie.toNVCookie(), sRoomId);
-		String response = HttpURLUtils.doGet(BAG_URL, header, null);
+		Map<String, String> request = _getRequest(sRoomId);
+		String response = HttpURLUtils.doGet(BAG_URL, header, request);
 
 		List<BagGift> bagGifts = new LinkedList<BagGift>();
 		try {
@@ -77,6 +78,18 @@ public class Gifts extends __XHR {
 			log.error("获取包裹礼物异常: {}", response, e);
 		}
 		return bagGifts;
+	}
+	
+	/**
+	 * 查看包裹的请求参数
+	 * @param roomId
+	 * @return
+	 */
+	private static Map<String, String> _getRequest(String roomId) {
+		Map<String, String> request = new HashMap<String, String>();
+		request.put(BiliCmdAtrbt.t, String.valueOf(System.currentTimeMillis()));
+		request.put(BiliCmdAtrbt.room_id, "0");
+		return request;
 	}
 	
 	/**

@@ -20,6 +20,7 @@ import exp.libs.utils.num.NumUtils;
 import exp.libs.utils.os.ThreadUtils;
 import exp.libs.utils.other.PathUtils;
 import exp.libs.utils.other.StrUtils;
+import exp.libs.utils.verify.RegexUtils;
 
 /**
  * <PRE>
@@ -182,7 +183,11 @@ public class CookiesMgr {
 	private BiliCookie load(String cookiePath, CookieType type) {
 		BiliCookie cookie = BiliCookie.NULL;
 		if(FileUtils.exists(cookiePath)) {
-			String data = CryptoUtils.deDES(FileUtils.read(cookiePath, Charset.ISO));
+			String data = FileUtils.read(cookiePath, Charset.ISO);
+			if(RegexUtils.matches(data, "^[A-Za-z0-9]+$")) {
+				data = CryptoUtils.deDES(data);
+			}
+			
 			if(StrUtils.isNotEmpty(data)) {
 				cookie = new BiliCookie(data);
 				cookie.setType(type);

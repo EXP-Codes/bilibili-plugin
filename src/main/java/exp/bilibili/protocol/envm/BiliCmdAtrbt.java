@@ -395,4 +395,6 @@ public class BiliCmdAtrbt {
 	
 	public final static String privilege_type = "privilege_type";
 	
+	public final static String t = "t";
+	
 }

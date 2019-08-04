@@ -46,7 +46,6 @@ public class Main {
 		} else {
 			App.createInstn(args);
 		}
-		
 	}
 	
 }
