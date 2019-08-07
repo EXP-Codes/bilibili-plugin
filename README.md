@@ -51,37 +51,41 @@
 ## 运行界面展示
 
 ### ※ 主界面
-![主界面](https://raw.githubusercontent.com/lyy289065406/bilibili-plugin/master/doc/%E8%BF%90%E8%A1%8C%E6%88%AA%E5%9B%BE/01-%E4%B8%BB%E7%95%8C%E9%9D%A2.png)
+![主界面](https://github.com/lyy289065406/bilibili-plugin/blob/master/doc/%E8%BF%90%E8%A1%8C%E6%88%AA%E5%9B%BE/01-%E4%B8%BB%E7%95%8C%E9%9D%A2.png)
 
 ### ※ 多号挂机管理界面
-![多号挂机](https://raw.githubusercontent.com/lyy289065406/bilibili-plugin/master/doc/%E8%BF%90%E8%A1%8C%E6%88%AA%E5%9B%BE/02-%E5%A4%9A%E5%8F%B7%E6%8C%82%E6%9C%BA.png)
+![多号挂机](https://github.com/lyy289065406/bilibili-plugin/blob/master/doc/%E8%BF%90%E8%A1%8C%E6%88%AA%E5%9B%BE/02-%E5%A4%9A%E5%8F%B7%E6%8C%82%E6%9C%BA.png)
 
 ### ※ 登陆界面
 <br/>　
 　*二维码登陆（左） & 帐密登陆（右）*<br/>
-![登陆界面](https://raw.githubusercontent.com/lyy289065406/bilibili-plugin/master/doc/%E8%BF%90%E8%A1%8C%E6%88%AA%E5%9B%BE/03-%E7%99%BB%E9%99%86%E7%95%8C%E9%9D%A2.png)
+
+![登陆界面](https://github.com/lyy289065406/bilibili-plugin/blob/master/doc/%E8%BF%90%E8%A1%8C%E6%88%AA%E5%9B%BE/03-%E7%99%BB%E9%99%86%E7%95%8C%E9%9D%A2.png)
 
 ### ※ 功能界面
 <br/>　
 　*自动抽奖设置（左） & 开播通知（右）*<br/>
-![抽奖设置与开播通知](https://raw.githubusercontent.com/lyy289065406/bilibili-plugin/master/doc/%E8%BF%90%E8%A1%8C%E6%88%AA%E5%9B%BE/04-%E6%8A%BD%E5%A5%96%E8%AE%BE%E7%BD%AE%E4%B8%8E%E5%BC%80%E6%92%AD%E9%80%9A%E7%9F%A5.png)
+
+![抽奖设置与开播通知](https://github.com/lyy289065406/bilibili-plugin/blob/master/doc/%E8%BF%90%E8%A1%8C%E6%88%AA%E5%9B%BE/04-%E6%8A%BD%E5%A5%96%E8%AE%BE%E7%BD%AE%E4%B8%8E%E5%BC%80%E6%92%AD%E9%80%9A%E7%9F%A5.png)
 <br/>　
 <br/>　
 　*小学宝箱（左） & 随缘点歌姬（右）*<br/>
-![小学宝箱与随缘点歌](https://raw.githubusercontent.com/lyy289065406/bilibili-plugin/master/doc/%E8%BF%90%E8%A1%8C%E6%88%AA%E5%9B%BE/05-%E5%B0%8F%E5%AD%A6%E5%AE%9D%E7%AE%B1%E4%B8%8E%E9%9A%8F%E7%BC%98%E7%82%B9%E6%AD%8C.png)
+
+![小学宝箱与随缘点歌](https://github.com/lyy289065406/bilibili-plugin/blob/master/doc/%E8%BF%90%E8%A1%8C%E6%88%AA%E5%9B%BE/05-%E5%B0%8F%E5%AD%A6%E5%AE%9D%E7%AE%B1%E4%B8%8E%E9%9A%8F%E7%BC%98%E7%82%B9%E6%AD%8C.png)
 <br/>　
 <br/>　
 　*粉丝活跃度统计（左） & 直播间抽奖姬（右）*<br/>
-![粉丝活跃度统计与抽奖](https://raw.githubusercontent.com/lyy289065406/bilibili-plugin/master/doc/%E8%BF%90%E8%A1%8C%E6%88%AA%E5%9B%BE/06-%E7%B2%89%E4%B8%9D%E6%B4%BB%E8%B7%83%E5%BA%A6%E7%BB%9F%E8%AE%A1%E4%B8%8E%E6%8A%BD%E5%A5%96.png)
+
+![粉丝活跃度统计与抽奖](https://github.com/lyy289065406/bilibili-plugin/blob/master/doc/%E8%BF%90%E8%A1%8C%E6%88%AA%E5%9B%BE/06-%E7%B2%89%E4%B8%9D%E6%B4%BB%E8%B7%83%E5%BA%A6%E7%BB%9F%E8%AE%A1%E4%B8%8E%E6%8A%BD%E5%A5%96.png)
 
 
 
 ## 安装与使用
 
-- 01.　安装JDK环境【[jdk-7u72-windows-x64.exe](https://github.com/lyy289065406/environment/tree/master/environment/java/JDK/windows/x64/jdk-7u72-windows-x64.exe)】，一直 下一步 到完成即可（无需修改安装路径）
+- 01.　安装JDK环境【[jdk-8u191-windows-x64.exe](https://github.com/lyy289065406/environment/tree/master/environment/java/JDK/windows/x64/jdk-8u191-windows-x64.exe)】，一直 下一步 到完成即可（无需修改安装路径）
 - 02.　解压并运行【哔哩哔哩插件姬.exe】（面向不同人群，分别提供了试用版/大众版/主播版/管理员版）
 - 03.　为限制随意传播，会要求输入注册码，请加QQ群131637823申请
-- 04.　2018.12.07开始B站关闭了原本的【账号+密码+验证码】的后台登录通道，最新的登录方式 [点这里](https://raw.githubusercontent.com/lyy289065406/bilibili-plugin/master/doc/%E8%BF%90%E8%A1%8C%E6%88%AA%E5%9B%BE/00-%E6%9C%80%E6%96%B0%E7%99%BB%E5%BD%95%E6%96%B9%E5%BC%8F.png)
+- 04.　2018.12.07开始B站关闭了原本的【账号+密码+验证码】的后台登录通道，最新的登录方式 [点这里](https://github.com/lyy289065406/bilibili-plugin/blob/master/doc/%E8%BF%90%E8%A1%8C%E6%88%AA%E5%9B%BE/00-%E6%9C%80%E6%96%B0%E7%99%BB%E5%BD%95%E6%96%B9%E5%BC%8F.png)
    
   
 ## 全功能一览
