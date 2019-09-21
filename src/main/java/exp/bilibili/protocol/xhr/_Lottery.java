@@ -3,9 +3,9 @@ package exp.bilibili.protocol.xhr;
 import java.util.HashMap;
 import java.util.Map;
 
-import net.sf.json.JSONObject;
 import exp.bilibili.plugin.Config;
 import exp.bilibili.plugin.bean.ldm.BiliCookie;
+import exp.bilibili.plugin.bean.ldm.Raffle;
 import exp.bilibili.plugin.envm.LotteryType;
 import exp.bilibili.plugin.utils.VercodeUtils;
 import exp.bilibili.protocol.envm.BiliCmdAtrbt;
@@ -15,6 +15,7 @@ import exp.libs.utils.os.ThreadUtils;
 import exp.libs.utils.other.StrUtils;
 import exp.libs.warp.net.http.HttpURLUtils;
 import exp.libs.warp.net.http.HttpUtils;
+import net.sf.json.JSONObject;
 
 /**
  * <PRE>
@@ -49,12 +50,12 @@ class _Lottery extends __XHR {
 	 * @param cookie 抽奖cookie
 	 * @param url 抽奖URL
 	 * @param roomId 直播间id
-	 * @param raffleId 抽奖号
+	 * @param raffle 抽奖号
 	 * @param retryInterval 抽奖失败重试间隔(ms)
 	 * @return 失败原因（若为空则成功）
 	 */
 	protected static String join(LotteryType type, BiliCookie cookie, 
-			String url, int roomId, String raffleId) {
+			String url, int roomId, Raffle raffle) {
 		String sRoomId = getRealRoomId(roomId);
 		String visitId = getVisitId();
 		Map<String, String> header = POST_HEADER(cookie.toNVCookie(), sRoomId);
@@ -62,7 +63,7 @@ class _Lottery extends __XHR {
 		
 		// 加入高能/小电视抽奖
 		if(LotteryType.STORM != type) {
-			Map<String, String> request = getRequest(cookie.CSRF(), sRoomId, raffleId, visitId);
+			Map<String, String> request = getRequest(cookie.CSRF(), sRoomId, raffle, visitId);
 			for(int retry = 0; retry < 20; retry++) {
 				String response = HttpURLUtils.doPost(url, header, request);
 				
@@ -78,8 +79,8 @@ class _Lottery extends __XHR {
 			for(int retry = 0; retry < 100; retry++) {
 				String[] captcha = cookie.isRealName() ? // 实名认证后无需填节奏风暴验证码
 						new String[] { "", "" } : getStormCaptcha(cookie);
-				Map<String, String> request = getRequest(sRoomId, raffleId, 
-						cookie.CSRF(), visitId, captcha[0], captcha[1]);
+				Map<String, String> request = getRequest(cookie.CSRF(), sRoomId, raffle, 
+						visitId, captcha[0], captcha[1]);
 				String response = HttpURLUtils.doPost(url, header, request);	// B站大概150ms才响应
 				
 				reason = analyse(response);
@@ -93,28 +94,32 @@ class _Lottery extends __XHR {
 	}
 	
 	/**
-	 * 高能抽奖请求参数
+	 * 查询礼物请求参数
 	 * @param roomId
 	 * @return
 	 */
 	protected static Map<String, String> getRequest(String roomId) {
 		Map<String, String> request = new HashMap<String, String>();
-		request.put(BiliCmdAtrbt.roomid, roomId);	// 正在抽奖的房间号
+		request.put(BiliCmdAtrbt.roomid, roomId);
 		return request;
 	}
 	
 	/**
-	 * 小电视抽奖请求参数
+	 * 高能/小电视抽奖请求参数
 	 * @param roomId
-	 * @param raffleId
 	 * @return
 	 */
-	private static Map<String, String> getRequest(String csrf, 
-			String roomId, String raffleId, String visitId) {
-		Map<String, String> request = getRequest(roomId);
-		request.put(BiliCmdAtrbt.raffleId, raffleId);	// 礼物编号
-		request.put(BiliCmdAtrbt.type, "small_tv");	// 礼物类型
+	protected static Map<String, String> getRequest(String csrf, String roomId, Raffle raffle, String visitId) {
+		Map<String, String> request = new HashMap<String, String>();
+		request.put(BiliCmdAtrbt.id, raffle.getRaffleId());
+		request.put(BiliCmdAtrbt.roomid, roomId);
+		if(StrUtils.isTrimEmpty(raffle.getGiftId())) {
+			request.put(BiliCmdAtrbt.type, "small_tv");
+		} else {
+			request.put(BiliCmdAtrbt.type, StrUtils.concat("GIFT_", raffle.getGiftId()));
+		}
 		request.put(BiliCmdAtrbt.csrf_token, csrf);
+		request.put(BiliCmdAtrbt.csrf, csrf);
 		request.put(BiliCmdAtrbt.visit_id, visitId);
 		return request;
 	}
@@ -128,16 +133,12 @@ class _Lottery extends __XHR {
 	 * @param captchaValue 验证码值 (实名认证的账号可不填)
 	 * @return
 	 */
-	private static Map<String, String> getRequest(String roomId, String raffleId, 
-			String csrf, String visitId, String captchaToken, String captchaValue) {
-		Map<String, String> request = getRequest(roomId);
-		request.put(BiliCmdAtrbt.id, raffleId);		// 礼物编号
+	private static Map<String, String> getRequest(String csrf, String roomId, Raffle raffle, String visitId, 
+			String captchaToken, String captchaValue) {
+		Map<String, String> request = getRequest(csrf, roomId, raffle, visitId);
 		request.put(BiliCmdAtrbt.color, Colors.WHITE.RGB());
 		request.put(BiliCmdAtrbt.captcha_token, captchaToken);
 		request.put(BiliCmdAtrbt.captcha_phrase, captchaValue);
-		request.put(BiliCmdAtrbt.csrf_token, csrf);
-		request.put(BiliCmdAtrbt.csrf, csrf);
-		request.put(BiliCmdAtrbt.visit_id, visitId);
 		return request;
 	}
 	

@@ -65,6 +65,9 @@ public class BiliCookie extends HttpCookie {
 	/** 是否为老爷/年费老爷 */
 	private boolean isVip;
 	
+	/** 是否为大会员 */
+	private boolean isSVip;
+	
 	/** 是否为提督/总督 */
 	private boolean isGuard;
 	
@@ -104,6 +107,7 @@ public class BiliCookie extends HttpCookie {
 		this.isRealName = false;
 		this.isRoomAdmin = false;
 		this.isVip = false;
+		this.isSVip = false;
 		this.isGuard = false;
 		this.autoFeed = false;
 		this.feedRoomId = Config.getInstn().SIGN_ROOM_ID();
@@ -206,6 +210,14 @@ public class BiliCookie extends HttpCookie {
 		this.isVip = isVip;
 	}
 	
+	public boolean isSVip() {
+		return isSVip;
+	}
+
+	public void setSVip(boolean isSVip) {
+		this.isSVip = isSVip;
+	}
+
 	public boolean isGuard() {
 		return isGuard;
 	}

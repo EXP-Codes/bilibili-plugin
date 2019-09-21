@@ -31,6 +31,7 @@
         <accountURL caption="账号信息URL"><![CDATA[https://api.live.bilibili.com/i/api/liveinfo]]></accountURL>
         <roomURL caption="房间信息URL"><![CDATA[https://api.live.bilibili.com/live_user/v1/UserInfo/get_anchor_in_room]]></roomURL>
         <playerURL caption="账号在特定房间内的信息URL"><![CDATA[https://api.live.bilibili.com/live_user/v1/UserInfo/get_info_in_room]]></playerURL>
+        <danmuURL caption="弹幕配置URL"><![CDATA[https://api.live.bilibili.com/userext/v1/danmuConf/getAll]]></danmuURL>
         <manageURL caption="房管列表URL"><![CDATA[https://api.live.bilibili.com/live_user/v1/RoomAdmin/get_by_anchor]]></manageURL>
         <medalURL caption="勋章亲密度URL"><![CDATA[https://api.live.bilibili.com/i/api/medal]]></medalURL>
         <giftURL caption="日常/周常礼物URL"><![CDATA[https://api.live.bilibili.com/gift/v2/live/receive_daily_bag]]></giftURL>
@@ -45,7 +46,7 @@
         <stormJoinURL caption="节奏风暴抽奖URL"><![CDATA[https://api.live.bilibili.com/lottery/v1/Storm/join]]></stormJoinURL>
         <guardCheckURL caption="船队检测URL"><![CDATA[https://api.live.bilibili.com/lottery/v1/Lottery/check_guard]]></guardCheckURL>
         <guardJoinURL caption="船队领奖URL"><![CDATA[https://api.live.bilibili.com/xlive/lottery-interface/v3/guard/join]]></guardJoinURL>
-        <egCheckURL caption="高能礼物取号URL"><![CDATA[https://api.live.bilibili.com/activity/v1/Raffle/check]]></egCheckURL>
+        <egCheckURL caption="高能礼物取号URL"><![CDATA[https://api.live.bilibili.com/xlive/lottery-interface/v1/lottery/Check]]></egCheckURL>
         <egJoinURL caption="高能礼物抽奖URL"><![CDATA[https://api.live.bilibili.com/xlive/lottery-interface/v5/smalltv/join]]></egJoinURL>
         <tvCheckURL caption="小电视取号URL"><![CDATA[https://api.live.bilibili.com/gift/v3/smalltv/check]]></tvCheckURL>
         <tvJoinURL caption="小电视抽奖URL"><![CDATA[https://api.live.bilibili.com/xlive/lottery-interface/v5/smalltv/join]]></tvJoinURL>

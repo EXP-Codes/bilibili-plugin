@@ -399,4 +399,10 @@ public class BiliCmdAtrbt {
 	
 	public final static String room_admin = "room_admin";
 	
+	public final static String gift = "gift";
+	
+	public final static String time_wait = "time_wait";
+	
+	public final static String length = "length";
+	
 }

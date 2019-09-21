@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import exp.bilibili.plugin.Config;
 import exp.bilibili.plugin.bean.ldm.BiliCookie;
 import exp.bilibili.plugin.bean.ldm.HotLiveRange;
+import exp.bilibili.plugin.bean.ldm.Raffle;
 import exp.bilibili.plugin.cache.CookiesMgr;
 import exp.bilibili.plugin.cache.RoomMgr;
 import exp.bilibili.plugin.envm.Area;
@@ -35,7 +36,6 @@ import exp.bilibili.protocol.xhr.LotteryTV;
 import exp.bilibili.protocol.xhr.Other;
 import exp.bilibili.protocol.xhr.WatchLive;
 import exp.libs.envm.Colors;
-import exp.libs.utils.num.NumUtils;
 import exp.libs.utils.os.ThreadUtils;
 import exp.libs.utils.other.StrUtils;
 
@@ -346,10 +346,10 @@ public class XHRSender {
 	 * @param roomId
 	 * @return
 	 */
-	public static void toStormLottery(final int roomId, final String raffleId) {
+	public static void toStormLottery(final int roomId, final Raffle raffle) {
 		new Thread() {
 			public void run() {
-				LotteryStorm.toLottery(roomId, raffleId);
+				LotteryStorm.toLottery(roomId, raffle);
 			};
 		}.start();
 	}
@@ -360,13 +360,8 @@ public class XHRSender {
 	 * @param raffleId
 	 * @return
 	 */
-	public static void toTvLottery(int roomId, String raffleId) {
-		if(NumUtils.toInt(raffleId, -1) <= 0) {
-			LotteryTV.toLottery(roomId);
-			
-		} else {
-			LotteryTV.toLottery(roomId, raffleId);
-		}
+	public static void toTvLottery(int roomId) {
+		LotteryTV.toLottery(roomId);
 	}
 	
 	/**

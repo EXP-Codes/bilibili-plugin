@@ -177,19 +177,18 @@ public class WebBot extends LoopThread {
 	 */
 	private void toLottery(LotteryRoom room) {
 		final int roomId = room.getRoomId();
-		final String raffleId = room.getRaffleId();
 		final String url = room.getUrl();
 		
 		// 小电视抽奖
 		if(room.TYPE() == LotteryType.TV && Switch.isJoinLottery()) {
 			_waitReactionTime(room);
 			XHRSender.entryRoom(roomId, url);
-			XHRSender.toTvLottery(roomId, raffleId);
+			XHRSender.toTvLottery(roomId);
 			
 		// 节奏风暴抽奖
-		} else if(room.TYPE() == LotteryType.STORM && Switch.isJoinStorm()) {
+//		} else if(room.TYPE() == LotteryType.STORM && Switch.isJoinStorm()) {
 //			_waitReactionTime(room);	// 节奏风暴无需等待, 当前环境太多机器人, 很难因为抢到前几名导致被捉
-			XHRSender.toStormLottery(roomId, raffleId);
+//			XHRSender.toStormLottery(roomId, raffle);
 			
 		// 登船领奖
 		} else if(room.TYPE() == LotteryType.GUARD && 

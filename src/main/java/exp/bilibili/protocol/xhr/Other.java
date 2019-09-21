@@ -57,6 +57,9 @@ public class Other extends __XHR {
 	/** 查询账号在特定房间内的信息URL */
 	private final static String PLAYER_URL = Config.getInstn().PLAYER_URL();
 	
+	/** 查询弹幕配置URL */
+	private final static String DANMU_URL = Config.getInstn().DANMU_URL();
+	
 	/** 查询房管列表URL */
 	private final static String MANAGE_URL = Config.getInstn().MANAGE_URL();
 	
@@ -202,26 +205,35 @@ public class Other extends __XHR {
 		String sRoomId = getRealRoomId(roomId);
 		Map<String, String> header = GET_HEADER(cookie.toNVCookie(), sRoomId);
 		Map<String, String> request = getRequest(sRoomId);
-		String response = HttpURLUtils.doGet(PLAYER_URL, header, request);
+		String rsp1 = HttpURLUtils.doGet(PLAYER_URL, header, request);
+		String rsp2 = HttpURLUtils.doGet(DANMU_URL, header, request);
 		
 		boolean isOk = true;
 		try {
-			JSONObject json = JSONObject.fromObject(response);
+			JSONObject json = JSONObject.fromObject(rsp1);
 			int code = JsonUtils.getInt(json, BiliCmdAtrbt.code, -1);
 			if(code == 0) {
 				JSONObject data = JsonUtils.getObject(json, BiliCmdAtrbt.data);
 				int isAdmin = JsonUtils.getInt(JsonUtils.getObject(data, BiliCmdAtrbt.room_admin), BiliCmdAtrbt.is_admin, 0); // 房管
 				int vip = JsonUtils.getInt(JsonUtils.getObject(data, BiliCmdAtrbt.level), BiliCmdAtrbt.vip, 0); 	// 老爷
 				int svip = JsonUtils.getInt(JsonUtils.getObject(data, BiliCmdAtrbt.level), BiliCmdAtrbt.svip, 0); 	// 大会员
-				int danmuLen = 20;
 				
 				cookie.setRoomAdmin(isAdmin > 0);
 				cookie.setVip(vip > 0);
+				cookie.setSVip(svip > 0);
+			}
+			
+			json = JSONObject.fromObject(rsp2);
+			code = JsonUtils.getInt(json, BiliCmdAtrbt.code, -1);
+			if(code == 0) {
+				JSONObject data = JsonUtils.getObject(json, BiliCmdAtrbt.data);
+				int danmuLen = JsonUtils.getInt(data, BiliCmdAtrbt.length, 0);
 				cookie.setGuard(danmuLen >= Danmu.LEN_GUARD);
 			}
+			
 		} catch(Exception e) {
 			isOk = false;
-			log.error("查询账号授权信息异常: {}", response, e);
+			log.error("查询账号授权信息异常", e);
 		}
 		return isOk;
 	}

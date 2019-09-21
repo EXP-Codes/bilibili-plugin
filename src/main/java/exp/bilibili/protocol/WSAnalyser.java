@@ -241,17 +241,19 @@ public class WSAnalyser {
 			String msg = StrUtils.concat("直播间 [", msgBean.ROOM_ID(), "] 正在全区抽奖中!!!");
 			UIUtils.notify(msg);
 			log.info(msg);
+			RoomMgr.getInstn().addTvRoom(msgBean.ROOM_ID(), msgBean.getUrl());
 			
 		} else if(!chatSession && !msgBean.getMsg().contains("全区")) {
 			String msg = StrUtils.concat("直播间 [", msgBean.ROOM_ID(), "] 正在分区抽奖中!!!");
 			UIUtils.notify(msg);
 			log.info(msg);
+			RoomMgr.getInstn().addGiftRoom(msgBean.ROOM_ID());
 				
 		} else {
 			// Undo: 避免其他监听会话重复打印 全区抽奖公告
+			RoomMgr.getInstn().addTvRoom(msgBean.ROOM_ID(), msgBean.getUrl());
 		}
 		
-		RoomMgr.getInstn().addTvRoom(msgBean.ROOM_ID(), msgBean.getUrl(), msgBean.getTvId());
 		RoomMgr.getInstn().relate(msgBean.getRoomId(), msgBean.getRealRoomId());
 	}
 	

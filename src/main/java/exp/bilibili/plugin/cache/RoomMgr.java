@@ -8,7 +8,6 @@ import java.util.Set;
 
 import exp.bilibili.plugin.Config;
 import exp.bilibili.plugin.envm.LotteryType;
-import exp.bilibili.protocol.XHRSender;
 import exp.bilibili.protocol.bean.other.LotteryRoom;
 import exp.libs.algorithm.struct.queue.pc.PCQueue;
 import exp.libs.envm.Charset;
@@ -71,17 +70,16 @@ public class RoomMgr {
 	 * @param roomId 礼物房间号
 	 */
 	public void addGiftRoom(int roomId) {
-		giftRoomIds.add(new LotteryRoom(roomId, "", "", LotteryType.ENGERY));
+		giftRoomIds.add(new LotteryRoom(roomId, "", LotteryType.ENGERY));
 	}
 	
 	/**
 	 * 添加小电视房间
 	 * @param roomId 小电视房间号
 	 * @param url 小电视房间地址
-	 * @param tvId 小电视编号
 	 */
-	public void addTvRoom(int roomId, String url, String tvId) {
-		giftRoomIds.add(new LotteryRoom(roomId, url, tvId, LotteryType.TV));
+	public void addTvRoom(int roomId, String url) {
+		giftRoomIds.add(new LotteryRoom(roomId, url, LotteryType.TV));
 	}
 	
 	/**
@@ -93,7 +91,7 @@ public class RoomMgr {
 		// 节奏风暴 因为对点击速度要求很高, 不放到抽奖房间队列排队, 直接抽奖
 //		giftRoomIds.add(new LotteryRoom(roomId, stormId, LotteryType.STORM));
 		
-		XHRSender.toStormLottery(roomId, stormId);
+//		XHRSender.toStormLottery(roomId, stormId);
 	}
 	
 	/**
@@ -102,7 +100,7 @@ public class RoomMgr {
 	 * @param url 总督房间地址
 	 */
 	public void addGuardRoom(int roomId, String url) {
-		giftRoomIds.add(new LotteryRoom(roomId, url, "", LotteryType.GUARD));
+		giftRoomIds.add(new LotteryRoom(roomId, url, LotteryType.GUARD));
 	}
 	
 	/**

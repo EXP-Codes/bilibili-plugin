@@ -178,6 +178,10 @@ public class Config {
 		return xConf.getVal("/config/urls/playerURL");
 	}
 	
+	public String DANMU_URL() {
+		return xConf.getVal("/config/urls/danmuURL");
+	}
+	
 	public String MANAGE_URL() {
 		return xConf.getVal("/config/urls/manageURL");
 	}

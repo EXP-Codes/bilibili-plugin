@@ -7,12 +7,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 import exp.bilibili.plugin.Config;
 import exp.bilibili.plugin.bean.ldm.BiliCookie;
 import exp.bilibili.plugin.bean.ldm.HotLiveRange;
-import exp.bilibili.plugin.bean.ldm.RaffleIDs;
+import exp.bilibili.plugin.bean.ldm.Raffle;
+import exp.bilibili.plugin.bean.ldm.Raffles;
 import exp.bilibili.plugin.cache.CookiesMgr;
 import exp.bilibili.plugin.cache.RoomMgr;
 import exp.bilibili.plugin.envm.LotteryType;
@@ -22,6 +21,8 @@ import exp.libs.utils.format.JsonUtils;
 import exp.libs.utils.os.ThreadUtils;
 import exp.libs.utils.other.StrUtils;
 import exp.libs.warp.net.http.HttpClient;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 /**
  * <PRE>
@@ -45,7 +46,7 @@ public class LotteryStorm extends _Lottery {
 	private final static String STORM_JOIN_URL = Config.getInstn().STORM_JOIN_URL();
 	
 	/** 已经抽过的节奏风暴ID */
-	private final static RaffleIDs RAFFLEIDS = new RaffleIDs();
+	private final static Raffles RAFFLES = new Raffles();
 	
 	/** 私有化构造函数 */
 	protected LotteryStorm() {}
@@ -127,8 +128,8 @@ public class LotteryStorm extends _Lottery {
 					CookiesMgr.VEST().toNVCookie(), sRoomId);
 			
 			String response = client.doGet(STORM_CHECK_URL, header, request);
-			List<String> raffleIds = getStormRaffleIds(roomId, response);
-			join(roomId, raffleIds);	// 参加节奏风暴抽奖
+			List<Raffle> raffles = getStormRaffles(roomId, response);
+			join(roomId, raffles);	// 参加节奏风暴抽奖
 			
 			Guard.getGuardGift(roomId);	// 顺便领取舰队奖励
 			ThreadUtils.tSleep(scanInterval);
@@ -142,16 +143,19 @@ public class LotteryStorm extends _Lottery {
 	 * @param response {"code":0,"msg":"","message":"","data":{"id":318289831272,"roomid":291623,"num":100,"send_num":"1","time":76,"content":"要优雅，不要污","hasJoin":0,"storm_gif":"https://static.hdslb.com/live-static/live-room/images/gift-section/mobilegift/2/jiezou.gif?2017011901"}}
 	 * @return
 	 */
-	private static List<String> getStormRaffleIds(int roomId, String response) {
-		List<String> raffleIds = new LinkedList<String>();
+	private static List<Raffle> getStormRaffles(int roomId, String response) {
+		List<Raffle> raffles = new LinkedList<Raffle>();
 		try {
 			JSONObject json = JSONObject.fromObject(response);
 			Object data = json.get(BiliCmdAtrbt.data);
 			if(data instanceof JSONObject) {
 				JSONObject room = (JSONObject) data;
 				String raffleId = JsonUtils.getStr(room, BiliCmdAtrbt.id);
-				if(RAFFLEIDS.add(raffleId)) {
-					raffleIds.add(raffleId);
+				Raffle raffle = new Raffle();
+				raffle.setRaffleId(raffleId);
+				
+				if(RAFFLES.add(raffle)) {
+					raffles.add(raffle);
 				}
 						
 			} else if(data instanceof JSONArray) {
@@ -159,33 +163,36 @@ public class LotteryStorm extends _Lottery {
 				for(int i = 0 ; i < array.size(); i++) {
 					JSONObject room = array.getJSONObject(i);
 					String raffleId = JsonUtils.getStr(room, BiliCmdAtrbt.id);
-					if(RAFFLEIDS.add(raffleId)) {
-						raffleIds.add(raffleId);
+					Raffle raffle = new Raffle();
+					raffle.setRaffleId(raffleId);
+					
+					if(RAFFLES.add(raffle)) {
+						raffles.add(raffle);
 					}
 				}
 			}
 		} catch(Exception e) {
 			log.error("提取直播间 [{}] 的节奏风暴信息失败: {}", roomId, response, e);
 		}
-		return raffleIds;
+		return raffles;
 	}
 	
 	/**
 	 * 加入节奏风暴抽奖
 	 * @param roomId
-	 * @param raffleIds
+	 * @param raffles
 	 * @return
 	 */
-	private static void join(final int roomId, final List<String> raffleIds) {
-		if(raffleIds.size() > 0) {
+	private static void join(final int roomId, final List<Raffle> raffles) {
+		if(raffles.size() > 0) {
 			String msg = StrUtils.concat("直播间 [", roomId, 
-					"] 开启了节奏风暴 [x", raffleIds.size(), "] !!!");
+					"] 开启了节奏风暴 [x", raffles.size(), "] !!!");
 			UIUtils.notify(msg);
 			
 			new Thread() {
 				public void run() {
-					for(String raffleId : raffleIds) {
-						toLottery(roomId, raffleId);
+					for(Raffle raffle : raffles) {
+						toLottery(roomId, raffle);
 					}
 				};
 			}.start();
@@ -198,7 +205,7 @@ public class LotteryStorm extends _Lottery {
 	 * @param raffleId
 	 * @return
 	 */
-	public static boolean toLottery(int roomId, String raffleId) {
+	public static boolean toLottery(int roomId, Raffle raffle) {
 		int cnt = 0;
 		String reason = "未知异常";
 		Set<BiliCookie> cookies = CookiesMgr.ALL(false);
@@ -219,7 +226,7 @@ public class LotteryStorm extends _Lottery {
 				continue;
 			}
 			
-			reason = join(LotteryType.STORM, cookie, STORM_JOIN_URL, roomId, raffleId);
+			reason = join(LotteryType.STORM, cookie, STORM_JOIN_URL, roomId, raffle);
 			if(StrUtils.isEmpty(reason)) {
 				log.info("[{}] 参与直播间 [{}] 抽奖成功(节奏风暴)", cookie.NICKNAME(), roomId);
 				cookie.updateLotteryTime();

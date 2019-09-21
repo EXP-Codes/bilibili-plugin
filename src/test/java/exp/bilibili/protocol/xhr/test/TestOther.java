@@ -42,10 +42,12 @@ public class TestOther extends _Init {
 	public void testQueryUserAuthorityInfo() {
 		System.out.println("[B] isRoomAdmin:" + cookie.isRoomAdmin());
 		System.out.println("[B] isVip:" + cookie.isVip());
+		System.out.println("[B] isSVip:" + cookie.isSVip());
 		System.out.println("[B] isGuard:" + cookie.isGuard());
 		Other.queryUserAuthorityInfo(cookie, roomId);
 		System.out.println("[A] isRoomAdmin:" + cookie.isRoomAdmin());
 		System.out.println("[A] isVip:" + cookie.isVip());
+		System.out.println("[A] isSVip:" + cookie.isSVip());
 		System.out.println("[A] isGuard:" + cookie.isGuard());
 	}
 
