@@ -7,13 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-
-import org.dom4j.Document;
-import org.dom4j.DocumentHelper;
-import org.dom4j.Element;
-
 import exp.bilibili.plugin.Config;
 import exp.bilibili.plugin.bean.ldm.BiliCookie;
 import exp.bilibili.plugin.envm.Danmu;
@@ -24,11 +17,11 @@ import exp.bilibili.protocol.envm.BiliCmdAtrbt;
 import exp.libs.envm.HttpHead;
 import exp.libs.utils.encode.CryptoUtils;
 import exp.libs.utils.format.JsonUtils;
-import exp.libs.utils.num.BODHUtils;
-import exp.libs.utils.num.NumUtils;
 import exp.libs.utils.other.StrUtils;
 import exp.libs.utils.verify.RegexUtils;
 import exp.libs.warp.net.http.HttpURLUtils;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 /**
  * <PRE>
@@ -213,17 +206,19 @@ public class Other extends __XHR {
 		
 		boolean isOk = true;
 		try {
-			String xml = StrUtils.concat("<root>", response, "</root>");
-			Document doc = DocumentHelper.parseText(xml);
-			Element root = doc.getRootElement();
-			int isAdmin = NumUtils.toInt(root.elementTextTrim(BiliCmdAtrbt.isadmin), 0); // 房管
-//			int vip = NumUtils.toInt(root.elementTextTrim(BiliCmdAtrbt.vip), 0); // 老爷(此值不准)
-			int danmuLen = NumUtils.toInt(root.elementTextTrim(BiliCmdAtrbt.msg_length), Danmu.LEN); // 弹幕长度
-			
-			cookie.setRoomAdmin(isAdmin > 0);
-			cookie.setVip(danmuLen >= Danmu.LEN_VIP);
-			cookie.setGuard(danmuLen >= Danmu.LEN_GUARD);
-			
+			JSONObject json = JSONObject.fromObject(response);
+			int code = JsonUtils.getInt(json, BiliCmdAtrbt.code, -1);
+			if(code == 0) {
+				JSONObject data = JsonUtils.getObject(json, BiliCmdAtrbt.data);
+				int isAdmin = JsonUtils.getInt(JsonUtils.getObject(data, BiliCmdAtrbt.room_admin), BiliCmdAtrbt.is_admin, 0); // 房管
+				int vip = JsonUtils.getInt(JsonUtils.getObject(data, BiliCmdAtrbt.level), BiliCmdAtrbt.vip, 0); 	// 老爷
+				int svip = JsonUtils.getInt(JsonUtils.getObject(data, BiliCmdAtrbt.level), BiliCmdAtrbt.svip, 0); 	// 大会员
+				int danmuLen = 20;
+				
+				cookie.setRoomAdmin(isAdmin > 0);
+				cookie.setVip(vip > 0);
+				cookie.setGuard(danmuLen >= Danmu.LEN_GUARD);
+			}
 		} catch(Exception e) {
 			isOk = false;
 			log.error("查询账号授权信息异常: {}", response, e);
@@ -238,10 +233,8 @@ public class Other extends __XHR {
 	 */
 	private static Map<String, String> getRequest(String roomId) {
 		Map<String, String> request = new HashMap<String, String>();
-		request.put(BiliCmdAtrbt.id, StrUtils.concat(BiliCmdAtrbt.cid, ":", roomId));
-		request.put(BiliCmdAtrbt.ts, BODHUtils.decToHex(System.currentTimeMillis()));
-		request.put(BiliCmdAtrbt.platform, "pc");
-		request.put(BiliCmdAtrbt.player_type, "web");
+		request.put(BiliCmdAtrbt.roomid, String.valueOf(roomId));
+		request.put(BiliCmdAtrbt.t, String.valueOf(System.currentTimeMillis()));
 		return request;
 	}
 	

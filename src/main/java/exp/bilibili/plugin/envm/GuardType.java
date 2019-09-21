@@ -1,5 +1,7 @@
 package exp.bilibili.plugin.envm;
 
+import exp.libs.utils.other.ObjUtils;
+
 /**
  * <PRE>
  * 船员类型
@@ -63,6 +65,11 @@ public class GuardType {
 			type = VICEROY;
 		}
 		return type;
+	}
+	
+	@Override
+	public String toString() {
+		return ObjUtils.toBeanInfo(this);
 	}
 	
 }

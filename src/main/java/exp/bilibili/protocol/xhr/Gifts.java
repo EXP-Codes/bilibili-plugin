@@ -203,7 +203,7 @@ public class Gifts extends __XHR {
 	 * @return 扭蛋币个数
 	 */
 	public static int queryCapsuleCoin(BiliCookie cookie) {
-		Map<String, String> header = GET_HEADER(cookie.toNVCookie(), "pages/playground/index");
+		Map<String, String> header = GET_HEADER(cookie.toNVCookie());
 		String response = HttpURLUtils.doGet(GET_CAPSULE_URL, header, null);
 		
 		int coin = 0;
@@ -234,8 +234,7 @@ public class Gifts extends __XHR {
 	 * @return
 	 */
 	public static boolean openCapsuleCoin(BiliCookie cookie, int coin) {
-		Map<String, String> header = POST_HEADER(cookie.toNVCookie(), 
-				"pages/playground/index?visit_id=".concat(getVisitId()));
+		Map<String, String> header = POST_HEADER(cookie.toNVCookie());
 		Map<String, String> request = getRequest(cookie.CSRF(), coin);
 		String response = HttpURLUtils.doPost(OPEN_CAPSULE_URL, header, request);
 		
@@ -250,7 +249,7 @@ public class Gifts extends __XHR {
 				UIUtils.log("[", cookie.NICKNAME(), "] 打开了 [", coin, 
 						"] 个扭蛋, 获得: ", text.toString());
 			} else {
-				String reason = JsonUtils.getStr(json, BiliCmdAtrbt.msg);
+				String reason = JsonUtils.getStr(json, BiliCmdAtrbt.message);
 				log.warn("[{}] 打开 [{}] 个扭蛋失败: {}", cookie.NICKNAME(), coin, reason);
 			}
 		} catch(Exception e) {
@@ -269,6 +268,8 @@ public class Gifts extends __XHR {
 		request.put(BiliCmdAtrbt.type, "normal");
 		request.put(BiliCmdAtrbt.count, String.valueOf(coin));
 		request.put(BiliCmdAtrbt.csrf_token, csrf);
+		request.put(BiliCmdAtrbt.csrf, csrf);
+		request.put(BiliCmdAtrbt.platform, "pc");
 		return request;
 	}
 	

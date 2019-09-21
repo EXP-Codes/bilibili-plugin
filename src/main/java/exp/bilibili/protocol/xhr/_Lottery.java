@@ -113,7 +113,7 @@ class _Lottery extends __XHR {
 			String roomId, String raffleId, String visitId) {
 		Map<String, String> request = getRequest(roomId);
 		request.put(BiliCmdAtrbt.raffleId, raffleId);	// 礼物编号
-		request.put(BiliCmdAtrbt.type, "Gift");	// 礼物编号
+		request.put(BiliCmdAtrbt.type, "small_tv");	// 礼物类型
 		request.put(BiliCmdAtrbt.csrf_token, csrf);
 		request.put(BiliCmdAtrbt.visit_id, visitId);
 		return request;

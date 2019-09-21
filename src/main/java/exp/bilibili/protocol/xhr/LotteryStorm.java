@@ -50,10 +50,6 @@ public class LotteryStorm extends _Lottery {
 	/** 私有化构造函数 */
 	protected LotteryStorm() {}
 	
-	public static void main(String[] args) {
-		System.out.println(queryHotLiveRoomIds(new HotLiveRange(1, 2)));
-	}
-	
 	/**
 	 * 扫描当前的人气直播间房号列表
 	 * @param range 扫描范围

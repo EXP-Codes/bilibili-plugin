@@ -397,4 +397,6 @@ public class BiliCmdAtrbt {
 	
 	public final static String t = "t";
 	
+	public final static String room_admin = "room_admin";
+	
 }

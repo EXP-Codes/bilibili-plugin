@@ -27,10 +27,6 @@ public class LiveArea extends __XHR {
 	/** 游戏区/手游区房间列表URL */
 	private final static String AREA_URL = Config.getInstn().AREA_URL();
 
-	public static void main(String[] args) {
-		getAreaTopOnes();
-	}
-	
 	/**
 	 * 获取每个直播分区的TOP1房间号
 	 * @return TOP1房间号列表

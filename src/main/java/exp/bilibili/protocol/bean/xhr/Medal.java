@@ -4,6 +4,7 @@ import net.sf.json.JSONObject;
 import exp.bilibili.plugin.cache.RoomMgr;
 import exp.bilibili.protocol.envm.BiliCmdAtrbt;
 import exp.libs.utils.format.JsonUtils;
+import exp.libs.utils.other.ObjUtils;
 
 /**
  * 勋章信息
@@ -674,4 +675,9 @@ public class Medal {
 		return todayFeed;
 	}
 
+	@Override
+	public String toString() {
+		return ObjUtils.toBeanInfo(this);
+	}
+	
 }

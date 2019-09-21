@@ -256,7 +256,7 @@ public class DailyTasks extends __XHR {
 		request.put(BiliCmdAtrbt.underline, String.valueOf(System.currentTimeMillis()));
 		HttpURLUtils.doGet(PONG_HB_URL, header, request);
 		
-		return DELAY_90_SEC;
+		return System.currentTimeMillis() + DELAY_90_SEC;
 	}
 	
 	/**
