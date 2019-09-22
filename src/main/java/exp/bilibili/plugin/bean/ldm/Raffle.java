@@ -3,6 +3,7 @@ package exp.bilibili.plugin.bean.ldm;
 import exp.bilibili.protocol.envm.BiliCmdAtrbt;
 import exp.libs.utils.format.JsonUtils;
 import exp.libs.utils.other.ObjUtils;
+import exp.libs.utils.other.StrUtils;
 import net.sf.json.JSONObject;
 
 /**
@@ -49,6 +50,8 @@ public class Raffle {
 	
 	private String giftId;
 	
+	private String type;
+	
 	/** 等待抽奖时间(s) */
 	private int timeWait;
 	
@@ -58,6 +61,7 @@ public class Raffle {
 	public Raffle() {
 		this.raffleId = "";
 		this.giftId = "";
+		this.type = "";
 		this.timeWait = 0;
 		this.dotime = System.currentTimeMillis();
 	}
@@ -66,10 +70,18 @@ public class Raffle {
 		this();
 		
 		if(json != null) {
-			this.raffleId = JsonUtils.getStr(json, BiliCmdAtrbt.raffleId);
-			this.giftId = JsonUtils.getStr(json, BiliCmdAtrbt.gift_id);
 			this.timeWait = JsonUtils.getInt(json, BiliCmdAtrbt.time_wait, 0);
 			this.dotime = System.currentTimeMillis() + (timeWait + 5) * 1000;
+			
+			this.type = JsonUtils.getStr(json, BiliCmdAtrbt.type);
+			if(StrUtils.isTrimEmpty(this.type)) {
+				this.raffleId = JsonUtils.getStr(json, BiliCmdAtrbt.id);
+				this.type = "guard";
+				
+			} else {
+				this.raffleId = JsonUtils.getStr(json, BiliCmdAtrbt.raffleId);
+				this.giftId = JsonUtils.getStr(json, BiliCmdAtrbt.gift_id);
+			}
 		}
 	}
 	
@@ -85,16 +97,12 @@ public class Raffle {
 		return giftId;
 	}
 
-	public void setGiftId(String giftId) {
-		this.giftId = giftId;
+	public String getType() {
+		return type;
 	}
 
 	public int getTimeWait() {
 		return timeWait;
-	}
-
-	public void setTimeWait(int timeWait) {
-		this.timeWait = timeWait;
 	}
 
 	public long getDotime() {

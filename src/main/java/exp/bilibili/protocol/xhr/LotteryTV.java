@@ -1,25 +1,17 @@
 package exp.bilibili.protocol.xhr;
 
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import exp.bilibili.plugin.Config;
 import exp.bilibili.plugin.bean.ldm.BiliCookie;
 import exp.bilibili.plugin.bean.ldm.Raffle;
-import exp.bilibili.plugin.bean.ldm.Raffles;
 import exp.bilibili.plugin.cache.CookiesMgr;
 import exp.bilibili.plugin.envm.LotteryType;
 import exp.bilibili.plugin.utils.UIUtils;
-import exp.bilibili.protocol.envm.BiliCmdAtrbt;
-import exp.libs.utils.format.JsonUtils;
 import exp.libs.utils.os.ThreadUtils;
 import exp.libs.utils.other.StrUtils;
-import exp.libs.warp.net.http.HttpURLUtils;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 
 /**
  * <PRE>
@@ -38,9 +30,6 @@ public class LotteryTV extends _Lottery {
 	
 	/** 小电视抽奖URL */
 	private final static String TV_JOIN_URL = Config.getInstn().TV_JOIN_URL();
-	
-	/** 已经抽过的小电视 */
-	private final static Raffles RAFFLES = new Raffles();
 	
 	/** 私有化构造函数 */
 	protected LotteryTV() {}
@@ -73,42 +62,6 @@ public class LotteryTV extends _Lottery {
 				}
 			};
 		}.start();
-	}
-	
-	/**
-	 * 获取礼物编号
-	 * @param response {"code":0,"msg":"OK","message":"OK","data":{"last_raffle_id":0,"last_raffle_type":"small_tv","asset_animation_pic":"https://i0.hdslb.com/bfs/live/746a8db0702740ec63106581825667ae525bb11a.gif","asset_tips_pic":"https://i0.hdslb.com/bfs/live/f9924d492fe8bc77bb706480d9d006aaef9ed5f3.png","list":[{"raffleId":52793,"title":"小电视飞船抽奖","type":"small_tv","from":"允宝贝爱吃梨","from_user":{"uname":"允宝贝爱吃梨","face":"https://i0.hdslb.com/bfs/face/f4506c5a8ee5b3cb82eff6093cfa2950d16022fd.jpg"},"time":119,"max_time":180,"status":1,"asset_animation_pic":"https://i0.hdslb.com/bfs/live/746a8db0702740ec63106581825667ae525bb11a.gif","asset_tips_pic":"https://i0.hdslb.com/bfs/live/f9924d492fe8bc77bb706480d9d006aaef9ed5f3.png"}]}}
-	 * @return
-	 */
-	private static List<Raffle> getRaffle(String url, int roomId, String cookie) {
-		String sRoomId = getRealRoomId(roomId);
-		Map<String, String> header = GET_HEADER(cookie, sRoomId);
-		Map<String, String> request = getRequest(sRoomId);
-		String response = HttpURLUtils.doGet(url, header, request);
-		
-		List<Raffle> raffles = new LinkedList<Raffle>();
-		try {
-			JSONObject json = JSONObject.fromObject(response);
-			int code = JsonUtils.getInt(json, BiliCmdAtrbt.code, -1);
-			if(code == 0) {
-				
-				JSONObject data = JsonUtils.getObject(json, BiliCmdAtrbt.data);
-				JSONArray list = JsonUtils.getArray(data, BiliCmdAtrbt.list);
-				for(int i = 0; i < list.size(); i++) {
-					JSONObject obj = list.getJSONObject(i);
-					Raffle raffle = new Raffle(obj);
-					if(RAFFLES.add(raffle)) {
-						raffles.add(raffle);
-					}
-				}
-			} else {
-				String reason = JsonUtils.getStr(json, BiliCmdAtrbt.msg);
-				log.warn("获取礼物编号失败: {}", reason);
-			}
-		} catch(Exception e) {
-			log.error("获取礼物编号异常: {}", response, e);
-		}
-		return raffles;
 	}
 	
 	/**

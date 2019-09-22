@@ -179,6 +179,8 @@ public class WebBot extends LoopThread {
 		final int roomId = room.getRoomId();
 		final String url = room.getUrl();
 		
+		// FIXME: 小电视、高能、活动、分区/全区、舰长 都已合并,  节奏风暴未知
+		
 		// 小电视抽奖
 		if(room.TYPE() == LotteryType.TV && Switch.isJoinLottery()) {
 			_waitReactionTime(room);

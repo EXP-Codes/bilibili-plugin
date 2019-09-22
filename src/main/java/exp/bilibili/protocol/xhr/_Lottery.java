@@ -1,11 +1,14 @@
 package exp.bilibili.protocol.xhr;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import exp.bilibili.plugin.Config;
 import exp.bilibili.plugin.bean.ldm.BiliCookie;
 import exp.bilibili.plugin.bean.ldm.Raffle;
+import exp.bilibili.plugin.bean.ldm.Raffles;
 import exp.bilibili.plugin.envm.LotteryType;
 import exp.bilibili.plugin.utils.VercodeUtils;
 import exp.bilibili.protocol.envm.BiliCmdAtrbt;
@@ -15,6 +18,7 @@ import exp.libs.utils.os.ThreadUtils;
 import exp.libs.utils.other.StrUtils;
 import exp.libs.warp.net.http.HttpURLUtils;
 import exp.libs.warp.net.http.HttpUtils;
+import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 /**
@@ -41,8 +45,60 @@ class _Lottery extends __XHR {
 	/** 节奏风暴验证码图片高度 */
 	private final static int IMG_HEIGHT = 32;
 	
+	/** 已经抽过的礼物 */
+	private final static Raffles RAFFLES = new Raffles();
+	
 	/** 私有化构造函数 */
 	protected _Lottery() {}
+	
+	/**
+	 * 获取礼物编号
+	 * @param response 
+	 * 	{"code":0,"message":"0","ttl":1,"data":{"pk":[],"guard":[],"gift":[{"raffleId":427802,"type":"GIFT_30035","from_user":{"uid":0,"uname":"sy阿四","face":"http://i2.hdslb.com/bfs/face/7b37c75d6467210cdd211a60c061b3b605156d1b.jpg"},"time_wait":19,"time":79,"max_time":180,"status":1,"sender_type":1,"asset_icon":"http://s1.hdslb.com/bfs/live/28c2f3dd68170391d173ca2efd02bdabc917df26.png","asset_animation_pic":"http://i0.hdslb.com/bfs/live/d7303a91bf00446b2bc53b8726844b4ad813b9ed.gif","thank_text":"感谢\u003c%sy阿四%\u003e 赠送的任意门","weight":0,"gift_id":30035}]}}
+	 *  {"code":0,"message":"0","ttl":1,"data":{"pk":[],"guard":[{"id":1496667,"sender":{"uid":2274252,"uname":"纯洁老爷","face":"http://i1.hdslb.com/bfs/face/6eefafb2e494c377a8470974eedcbdaf66a985f8.jpg"},"keyword":"guard","privilege_type":3,"time":949,"status":1,"time_wait":0,"asset_icon":"https://i0.hdslb.com/bfs/vc/43f488e7c4dca5ba6fbdcb88f40052d56bf777d8.png","asset_animation_pic":"https://i0.hdslb.com/bfs/vc/ff2a28492970850ce73df0cc144f1766b222d471.gif","thank_text":"恭喜\u003c%纯洁老爷%\u003e上任舰长","weight":0}],"gift":[]}}
+	 * @return
+	 */
+	protected static List<Raffle> getRaffle(String url, int roomId, String cookie) {
+		String sRoomId = getRealRoomId(roomId);
+		Map<String, String> header = GET_HEADER(cookie, sRoomId);
+		Map<String, String> request = getRequest(sRoomId);
+		String response = HttpURLUtils.doGet(url, header, request);
+		
+		List<Raffle> raffles = new LinkedList<Raffle>();
+		try {
+			JSONObject json = JSONObject.fromObject(response);
+			int code = JsonUtils.getInt(json, BiliCmdAtrbt.code, -1);
+			if(code == 0) {
+				JSONObject data = JsonUtils.getObject(json, BiliCmdAtrbt.data);
+				JSONArray array = JsonUtils.getArray(data, BiliCmdAtrbt.gift);
+				for(int i = 0; i < array.size(); i++) {
+					JSONObject obj = array.getJSONObject(i);
+					log.warn(obj.toString());
+					Raffle raffle = new Raffle(obj);
+					if(RAFFLES.add(raffle)) {
+						raffles.add(raffle);
+					}
+				}
+				
+				array = JsonUtils.getArray(data, BiliCmdAtrbt.guard);
+				for(int i = 0; i < array.size(); i++) {
+					JSONObject obj = array.getJSONObject(i);
+					log.warn(obj.toString());
+					Raffle raffle = new Raffle(obj);
+					if(RAFFLES.add(raffle)) {
+						raffles.add(raffle);
+					}
+				}
+				
+			} else {
+				String reason = JsonUtils.getStr(json, BiliCmdAtrbt.msg);
+				log.warn("获取礼物编号失败: {}", reason);
+			}
+		} catch(Exception e) {
+			log.error("获取礼物编号异常: {}", response, e);
+		}
+		return raffles;
+	}
 	
 	/**
 	 * 加入抽奖
@@ -64,8 +120,10 @@ class _Lottery extends __XHR {
 		// 加入高能/小电视抽奖
 		if(LotteryType.STORM != type) {
 			Map<String, String> request = getRequest(cookie.CSRF(), sRoomId, raffle, visitId);
+			log.warn(request.toString());
 			for(int retry = 0; retry < 20; retry++) {
 				String response = HttpURLUtils.doPost(url, header, request);
+				log.warn(response);
 				
 				reason = analyse(response);
 				if(StrUtils.isEmpty(reason) || !reason.contains("系统繁忙")) {
@@ -113,11 +171,7 @@ class _Lottery extends __XHR {
 		Map<String, String> request = new HashMap<String, String>();
 		request.put(BiliCmdAtrbt.id, raffle.getRaffleId());
 		request.put(BiliCmdAtrbt.roomid, roomId);
-		if(StrUtils.isTrimEmpty(raffle.getGiftId())) {
-			request.put(BiliCmdAtrbt.type, "small_tv");
-		} else {
-			request.put(BiliCmdAtrbt.type, StrUtils.concat("GIFT_", raffle.getGiftId()));
-		}
+		request.put(BiliCmdAtrbt.type, raffle.getType());
 		request.put(BiliCmdAtrbt.csrf_token, csrf);
 		request.put(BiliCmdAtrbt.csrf, csrf);
 		request.put(BiliCmdAtrbt.visit_id, visitId);
