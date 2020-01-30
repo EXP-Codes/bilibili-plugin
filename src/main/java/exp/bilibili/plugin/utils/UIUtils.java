@@ -90,7 +90,11 @@ public class UIUtils {
 	}
 	
 	public static boolean isLogined() {
-		return AppUI.getInstn().isLogined();
+		boolean isLogined = false;
+		if(Config.USE_UI()) {
+			isLogined = AppUI.getInstn().isLogined();
+		}
+		return isLogined;
 	}
 	
 	public static void updateAppTitle(String certificateTime) {

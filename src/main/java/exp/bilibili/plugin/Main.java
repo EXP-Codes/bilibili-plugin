@@ -26,10 +26,10 @@ public class Main {
 	 */
 	public static void main(String[] args) {
 		LogUtils.loadLogBackConfig();
-		BeautyEyeUtils.init();
 		Config.getInstn();
 		
 		if(Config.USE_UI()) {
+			BeautyEyeUtils.init();
 			if(OSUtils.getStartlock(2333)) {
 				if(TimeUtils.isCalibrated(3600000)) {
 					AppUI.createInstn(args);

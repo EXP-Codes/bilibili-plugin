@@ -34,7 +34,7 @@ class __XHR {
 	protected final static String LIVE_HOST = Config.getInstn().LIVE_HOST();
 	
 	/** 直播首页 */
-	private final static String LIVE_HOME = Config.getInstn().LIVE_HOME();
+	protected final static String LIVE_HOME = Config.getInstn().LIVE_HOME();
 	
 	/** 个人Link中心服务器主机 */
 	protected final static String LINK_HOST = Config.getInstn().LINK_HOST();

@@ -28,6 +28,7 @@ import exp.bilibili.protocol.bean.ws.RaffleEnd;
 import exp.bilibili.protocol.bean.ws.RaffleStart;
 import exp.bilibili.protocol.bean.ws.RoomBlock;
 import exp.bilibili.protocol.bean.ws.RoomRank;
+import exp.bilibili.protocol.bean.ws.RoomRealTimeMessageUpdate;
 import exp.bilibili.protocol.bean.ws.RoomSilentOff;
 import exp.bilibili.protocol.bean.ws.SendGift;
 import exp.bilibili.protocol.bean.ws.SpecialGift;
@@ -168,6 +169,9 @@ public class WSAnalyser {
 			
 		} else if(!onlyListen && biliCmd == BiliCmd.ACTIVITY_BANNER_RED_NOTICE_CLOSE) {
 			toDo(new ActivityBannerRedNoticeClose(json));
+			
+		} else if(!onlyListen && biliCmd == BiliCmd.ROOM_REAL_TIME_MESSAGE_UPDATE) {
+			toDo(new RoomRealTimeMessageUpdate(json));
 			
 		} else {
 			isOk = onlyListen;
@@ -517,6 +521,14 @@ public class WSAnalyser {
 	 * @param msgBean
 	 */
 	private static void toDo(ActivityBannerRedNoticeClose msgBean) {
+		// Undo
+	}
+	
+	/**
+	 * 直播间实时信息更新（粉丝人数）
+	 * @param msgBean
+	 */
+	private static void toDo(RoomRealTimeMessageUpdate msgBean) {
 		// Undo
 	}
 	

@@ -129,7 +129,8 @@ public class XHRSender {
 	 * @return username
 	 */
 	public static boolean queryUserInfo(BiliCookie cookie) {
-		boolean isOk = Other.queryUserInfo(cookie);	// 普通信息: 用户ID+昵称
+		int roomId = UIUtils.getLiveRoomId();
+		boolean isOk = Other.queryUserInfo(cookie, roomId);	// 普通信息: 用户ID+昵称
 		isOk &= Other.queryUserSafeInfo(cookie);	// 安全信息: 是否绑定手机号
 		return isOk;
 	}

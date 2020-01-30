@@ -28,7 +28,7 @@
         <chatURL caption="版聊URL"><![CDATA[https://api.live.bilibili.com/msg/send]]></chatURL>
         <signURL caption="签到URL"><![CDATA[https://api.live.bilibili.com/sign/doSign]]></signURL>
         <assnURL caption="友爱社URL"><![CDATA[https://api.live.bilibili.com/activity/v1/task/receive_award]]></assnURL>
-        <accountURL caption="账号信息URL"><![CDATA[https://api.live.bilibili.com/i/api/liveinfo]]></accountURL>
+        <accountURL caption="账号信息URL"><![CDATA[https://api.live.bilibili.com/xlive/web-room/v1/index/getInfoByUser]]></accountURL>
         <roomURL caption="房间信息URL"><![CDATA[https://api.live.bilibili.com/live_user/v1/UserInfo/get_anchor_in_room]]></roomURL>
         <playerURL caption="账号在特定房间内的信息URL"><![CDATA[https://api.live.bilibili.com/live_user/v1/UserInfo/get_info_in_room]]></playerURL>
         <danmuURL caption="弹幕配置URL"><![CDATA[https://api.live.bilibili.com/userext/v1/danmuConf/getAll]]></danmuURL>

@@ -137,9 +137,14 @@ public class BiliHandler implements IHandler {
 					BODHUtils.toBytes(subHexMsg), Config.DEFAULT_CHARSET);
 			
 			if(JsonUtils.isVaild(msg)) {
-				JSONObject json = JSONObject.fromObject(msg);
-				if(!WSAnalyser.toMsgBean(json, roomId, onlyListen)) {
-					isOk = false;
+				if("{\"code\":0}".equals(msg)) {
+					// 首次连接 ws 后的答复消息
+					
+				} else {
+					JSONObject json = JSONObject.fromObject(msg);
+					if(!WSAnalyser.toMsgBean(json, roomId, onlyListen)) {
+						isOk = false;
+					}
 				}
 			} else {
 				isOk = false;

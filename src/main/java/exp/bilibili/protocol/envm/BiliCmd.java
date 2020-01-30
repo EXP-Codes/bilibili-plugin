@@ -120,6 +120,10 @@ public class BiliCmd {
 	private final static String _ACTIVITY_BANNER_RED_NOTICE_CLOSE = "ACTIVITY_BANNER_RED_NOTICE_CLOSE";
 	public final static BiliCmd ACTIVITY_BANNER_RED_NOTICE_CLOSE = new BiliCmd(_ACTIVITY_BANNER_RED_NOTICE_CLOSE);
 	
+	/** 直播间实时信息更新（粉丝人数） */
+	private final static String _ROOM_REAL_TIME_MESSAGE_UPDATE = "ROOM_REAL_TIME_MESSAGE_UPDATE";
+	public final static BiliCmd ROOM_REAL_TIME_MESSAGE_UPDATE = new BiliCmd(_ROOM_REAL_TIME_MESSAGE_UPDATE);
+	
 	private String cmd;
 	
 	private BiliCmd(String cmd) {
@@ -210,6 +214,8 @@ public class BiliCmd {
 		} else if(_ACTIVITY_BANNER_RED_NOTICE_CLOSE.equals(cmd)) {
 			biliCMD = ACTIVITY_BANNER_RED_NOTICE_CLOSE;
 			
+		} else if(_ROOM_REAL_TIME_MESSAGE_UPDATE.equals(cmd)) {
+			biliCMD = ROOM_REAL_TIME_MESSAGE_UPDATE;
 		}
 		return biliCMD;
 	}

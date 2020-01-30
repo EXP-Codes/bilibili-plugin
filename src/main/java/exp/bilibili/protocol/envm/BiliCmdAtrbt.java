@@ -405,4 +405,6 @@ public class BiliCmdAtrbt {
 	
 	public final static String length = "length";
 	
+	public final static String fans = "fans";
+	
 }

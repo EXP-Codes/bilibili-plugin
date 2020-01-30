@@ -14,7 +14,7 @@ public class _Init {
 	
 	@Before
 	public void before() {
-		System.setProperty("os.name", "Linux");		// 虚构非 win 系统，避免测试弹窗
+		System.setProperty("os.name", "Linux");		// 声明非 win 系统，避免测试弹窗
 		CookiesMgr.getInstn().load(CookieType.MAIN);
 		this.cookie = CookiesMgr.MAIN();
 		this.roomId = 1;
