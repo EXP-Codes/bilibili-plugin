@@ -16,7 +16,7 @@ import exp.libs.utils.other.StrUtils;
 public class TestWSAnalyser {
 
 	public static void main(String[] args) {
-		String hex = "0000001A0010000100000008000000017B22636F6465223A307D";
+		String hex = "0000005B0010000000000005000000007B22636D64223A22504B5F424154544C455F454E5452414E4345222C2274696D657374616D70223A31353830343";
 		alalyseMsg(hex);
 	}
 	
@@ -32,11 +32,11 @@ public class TestWSAnalyser {
 			if(len <= 32) {
 				break;
 			}
+			
 			String subHexMsg = hexMsg.substring(32, len);
 			msg = new String(BODHUtils.toBytes(subHexMsg));
 			System.out.println(StrUtils.view(msg));
-			
-			
+
 			hexMsg = hexMsg.substring(len);
 		} while(StrUtils.isNotEmpty(hexMsg));
 	}

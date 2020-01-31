@@ -132,9 +132,14 @@ public class BiliHandler implements IHandler {
 				break;
 			}
 			
-			String subHexMsg = hexMsg.substring(MSG_HEADER_LEN, len);
-			String msg = CharsetUtils.toStr(
-					BODHUtils.toBytes(subHexMsg), Config.DEFAULT_CHARSET);
+			String msg = "";
+			try {
+				String subHexMsg = hexMsg.substring(MSG_HEADER_LEN, len);
+				msg = CharsetUtils.toStr(
+						BODHUtils.toBytes(subHexMsg), Config.DEFAULT_CHARSET);
+			} catch (Exception e) {
+				// UNDO: 存在一些奇怪的乱码消息导致截断失败
+			}
 			
 			if(JsonUtils.isVaild(msg)) {
 				if("{\"code\":0}".equals(msg)) {

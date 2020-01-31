@@ -285,7 +285,10 @@ public class WebBot extends LoopThread {
 			
 			reissueGuardGift();		// 补领舰长亲密度
 			reflashActivity();		// 刷新活跃值到数据库
-			checkCookieExpires();	// 检查Cookie有效期
+			
+			if(Config.USE_UI()) {
+				checkCookieExpires();	// 检查Cookie有效期
+			}
 			
 			// 打印心跳
 			log.info("{} 活动中...", getName());
