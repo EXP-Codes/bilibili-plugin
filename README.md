@@ -50,6 +50,9 @@
       
 ## 运行界面展示
 
+<details>
+<summary>展开查看</summary>
+
 ### ※ 主界面
 ![主界面](https://github.com/lyy289065406/bilibili-plugin/blob/master/doc/%E8%BF%90%E8%A1%8C%E6%88%AA%E5%9B%BE/01-%E4%B8%BB%E7%95%8C%E9%9D%A2.png)
 
@@ -78,6 +81,7 @@
 
 ![粉丝活跃度统计与抽奖](https://github.com/lyy289065406/bilibili-plugin/blob/master/doc/%E8%BF%90%E8%A1%8C%E6%88%AA%E5%9B%BE/06-%E7%B2%89%E4%B8%9D%E6%B4%BB%E8%B7%83%E5%BA%A6%E7%BB%9F%E8%AE%A1%E4%B8%8E%E6%8A%BD%E5%A5%96.png)
 
+</details>
 
 
 ## 安装与使用
@@ -128,7 +132,10 @@
 ### v6.1版本：
 - 01.　修正账号信息查询接口失效问题
 - 02.　补充近百个新礼物支持
+- 03.　追加 ws 消息主体可能存在的 zlib 解压支持
 
+<details>
+<summary>更多历史记录...</summary>
 
 ### v6.0版本：
 - 01.　JDK1.8重编译版
@@ -461,6 +468,7 @@
 - 03.　修复内存泄漏问题
 - 04.　屏蔽B站首次登入时的升级教程（妨碍抽奖）
     
+</details>
     
 ## 版权声明
 
