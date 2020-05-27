@@ -2,26 +2,24 @@ package exp.bilibili.protocol.ws;
 
 import java.nio.ByteBuffer;
 
-import net.sf.json.JSONObject;
-
 import org.java_websocket.framing.Framedata;
 import org.java_websocket.framing.Framedata.Opcode;
 import org.java_websocket.handshake.ServerHandshake;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import exp.bilibili.plugin.Config;
 import exp.bilibili.plugin.cache.RoomMgr;
 import exp.bilibili.plugin.utils.UIUtils;
+import exp.bilibili.plugin.utils.ZlibUtils;
 import exp.bilibili.protocol.WSAnalyser;
 import exp.bilibili.protocol.envm.BiliBinary;
-import exp.libs.utils.encode.CharsetUtils;
 import exp.libs.utils.format.JsonUtils;
 import exp.libs.utils.num.BODHUtils;
 import exp.libs.utils.other.StrUtils;
 import exp.libs.warp.net.websock.bean.Frame;
 import exp.libs.warp.net.websock.interfaze.IHandler;
 import exp.libs.warp.net.websock.interfaze.ISession;
+import net.sf.json.JSONObject;
 
 /**
  * <PRE>
@@ -102,7 +100,7 @@ public class BiliHandler implements IHandler {
 	@Override
 	public void onMessage(ByteBuffer byteBuffer) {
 		String hex = BODHUtils.toHex(byteBuffer.array());
-		wslog.info("RECEIVE: {}", hex);
+		wslog.info("接收到推送消息: {}", hex);
 		
 		if(hex.startsWith(BiliBinary.SERVER_HB_CONFIRM)) {
 			log.debug("websocket连接保活确认");
@@ -126,35 +124,32 @@ public class BiliHandler implements IHandler {
 	 */
 	private boolean alalyseHexMsg(String hexMsg) {
 		boolean isOk = true;
-		while(StrUtils.isNotEmpty(hexMsg)) {
-			int len = getHexLen(hexMsg);	// 获取子消息长度
-			if(len <= MSG_HEADER_LEN) {	// 消息的前32个字节(即16个字符)为消息头
-				break;
-			}
+		if(StrUtils.isNotEmpty(hexMsg)) {
 			
-			String msg = "";
-			try {
-				String subHexMsg = hexMsg.substring(MSG_HEADER_LEN, len);
-				msg = CharsetUtils.toStr(
-						BODHUtils.toBytes(subHexMsg), Config.DEFAULT_CHARSET);
-			} catch (Exception e) {
-				// UNDO: 存在一些奇怪的乱码消息导致截断失败
-			}
+			// 丢弃前 32 位消息头之后， 使用 zlib 对消息主体进行解压
+			String str = new String(ZlibUtils.decompress(BODHUtils.toBytes(hexMsg.substring(MSG_HEADER_LEN))));
 			
-			if(JsonUtils.isVaild(msg)) {
-				if("{\"code\":0}".equals(msg)) {
-					// 首次连接 ws 后的答复消息
+			// 提取消息
+			String[] msgs = str.split("\0");
+			for(String msg : msgs) {
+				if(StrUtils.isNotTrimEmpty(msg) && msg.startsWith("{")) {
+					wslog.info(msg);
 					
-				} else {
-					JSONObject json = JSONObject.fromObject(msg);
-					if(!WSAnalyser.toMsgBean(json, roomId, onlyListen)) {
+					if(JsonUtils.isVaild(msg)) {
+						if("{\"code\":0}".equals(msg)) {
+							// 首次连接 ws 后的答复消息
+							
+						} else {
+							JSONObject json = JSONObject.fromObject(msg);
+							if(!WSAnalyser.toMsgBean(json, roomId, onlyListen)) {
+								isOk = false;
+							}
+						}
+					} else {
 						isOk = false;
 					}
 				}
-			} else {
-				isOk = false;
 			}
-			hexMsg = hexMsg.substring(len);
 		}
 		return isOk;
 	}

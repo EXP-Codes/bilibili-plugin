@@ -191,13 +191,6 @@ public class AppUI extends MainWindow {
 	
 	private AppUI() {
 		super("哔哩哔哩插件姬 - By EXP", WIDTH, HEIGHT);
-		
-		try {
-			throw new Exception("xxx");
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		
 	}
 	
 	/**
